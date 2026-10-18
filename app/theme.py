@@ -6,6 +6,10 @@ SURFACE = "#FFFFFF"
 CARD_BORDER = "#DFE6EE"
 TEXT_PRIMARY = "#152231"
 TEXT_SECONDARY = "#42556D"
+WARNING_BACKGROUND = "#FFF2CC"
+WARNING_TEXT = "#5C4400"
+REVIEW_BACKGROUND = "#FDE8E8"
+REVIEW_TEXT = "#8B1E2D"
 
 
 def apply_theme(page: ft.Page) -> None:
@@ -25,4 +29,3 @@ def apply_theme(page: ft.Page) -> None:
         ),
     )
     page.bgcolor = BACKGROUND
-    
