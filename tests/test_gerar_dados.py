@@ -23,6 +23,18 @@ def gerar_amostra():
 
 def test_mesma_semente_produz_mesmos_dados():
     assert gerar_amostra() == gerar_amostra()
+    
+def test_idade_e_imc_estao_dentro_dos_limites():
+    participantes, _, _ = gerar_amostra()
+
+    for participante in participantes:
+        assert 18 <= participante["idade"] <= 60
+
+        imc = participante["peso_kg"] / participante["altura_m"] ** 2
+
+        assert 17 <= imc <= 35, (
+            f"IMC fora dos limites para {participante['codigo']}: {imc:.2f}"
+        )
 
 
 def test_quantidades_e_ligacoes_sao_validas():
