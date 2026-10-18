@@ -1,0 +1,7138 @@
+{
+  "metadados": {
+    "ficticio": true,
+    "semente": 42
+  },
+  "participantes": [
+    {
+      "codigo": "P-001",
+      "idade": 58,
+      "peso_kg": 52.2,
+      "altura_m": 1.86,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-002",
+      "idade": 33,
+      "peso_kg": 59.5,
+      "altura_m": 1.86,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-003",
+      "idade": 61,
+      "peso_kg": 93.1,
+      "altura_m": 1.75,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-004",
+      "idade": 55,
+      "peso_kg": 72.4,
+      "altura_m": 1.47,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-005",
+      "idade": 31,
+      "peso_kg": 60.1,
+      "altura_m": 1.78,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-006",
+      "idade": 53,
+      "peso_kg": 57.9,
+      "altura_m": 1.81,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-007",
+      "idade": 52,
+      "peso_kg": 72.3,
+      "altura_m": 1.7,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-008",
+      "idade": 35,
+      "peso_kg": 97.6,
+      "altura_m": 1.45,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-009",
+      "idade": 69,
+      "peso_kg": 55.4,
+      "altura_m": 1.68,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-010",
+      "idade": 35,
+      "peso_kg": 55.1,
+      "altura_m": 1.98,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-011",
+      "idade": 39,
+      "peso_kg": 51.6,
+      "altura_m": 1.66,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-012",
+      "idade": 40,
+      "peso_kg": 100.1,
+      "altura_m": 1.78,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-013",
+      "idade": 69,
+      "peso_kg": 47.8,
+      "altura_m": 1.7,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-014",
+      "idade": 25,
+      "peso_kg": 108.3,
+      "altura_m": 1.66,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-015",
+      "idade": 53,
+      "peso_kg": 64.1,
+      "altura_m": 1.8,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-016",
+      "idade": 74,
+      "peso_kg": 101.0,
+      "altura_m": 1.77,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-017",
+      "idade": 63,
+      "peso_kg": 49.5,
+      "altura_m": 1.81,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-018",
+      "idade": 67,
+      "peso_kg": 63.8,
+      "altura_m": 1.49,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-019",
+      "idade": 32,
+      "peso_kg": 101.3,
+      "altura_m": 1.66,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-020",
+      "idade": 47,
+      "peso_kg": 86.3,
+      "altura_m": 1.65,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-021",
+      "idade": 41,
+      "peso_kg": 68.1,
+      "altura_m": 1.82,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-022",
+      "idade": 62,
+      "peso_kg": 105.9,
+      "altura_m": 1.81,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-023",
+      "idade": 56,
+      "peso_kg": 86.3,
+      "altura_m": 1.74,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-024",
+      "idade": 33,
+      "peso_kg": 55.6,
+      "altura_m": 1.66,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-025",
+      "idade": 58,
+      "peso_kg": 89.7,
+      "altura_m": 1.57,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-026",
+      "idade": 38,
+      "peso_kg": 99.8,
+      "altura_m": 1.88,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-027",
+      "idade": 32,
+      "peso_kg": 98.4,
+      "altura_m": 1.89,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-028",
+      "idade": 43,
+      "peso_kg": 62.4,
+      "altura_m": 1.57,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-029",
+      "idade": 54,
+      "peso_kg": 102.0,
+      "altura_m": 1.62,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-030",
+      "idade": 59,
+      "peso_kg": 77.5,
+      "altura_m": 1.94,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-031",
+      "idade": 59,
+      "peso_kg": 74.8,
+      "altura_m": 1.6,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-032",
+      "idade": 33,
+      "peso_kg": 93.4,
+      "altura_m": 1.75,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-033",
+      "idade": 65,
+      "peso_kg": 83.0,
+      "altura_m": 1.94,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-034",
+      "idade": 43,
+      "peso_kg": 68.5,
+      "altura_m": 2.0,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-035",
+      "idade": 26,
+      "peso_kg": 78.1,
+      "altura_m": 1.5,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-036",
+      "idade": 21,
+      "peso_kg": 101.0,
+      "altura_m": 1.53,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-037",
+      "idade": 28,
+      "peso_kg": 96.5,
+      "altura_m": 1.68,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-038",
+      "idade": 22,
+      "peso_kg": 70.0,
+      "altura_m": 1.78,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-039",
+      "idade": 47,
+      "peso_kg": 79.4,
+      "altura_m": 1.98,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-040",
+      "idade": 73,
+      "peso_kg": 106.3,
+      "altura_m": 1.82,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-041",
+      "idade": 25,
+      "peso_kg": 89.3,
+      "altura_m": 1.75,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-042",
+      "idade": 35,
+      "peso_kg": 95.0,
+      "altura_m": 1.64,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-043",
+      "idade": 36,
+      "peso_kg": 73.3,
+      "altura_m": 1.7,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-044",
+      "idade": 64,
+      "peso_kg": 101.9,
+      "altura_m": 1.59,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-045",
+      "idade": 50,
+      "peso_kg": 94.5,
+      "altura_m": 1.73,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-046",
+      "idade": 24,
+      "peso_kg": 101.6,
+      "altura_m": 1.61,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-047",
+      "idade": 58,
+      "peso_kg": 78.0,
+      "altura_m": 1.56,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-048",
+      "idade": 41,
+      "peso_kg": 94.6,
+      "altura_m": 1.75,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-049",
+      "idade": 67,
+      "peso_kg": 105.0,
+      "altura_m": 1.96,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-050",
+      "idade": 56,
+      "peso_kg": 66.1,
+      "altura_m": 1.46,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-051",
+      "idade": 41,
+      "peso_kg": 102.1,
+      "altura_m": 1.91,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-052",
+      "idade": 37,
+      "peso_kg": 60.6,
+      "altura_m": 1.58,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-053",
+      "idade": 54,
+      "peso_kg": 106.6,
+      "altura_m": 1.5,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-054",
+      "idade": 49,
+      "peso_kg": 98.0,
+      "altura_m": 1.99,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-055",
+      "idade": 52,
+      "peso_kg": 94.8,
+      "altura_m": 1.52,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-056",
+      "idade": 48,
+      "peso_kg": 106.5,
+      "altura_m": 1.54,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-057",
+      "idade": 51,
+      "peso_kg": 101.7,
+      "altura_m": 1.68,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-058",
+      "idade": 31,
+      "peso_kg": 105.4,
+      "altura_m": 1.87,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-059",
+      "idade": 62,
+      "peso_kg": 58.1,
+      "altura_m": 1.62,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    },
+    {
+      "codigo": "P-060",
+      "idade": 60,
+      "peso_kg": 87.2,
+      "altura_m": 1.69,
+      "consentimento": true,
+      "data_consentimento": "2026-10-17"
+    }
+  ],
+  "testes_catalogo": [
+    {
+      "id": "T-01",
+      "regiao": "Joelho",
+      "nome": "Lachman"
+    },
+    {
+      "id": "T-02",
+      "regiao": "Joelho",
+      "nome": "Gaveta Anterior (LCA)"
+    },
+    {
+      "id": "T-03",
+      "regiao": "Joelho",
+      "nome": "Estresse em Valgo (LCM)"
+    },
+    {
+      "id": "T-04",
+      "regiao": "Joelho",
+      "nome": "Estresse em Varo (LCL)"
+    },
+    {
+      "id": "T-05",
+      "regiao": "Tornozelo",
+      "nome": "Thompson"
+    },
+    {
+      "id": "T-06",
+      "regiao": "Tornozelo",
+      "nome": "Inclinação Talar"
+    },
+    {
+      "id": "T-07",
+      "regiao": "Tornozelo",
+      "nome": "Sinal de Kleiger"
+    },
+    {
+      "id": "T-08",
+      "regiao": "Ombro",
+      "nome": "Neer"
+    },
+    {
+      "id": "T-09",
+      "regiao": "Ombro",
+      "nome": "Impacto de Yocum"
+    },
+    {
+      "id": "T-10",
+      "regiao": "Ombro",
+      "nome": "Jobe"
+    },
+    {
+      "id": "T-11",
+      "regiao": "Punho",
+      "nome": "Finkelstein"
+    },
+    {
+      "id": "T-12",
+      "regiao": "Punho",
+      "nome": "Tinel"
+    },
+    {
+      "id": "T-13",
+      "regiao": "Punho",
+      "nome": "Phalen"
+    },
+    {
+      "id": "T-14",
+      "regiao": "Coluna",
+      "nome": "Lasègue"
+    },
+    {
+      "id": "T-15",
+      "regiao": "Coluna",
+      "nome": "Patrick-FABERE"
+    },
+    {
+      "id": "T-16",
+      "regiao": "Coluna",
+      "nome": "Adams"
+    }
+  ],
+  "avaliacoes": [
+    {
+      "id": "A-001",
+      "participante_codigo": "P-001",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-002",
+      "participante_codigo": "P-002",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-003",
+      "participante_codigo": "P-003",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-004",
+      "participante_codigo": "P-004",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-005",
+      "participante_codigo": "P-005",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-006",
+      "participante_codigo": "P-006",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-007",
+      "participante_codigo": "P-007",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-008",
+      "participante_codigo": "P-008",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-009",
+      "participante_codigo": "P-009",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-010",
+      "participante_codigo": "P-010",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-011",
+      "participante_codigo": "P-011",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-012",
+      "participante_codigo": "P-012",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-013",
+      "participante_codigo": "P-013",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-014",
+      "participante_codigo": "P-014",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-015",
+      "participante_codigo": "P-015",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-016",
+      "participante_codigo": "P-016",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-017",
+      "participante_codigo": "P-017",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-018",
+      "participante_codigo": "P-018",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-019",
+      "participante_codigo": "P-019",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-020",
+      "participante_codigo": "P-020",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-021",
+      "participante_codigo": "P-021",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-022",
+      "participante_codigo": "P-022",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-023",
+      "participante_codigo": "P-023",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-024",
+      "participante_codigo": "P-024",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-025",
+      "participante_codigo": "P-025",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-026",
+      "participante_codigo": "P-026",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-027",
+      "participante_codigo": "P-027",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-028",
+      "participante_codigo": "P-028",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-029",
+      "participante_codigo": "P-029",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-030",
+      "participante_codigo": "P-030",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-031",
+      "participante_codigo": "P-031",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-032",
+      "participante_codigo": "P-032",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-033",
+      "participante_codigo": "P-033",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-034",
+      "participante_codigo": "P-034",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-035",
+      "participante_codigo": "P-035",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-036",
+      "participante_codigo": "P-036",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-037",
+      "participante_codigo": "P-037",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-038",
+      "participante_codigo": "P-038",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-039",
+      "participante_codigo": "P-039",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-040",
+      "participante_codigo": "P-040",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-041",
+      "participante_codigo": "P-041",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-042",
+      "participante_codigo": "P-042",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-043",
+      "participante_codigo": "P-043",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-044",
+      "participante_codigo": "P-044",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-045",
+      "participante_codigo": "P-045",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-046",
+      "participante_codigo": "P-046",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-047",
+      "participante_codigo": "P-047",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-048",
+      "participante_codigo": "P-048",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-049",
+      "participante_codigo": "P-049",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-050",
+      "participante_codigo": "P-050",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-051",
+      "participante_codigo": "P-051",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-052",
+      "participante_codigo": "P-052",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-053",
+      "participante_codigo": "P-053",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-054",
+      "participante_codigo": "P-054",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-055",
+      "participante_codigo": "P-055",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-056",
+      "participante_codigo": "P-056",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-057",
+      "participante_codigo": "P-057",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-058",
+      "participante_codigo": "P-058",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-059",
+      "participante_codigo": "P-059",
+      "data_avaliacao": "2026-10-18"
+    },
+    {
+      "id": "A-060",
+      "participante_codigo": "P-060",
+      "data_avaliacao": "2026-10-18"
+    }
+  ],
+  "resultados_testes": [
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-12",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-001",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-002",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-05",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-003",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-004",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-005",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-006",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-007",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-008",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-009",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-010",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-011",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-05",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-012",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-013",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-014",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-014",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-014",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-014",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-014",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-014",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-014",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-014",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-015",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-015",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-015",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-015",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-015",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-015",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-015",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-015",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-015",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-016",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-016",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-016",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-016",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-016",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-016",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-016",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-017",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-018",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-019",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-020",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-021",
+      "teste_id": "T-12",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-021",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-021",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-021",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-021",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-021",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-022",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-022",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-022",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-022",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-022",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-022",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-022",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-022",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-023",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-024",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-01",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-025",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-05",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-026",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-027",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-028",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-029",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-029",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-029",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-029",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-029",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-029",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-029",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-029",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-12",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-030",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-031",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-031",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-031",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-031",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-031",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-032",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-033",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-034",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-035",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-035",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-035",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-035",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-035",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-035",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-035",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-036",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-036",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-036",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-036",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-036",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-036",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-036",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-036",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-036",
+      "teste_id": "T-12",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-05",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-037",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-038",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-039",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-039",
+      "teste_id": "T-01",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-039",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-039",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-039",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-039",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-039",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-039",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-12",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-01",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-040",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-041",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-041",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-041",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-041",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-041",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-041",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-041",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-041",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-041",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-042",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-05",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-043",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-01",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-044",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-09",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-045",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-046",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-05",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-047",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-048",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-048",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-048",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-048",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-048",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-02",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-05",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-049",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-11",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-050",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-09",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-14",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-051",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-01",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-052",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-05",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 7,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-053",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-054",
+      "teste_id": "T-02",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-054",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-054",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-054",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-054",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-11",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-12",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-14",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-05",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-03",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-055",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-09",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-01",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 9,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-16",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-08",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-05",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-056",
+      "teste_id": "T-13",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-12",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-02",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-07",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-04",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-06",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Positivo",
+      "dor_0_10": 5,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-15",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-08",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-057",
+      "teste_id": "T-16",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-03",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 8,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-10",
+      "lado": "Direito",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-15",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-13",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-01",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-05",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-058",
+      "teste_id": "T-04",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-059",
+      "teste_id": "T-13",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-059",
+      "teste_id": "T-06",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-059",
+      "teste_id": "T-14",
+      "lado": "Direito",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 4,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-059",
+      "teste_id": "T-10",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-059",
+      "teste_id": "T-07",
+      "lado": "Direito",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-10",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-12",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-15",
+      "lado": "Bilateral",
+      "resultado": "Negativo",
+      "dor_0_10": 2,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-11",
+      "lado": "Bilateral",
+      "resultado": "Positivo",
+      "dor_0_10": 0,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-08",
+      "lado": "Esquerdo",
+      "resultado": "Inconclusivo",
+      "dor_0_10": 3,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-16",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 1,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-04",
+      "lado": "Esquerdo",
+      "resultado": "Não realizado",
+      "dor_0_10": null,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-06",
+      "lado": "Direito",
+      "resultado": "Positivo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-07",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 10,
+      "valor_medido": null,
+      "observacoes": null
+    },
+    {
+      "avaliacao_id": "A-060",
+      "teste_id": "T-03",
+      "lado": "Esquerdo",
+      "resultado": "Negativo",
+      "dor_0_10": 6,
+      "valor_medido": null,
+      "observacoes": null
+    }
+  ]
+}
