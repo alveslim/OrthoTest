@@ -1,13 +1,6 @@
 import flet as ft
 
-from theme import (
-    PRIMARY,
-    SURFACE,
-    CARD_BORDER,
-    TEXT_PRIMARY,
-    TEXT_SECONDARY,
-    apply_theme,
-)
+from theme import PRIMARY, SURFACE, CARD_BORDER, TEXT_SECONDARY, apply_theme
 
 
 def main(page: ft.Page) -> None:
@@ -20,9 +13,7 @@ def main(page: ft.Page) -> None:
             controls=[
                 ft.Text(
                     "Participantes",
-                    size=28,
-                    weight=ft.FontWeight.BOLD,
-                    color=TEXT_PRIMARY,
+                    theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,
                 ),
                 ft.Container(
                     bgcolor=SURFACE,
@@ -31,9 +22,20 @@ def main(page: ft.Page) -> None:
                     padding=20,
                     content=ft.Column(
                         controls=[
-                            ft.Text("P-014", size=20, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
-                            ft.Text("19 anos · 65 kg · 1,70 m", color=TEXT_SECONDARY),
-                            ft.Text("7 de 16 testes", color=PRIMARY),
+                            ft.Text(
+                                "P-014",
+                                theme_style=ft.TextThemeStyle.TITLE_LARGE,
+                            ),
+                            ft.Text(
+                                "19 anos · 65 kg · 1,70 m",
+                                theme_style=ft.TextThemeStyle.BODY_MEDIUM,
+                                color=TEXT_SECONDARY,
+                            ),
+                            ft.Text(
+                                "7 de 16 testes",
+                                theme_style=ft.TextThemeStyle.BODY_MEDIUM,
+                                color=PRIMARY,
+                            ),
                         ]
                     ),
                 ),

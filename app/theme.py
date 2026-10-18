@@ -13,5 +13,16 @@ def apply_theme(page: ft.Page) -> None:
     page.theme = ft.Theme(
         color_scheme_seed=PRIMARY,
         use_material3=True,
+        text_theme=ft.TextTheme(
+            headline_medium=ft.TextStyle(
+                size=28, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY
+            ),
+            title_large=ft.TextStyle(
+                size=20, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY
+            ),
+            body_medium=ft.TextStyle(size=14, color=TEXT_PRIMARY),
+            body_small=ft.TextStyle(size=12, color=TEXT_SECONDARY),
+        ),
     )
     page.bgcolor = BACKGROUND
+    
