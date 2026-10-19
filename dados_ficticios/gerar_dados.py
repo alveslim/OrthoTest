@@ -1,5 +1,6 @@
 """Gera dados inteiramente fictícios para desenvolvimento."""
 
+import argparse
 import json
 import random
 from pathlib import Path
@@ -30,19 +31,41 @@ TESTES = [
 RESULTADOS = ("Negativo", "Positivo", "Não realizado", "Inconclusivo")
 LADOS = ("Direito", "Esquerdo", "Bilateral")
 
+# Probabilidade de resultado positivo, em porcentagem,
+# seguindo a mesma ordem dos testes definidos em TESTES.
+TAXAS_POSITIVO = (
+    12, 18, 25, 30,
+    15, 22, 28, 20,
+    32, 14, 24, 35,
+    17, 27, 11, 21,
+)
 
-def gerar_participantes(gerador: random.Random) -> list[dict]:
+def gerar_participantes(
+    gerador: random.Random, 
+    total: int = TOTAL_PARTICIPANTES
+    ) -> list[dict]:
     participantes = []
 
-    for numero in range(1, TOTAL_PARTICIPANTES + 1):
+    for numero in range(1, total + 1):
+        idade = gerador.randint(18, 60)
+        altura = round(gerador.uniform(1.45, 2.00), 2)
+
+        # Usamos uma margem para evitar que o arredondamento
+        # do peso faça o IMC ultrapassar os limites.
+        imc_alvo = gerador.uniform(17.2, 34.8)
+        peso = round(imc_alvo * altura**2, 1)
+
         participantes.append(
             {
+                "id": f"PART-{numero:03d}",
                 "codigo": f"P-{numero:03d}",
-                "idade": gerador.randint(18, 75),
-                "peso_kg": round(gerador.uniform(45, 110), 1),
-                "altura_m": round(gerador.uniform(1.45, 2.00), 2),
+                "idade": idade,
+                "peso_kg": peso,
+                "altura_m": altura,
                 "consentimento": True,
                 "data_consentimento": "2026-10-17",
+                "criado_em": "2026-10-17T09:00:00",
+                "ficticio": True,
             }
         )
 
@@ -50,30 +73,48 @@ def gerar_participantes(gerador: random.Random) -> list[dict]:
 
 
 def gerar_avaliacoes_e_resultados(
-    participantes: list[dict], gerador: random.Random
+    participantes: list[dict],
+    gerador: random.Random,
 ) -> tuple[list[dict], list[dict]]:
     avaliacoes = []
     resultados_testes = []
 
     for numero, participante in enumerate(participantes, start=1):
         avaliacao_id = f"A-{numero:03d}"
+
+        # Cria uma avaliação relacionada ao participante.
         avaliacoes.append(
             {
                 "id": avaliacao_id,
-                "participante_codigo": participante["codigo"],
+                "participante_id": participante["id"],
+                "avaliador_id": "AV-001",
                 "data_avaliacao": "2026-10-18",
+                "flag_professor": False,
+                "flag_motivo": None,
+                "ficticio": True,
             }
         )
 
-        # Algumas avaliações completas e outras ainda com testes pendentes.
-        quantidade = (
-            len(TESTES) if numero <= 12 else gerador.randint(5, len(TESTES) - 1)
-        )
+        # Registra todos os testes para cada avaliação.
+        for indice in range(len(TESTES)):
+            taxa_positiva = TAXAS_POSITIVO[indice]
 
-        for indice in gerador.sample(range(len(TESTES)), k=quantidade):
             resultado = gerador.choices(
-                RESULTADOS, weights=(65, 15, 12, 8), k=1
+                RESULTADOS,
+                weights=(
+                    85 - taxa_positiva,
+                    taxa_positiva,
+                    8,
+                    7,
+                ),
+                k=1,
             )[0]
+
+            # A dor depende do resultado sorteado.
+            if resultado == "Positivo":
+                dor = gerador.randint(3, 8)
+            else:
+                dor = gerador.randint(0, 2)
 
             resultados_testes.append(
                 {
@@ -81,22 +122,45 @@ def gerar_avaliacoes_e_resultados(
                     "teste_id": f"T-{indice + 1:02d}",
                     "lado": gerador.choice(LADOS),
                     "resultado": resultado,
-                    "dor_0_10": (
-                        None
-                        if resultado == "Não realizado"
-                        else gerador.randint(0, 10)
-                    ),
+                    "dor_0_10": dor,
                     "valor_medido": None,
                     "observacoes": None,
+                    "ficticio": True,
                 }
             )
 
     return avaliacoes, resultados_testes
 
+def ler_argumentos() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Gera dados fictícios para o OrthoCheck."
+    )
+
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Semente para reproduzir os mesmos dados.",
+    )
+
+    parser.add_argument(
+        "--n",
+        type=int,
+        default=60,
+        help="Quantidade de participantes.",
+    )
+
+    args = parser.parse_args()
+
+    if args.n < 1:
+        parser.error("--n deve ser maior que zero.")
+
+    return args
 
 def main() -> None:
-    gerador = random.Random(SEMENTE)
-    participantes = gerar_participantes(gerador)
+    args = ler_argumentos()
+    gerador = random.Random(args.seed)
+    participantes = gerar_participantes(gerador, total=args.n)
     avaliacoes, resultados_testes = gerar_avaliacoes_e_resultados(
         participantes, gerador
     )
