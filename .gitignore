@@ -6,3 +6,6 @@ __pycache__/
 .env.*
 !.env.example
 *.db
+schema.sql
+testes_schema.sql
+tela_teste.py
