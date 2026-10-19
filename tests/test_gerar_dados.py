@@ -42,28 +42,55 @@ def test_quantidades_e_ligacoes_sao_validas():
 
     assert len(participantes) == TOTAL_PARTICIPANTES == 60
     assert len(TESTES) == 16
-    assert len(avaliacoes) == 60
+    assert len(avaliacoes) == len(participantes)
 
+    # Identificadores dos registros.
+    ids_participantes = {p["id"] for p in participantes}
     codigos = {p["codigo"] for p in participantes}
     ids_avaliacao = {a["id"] for a in avaliacoes}
-    ids_teste = {f"T-{numero:02d}" for numero in range(1, len(TESTES) + 1)}
+    ids_teste = {
+        f"T-{numero:02d}"
+        for numero in range(1, len(TESTES) + 1)
+    }
 
+    # Os identificadores devem ser únicos.
+    assert len(ids_participantes) == len(participantes)
     assert len(codigos) == len(participantes)
     assert len(ids_avaliacao) == len(avaliacoes)
-    assert all(a["participante_codigo"] in codigos for a in avaliacoes)
-    assert all("nome" not in p and "email" not in p for p in participantes)
 
-    quantidades = Counter(r["avaliacao_id"] for r in resultados)
-    assert any(total == len(TESTES) for total in quantidades.values())
-    assert any(total < len(TESTES) for total in quantidades.values())
+    # Nenhum nome ou e-mail real deve ser incluído.
+    assert all(
+        "nome" not in p and "email" not in p
+        for p in participantes
+    )
 
+    # Toda avaliação deve apontar para um participante existente.
+    assert all(
+        a["participante_id"] in ids_participantes
+        for a in avaliacoes
+    )
+
+    # Todas as avaliações devem ter exatamente 16 registros.
+    quantidades = Counter(
+        r["avaliacao_id"] for r in resultados
+    )
+
+    assert len(quantidades) == len(avaliacoes)
+    assert all(
+        total == len(TESTES)
+        for total in quantidades.values()
+    )
+
+    # Confere os vínculos e os valores de cada resultado.
     combinacoes = set()
+
     for registro in resultados:
         chave = (
             registro["avaliacao_id"],
             registro["teste_id"],
-            registro["lado"],
         )
+
+        # Um teste só pode aparecer uma vez por avaliação.
         assert chave not in combinacoes
         combinacoes.add(chave)
 
@@ -71,9 +98,11 @@ def test_quantidades_e_ligacoes_sao_validas():
         assert registro["teste_id"] in ids_teste
         assert registro["lado"] in LADOS
         assert registro["resultado"] in RESULTADOS
+        assert registro["ficticio"] is True
 
         dor = registro["dor_0_10"]
-        if registro["resultado"] == "Não realizado":
-            assert dor is None
+
+        if registro["resultado"] == "Positivo":
+            assert isinstance(dor, int) and 3 <= dor <= 8
         else:
-            assert isinstance(dor, int) and 0 <= dor <= 10
+            assert isinstance(dor, int) and 0 <= dor <= 2
