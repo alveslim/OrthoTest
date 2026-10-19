@@ -8,3 +8,4 @@ __pycache__/
 *.db
 schema.sql
 testes_schema.sql
+tela_teste.py
