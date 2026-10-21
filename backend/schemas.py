@@ -41,3 +41,21 @@ class AvaliacaoEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     participante_id: UUID
+
+class Regiao(str, Enum):
+    JOELHO = "Joelho"
+    TORNOZELO = "Tornozelo"
+    OMBRO = "Ombro"
+    PUNHO = "Punho"
+    COLUNA = "Coluna"
+
+class TesteCatalogo(BaseModel):
+    id: int = Field(gt=0)
+    regiao: Regiao
+    nome: str = Field(min_length=1, max_length=100)
+    estrutura: str | None = Field(default=None, max_length=100)
+    definicao: str = Field(min_length=1)
+    objetivo: str = Field(min_length=1)
+    como_fazer: str = Field(min_length=1)
+    positivo_se: str = Field(min_length=1)
+    referencia: str | None = None

@@ -1,6 +1,8 @@
 import pytest
+import backend.schemas as schemas
 from pydantic import ValidationError
 from backend.schemas import ParticipanteEntrada, ResultadoTeste, AvaliacaoEntrada
+
 
 BASE = dict(avaliacao_id="a1", teste_id=1, lado="Direito", resultado="Positivo")
 
@@ -63,3 +65,34 @@ def test_avaliacao_rejeita_campos_definidos_pelo_backend(campo):
         AvaliacaoEntrada.model_validate(
             {"participante_id": PARTICIPANTE_ID, campo: "valor-enviado"}
         )
+
+CATALOGO_BASE = {
+    "id": 1,
+    "regiao": "Joelho",
+    "nome": "Teste fictício",
+    "definicao": "Descrição de exemplo",
+    "objetivo": "Objetivo de exemplo",
+    "como_fazer": "Procedimento de exemplo",
+    "positivo_se": "Critério de exemplo",
+}
+
+
+def test_catalogo_aceita_registro_valido():
+    teste = schemas.TesteCatalogo.model_validate(CATALOGO_BASE)
+
+    assert teste.regiao.value == "Joelho"
+    assert teste.estrutura is None
+    assert teste.referencia is None
+
+
+@pytest.mark.parametrize(
+    "campo, valor",
+    [
+        ("id", 0),
+        ("regiao", "Região inexistente"),
+        ("definicao", ""),
+    ],
+)
+def test_catalogo_rejeita_valor_invalido(campo, valor):
+    with pytest.raises(ValidationError):
+        schemas.TesteCatalogo.model_validate({**CATALOGO_BASE, campo: valor})
