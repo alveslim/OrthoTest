@@ -1,7 +1,7 @@
 import pytest
 import backend.schemas as schemas
 from pydantic import ValidationError
-from backend.schemas import ParticipanteEntrada, ResultadoTeste, AvaliacaoEntrada
+from backend.schemas import ParticipanteEntrada, ResultadoTeste, AvaliacaoEntrada, RascunhoIA
 
 
 BASE = dict(avaliacao_id="a1", teste_id=1, lado="Direito", resultado="Positivo")
@@ -96,3 +96,39 @@ def test_catalogo_aceita_registro_valido():
 def test_catalogo_rejeita_valor_invalido(campo, valor):
     with pytest.raises(ValidationError):
         schemas.TesteCatalogo.model_validate({**CATALOGO_BASE, campo: valor})
+
+RASCUNHO_BASE = {
+    "id": "123e4567-e89b-12d3-a456-426614174001",
+    "avaliacao_id": "123e4567-e89b-12d3-a456-426614174002",
+    "texto": "Resumo fictício para revisão.",
+    "gerado_em": "2026-10-21T10:00:00-04:00",
+}
+
+
+def test_rascunho_pendente_e_aceito():
+    rascunho = RascunhoIA.model_validate(RASCUNHO_BASE)
+
+    assert rascunho.aprovado is False
+    assert rascunho.revisado_por is None
+
+
+def test_rascunho_aprovado_com_revisor_e_aceito():
+    rascunho = RascunhoIA.model_validate(
+        {
+            **RASCUNHO_BASE,
+            "aprovado": True,
+            "revisado_por": "123e4567-e89b-12d3-a456-426614174003",
+        }
+    )
+
+    assert rascunho.aprovado is True
+
+
+def test_rascunho_aprovado_sem_revisor_e_rejeitado():
+    with pytest.raises(ValidationError, match="exige revisado_por"):
+        RascunhoIA.model_validate({**RASCUNHO_BASE, "aprovado": True})
+
+
+def test_rascunho_sem_texto_e_rejeitado():
+    with pytest.raises(ValidationError):
+        RascunhoIA.model_validate({**RASCUNHO_BASE, "texto": ""})

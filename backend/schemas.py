@@ -59,3 +59,17 @@ class TesteCatalogo(BaseModel):
     como_fazer: str = Field(min_length=1)
     positivo_se: str = Field(min_length=1)
     referencia: str | None = None
+
+class RascunhoIA(BaseModel):
+    id: UUID
+    avaliacao_id: UUID
+    texto: str = Field(min_length=1)
+    gerado_em: datetime
+    revisado_por: UUID | None = None
+    aprovado: bool = False
+
+    @model_validator(mode="after")
+    def validar_aprovacao(self) -> "RascunhoIA":
+        if self.aprovado and self.revisado_por is None:
+            raise ValueError("Rascunho aprovado exige revisado_por")
+        return self
