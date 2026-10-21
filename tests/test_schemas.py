@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from backend.schemas import ParticipanteEntrada, ResultadoTeste
+from backend.schemas import ParticipanteEntrada, ResultadoTeste, AvaliacaoEntrada
 
 BASE = dict(avaliacao_id="a1", teste_id=1, lado="Direito", resultado="Positivo")
 
@@ -41,4 +41,25 @@ def test_consentimento_sem_data_e_rejeitado():
             codigo="P-003",
             idade=20,
             consentimento=True,
+        )
+
+PARTICIPANTE_ID = "123e4567-e89b-12d3-a456-426614174000"
+
+
+def test_avaliacao_aceita_id_de_participante_valido():
+    avaliacao = AvaliacaoEntrada(participante_id=PARTICIPANTE_ID)
+
+    assert str(avaliacao.participante_id) == PARTICIPANTE_ID
+
+
+def test_avaliacao_rejeita_id_de_participante_invalido():
+    with pytest.raises(ValidationError):
+        AvaliacaoEntrada(participante_id="id-invalido")
+
+
+@pytest.mark.parametrize("campo", ["avaliador_id", "status"])
+def test_avaliacao_rejeita_campos_definidos_pelo_backend(campo):
+    with pytest.raises(ValidationError):
+        AvaliacaoEntrada.model_validate(
+            {"participante_id": PARTICIPANTE_ID, campo: "valor-enviado"}
         )

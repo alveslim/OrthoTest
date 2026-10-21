@@ -1,6 +1,7 @@
+from uuid import UUID
 from datetime import datetime
 from enum import Enum
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 class Resultado(str, Enum):
     POSITIVO = "Positivo"
@@ -35,3 +36,8 @@ class ParticipanteEntrada(BaseModel):
         if self.consentimento and self.data_consentimento is None:
             raise ValueError("Consentimento marcado exige data_consentimento")
         return self
+
+class AvaliacaoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    participante_id: UUID
