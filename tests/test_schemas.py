@@ -175,3 +175,20 @@ def test_perfil_rejeita_valor_invalido(campo, valor):
 def test_entradas_rejeitam_campos_extras(modelo, dados):
     with pytest.raises(ValidationError):
         modelo.model_validate(dados)
+
+@pytest.mark.parametrize("dor", [0, 10])
+def test_dor_nos_limites_e_aceita(dor):
+    registro = ResultadoTeste.model_validate({**BASE, "dor_0_10": dor})
+
+    assert registro.dor_0_10 == dor
+
+
+@pytest.mark.parametrize("dor", [-1, 11])
+def test_dor_fora_dos_limites_e_rejeitada(dor):
+    with pytest.raises(ValidationError):
+        ResultadoTeste.model_validate({**BASE, "dor_0_10": dor})
+
+
+def test_resultado_desconhecido_e_rejeitado():
+    with pytest.raises(ValidationError):
+        ResultadoTeste.model_validate({**BASE, "resultado": "Talvez"})
