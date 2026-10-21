@@ -15,6 +15,7 @@ class Lado(str, Enum):
     BILATERAL = "Bilateral"
 
 class ResultadoTeste(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     avaliacao_id: str
     teste_id: int
     lado: Lado
@@ -24,6 +25,7 @@ class ResultadoTeste(BaseModel):
     observacoes: str | None = Field(default=None, max_length=500)
 
 class ParticipanteEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     codigo: str = Field(min_length=1, max_length=20)
     idade: int = Field(gt=0, lt=120)
     peso_kg: float | None = Field(default=None, gt=0)

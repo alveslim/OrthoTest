@@ -158,3 +158,20 @@ def test_perfil_aceita_papel_valido(papel):
 def test_perfil_rejeita_valor_invalido(campo, valor):
     with pytest.raises(ValidationError):
         Perfil.model_validate({**PERFIL_BASE, campo: valor})
+
+@pytest.mark.parametrize(
+    "modelo, dados",
+    [
+        (
+            ParticipanteEntrada,
+            {"codigo": "P-001", "idade": 19, "nome": "Exemplo fictício"},
+        ),
+        (
+            ResultadoTeste,
+            {**BASE, "status": "Completo"},
+        ),
+    ],
+)
+def test_entradas_rejeitam_campos_extras(modelo, dados):
+    with pytest.raises(ValidationError):
+        modelo.model_validate(dados)
