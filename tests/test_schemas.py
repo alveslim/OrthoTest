@@ -1,7 +1,7 @@
 import pytest
 import backend.schemas as schemas
 from pydantic import ValidationError
-from backend.schemas import ParticipanteEntrada, ResultadoTeste, AvaliacaoEntrada, RascunhoIA
+from backend.schemas import ParticipanteEntrada, ResultadoTeste, AvaliacaoEntrada, RascunhoIA, Perfil
 
 
 BASE = dict(avaliacao_id="a1", teste_id=1, lado="Direito", resultado="Positivo")
@@ -132,3 +132,29 @@ def test_rascunho_aprovado_sem_revisor_e_rejeitado():
 def test_rascunho_sem_texto_e_rejeitado():
     with pytest.raises(ValidationError):
         RascunhoIA.model_validate({**RASCUNHO_BASE, "texto": ""})
+
+PERFIL_BASE = {
+    "user_id": "123e4567-e89b-12d3-a456-426614174004",
+    "nome_exibicao": "Avaliador 01",
+    "papel": "aluno",
+}
+
+
+@pytest.mark.parametrize("papel", ["aluno", "professor"])
+def test_perfil_aceita_papel_valido(papel):
+    perfil = Perfil.model_validate({**PERFIL_BASE, "papel": papel})
+
+    assert perfil.papel.value == papel
+
+
+@pytest.mark.parametrize(
+    "campo, valor",
+    [
+        ("papel", "admin"),
+        ("nome_exibicao", ""),
+        ("user_id", "id-invalido"),
+    ],
+)
+def test_perfil_rejeita_valor_invalido(campo, valor):
+    with pytest.raises(ValidationError):
+        Perfil.model_validate({**PERFIL_BASE, campo: valor})

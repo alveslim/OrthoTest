@@ -73,3 +73,13 @@ class RascunhoIA(BaseModel):
         if self.aprovado and self.revisado_por is None:
             raise ValueError("Rascunho aprovado exige revisado_por")
         return self
+
+class Papel(str, Enum):
+    ALUNO = "aluno"
+    PROFESSOR = "professor"
+
+
+class Perfil(BaseModel):
+    user_id: UUID
+    nome_exibicao: str = Field(min_length=1)
+    papel: Papel
