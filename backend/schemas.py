@@ -3,6 +3,8 @@ from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+# Codigo do Paulo
+
 class Resultado(str, Enum):
     POSITIVO = "Positivo"
     NEGATIVO = "Negativo"
@@ -85,3 +87,22 @@ class Perfil(BaseModel):
     user_id: UUID
     nome_exibicao: str = Field(min_length=1)
     papel: Papel
+
+# Parte do Flávio XD
+class ParticipanteSaida(ParticipanteEntrada):
+    id: UUID
+    criado_em: datetime
+    # adicionou o user_id na tabela participantes na ORT-09
+    user_id: UUID # adicionado para vincular o participante ao usuário que o criou
+
+class AvaliacaoSaida(AvaliacaoEntrada):
+    id: UUID
+    avaliador_id: UUID
+    data_avaliacao: datetime
+    flag_professor: bool
+    flag_motivo: str | None
+    status: str = "pendente"
+    progresso_percentual: float = 0.0
+
+class ResultadoTesteSaida(ResultadoTeste):
+    id: UUID
