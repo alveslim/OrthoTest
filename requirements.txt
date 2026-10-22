@@ -4,3 +4,5 @@ pydantic==2.14.1
 pandas==3.0.6
 supabase==2.33.0
 python-dotenv==1.2.4
+PyJWT==2.8.0
+fastapi==0.104.1
