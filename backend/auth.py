@@ -28,3 +28,15 @@ def validar(credentials: HTTPAuthorizationCredentials = Depends(security)):
             detail="Token inválido",
             headers={"WWW-Authenticate": "Bearer"},
         )
+        
+def requer_professor(payload: dict = Depends(validar)):
+    """Verifica se o utilizador possui a role 'professor'."""
+    app_metadata = payload.get("app_metadata", {})
+    papel = app_metadata.get("role")
+    
+    if papel != "professor":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso negado: apenas professores podem acessar este recurso.",
+        )
+    return payload
