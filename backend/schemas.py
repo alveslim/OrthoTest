@@ -106,3 +106,8 @@ class AvaliacaoSaida(AvaliacaoEntrada):
 
 class ResultadoTesteSaida(ResultadoTeste):
     id: UUID
+
+# validar payload enviado pelo frontend do aluno que quiser deixar uma justificacao
+class AvaliacaoSinalizar(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    motivo: str | None = Field(default=None, max_length=500, description="Motivo da sinalização ou dúvida")
