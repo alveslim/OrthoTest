@@ -59,3 +59,14 @@ def registar_resultado_teste(
 ):
     """regista o resultado de um teste específico dentro de uma avaliação."""
     pass
+
+# importar o novo schema no topo do ficheiro (OU ONDE TIVER OS RESTANTES IMPORTS)
+from backend.schemas import AvaliacaoSinalizar
+
+@router.post("/avaliacoes/{avaliacao_id}/sinalizar", status_code=status.HTTP_200_OK)
+def sinalizar_avaliacao(
+    avaliacao_id: UUID,
+    sinalizacao: AvaliacaoSinalizar,
+    user_payload: dict = Depends(validar_token)
+):
+    return {"mensagem": "Avaliação sinalizada com sucesso para o professor."}
