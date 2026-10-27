@@ -26,20 +26,30 @@ def obter_cliente_supabase() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 def autenticar_usuario(email: str, senha: str) -> tuple[bool, str]:
-    """Autentica no Supabase Auth e guarda o JWT na sessão."""
+    """Autentica via API REST do Supabase Auth e guarda o JWT na sessão."""
+    if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+        return False, "Configure SUPABASE_URL e SUPABASE_ANON_KEY no ficheiro .env"
     try:
-        sb = obter_cliente_supabase()
-        resposta = sb.auth.sign_in_with_password({"email": email.strip(), "password": senha})
-        if resposta.session:
-            sessao["access_token"] = resposta.session.access_token
-            sessao["user_id"] = str(resposta.user.id)
-            sessao["email"] = resposta.user.email
+        url = f"{SUPABASE_URL.rstrip('/')}/auth/v1/token?grant_type=password"
+        headers = {
+            "apikey": SUPABASE_ANON_KEY,
+            "Content-Type": "application/json",
+        }
+        resp = requests.post(
+            url,
+            headers=headers,
+            json={"email": email.strip(), "password": senha},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            dados = resp.json()
+            sessao["access_token"] = dados.get("access_token")
+            usuario = dados.get("user") or {}
+            sessao["user_id"] = str(usuario.get("id", ""))
+            sessao["email"] = usuario.get("email", email.strip())
             return True, "Autenticado com sucesso."
-        return False, "Sessão não iniciada. Verifique as credenciais."
-    except Exception as erro:
-        msg = str(erro)
-        if "Invalid login credentials" in msg:
-            return False, "E-mail ou palavra-passe incorretos."
+        return False, "E-mail ou palavra-passe incorretos."
+    except Exception:
         return False, "Erro ao conectar ao servidor de autenticação."
 
 def registrar_consentimento_sessao():
@@ -127,3 +137,44 @@ def garantir_avaliacao_ativa(participante_id: str, avaliacao_existente: dict | N
         return False, "Não foi possível iniciar a ficha de avaliação."
     except Exception:
         return False, "Erro de ligação ao iniciar avaliação."
+
+def buscar_catalogo_e_resultados(avaliacao_id: str) -> tuple[bool, dict | str]:
+    """Busca o catálogo completo de testes e os resultados já registrados na avaliação."""
+    try:
+        resp_cat = requests.get(f"{API_BASE_URL}/catalogo/testes", headers=_headers_autenticados(), timeout=10)
+        if resp_cat.status_code != 200:
+            return False, f"Erro ao carregar catálogo ({resp_cat.status_code})."
+
+        resp_res = requests.get(
+            f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados",
+            headers=_headers_autenticados(),
+            timeout=10,
+        )
+        catalogo = resp_cat.json()
+        resultados = resp_res.json() if resp_res.status_code == 200 else []
+
+        # Mapeia teste_id -> último resultado registrado
+        mapa_resultados = {int(r["teste_id"]): r for r in resultados if "teste_id" in r}
+
+        return True, {
+            "catalogo": catalogo,
+            "mapa_resultados": mapa_resultados,
+        }
+    except Exception:
+        return False, "Falha de comunicação ao carregar catálogo e progresso da API."
+
+
+def sinalizar_avaliacao_professor(avaliacao_id: str, motivo: str) -> tuple[bool, str]:
+    """Envia POST para sinalizar a avaliação ao professor (ORT-15 / Tela de Seleção)."""
+    try:
+        resp = requests.post(
+            f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/sinalizar",
+            json={"motivo": motivo.strip() or "Solicitação de revisão pelo aluno."},
+            headers=_headers_autenticados(),
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            return True, "Avaliação sinalizada ao professor com sucesso."
+        return False, "Não foi possível sinalizar a avaliação."
+    except Exception:
+        return False, "Erro de conexão ao sinalizar avaliação."
