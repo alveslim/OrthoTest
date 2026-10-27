@@ -127,3 +127,44 @@ def garantir_avaliacao_ativa(participante_id: str, avaliacao_existente: dict | N
         return False, "Não foi possível iniciar a ficha de avaliação."
     except Exception:
         return False, "Erro de ligação ao iniciar avaliação."
+
+def buscar_catalogo_e_resultados(avaliacao_id: str) -> tuple[bool, dict | str]:
+    """Busca o catálogo completo de testes e os resultados já registrados na avaliação."""
+    try:
+        resp_cat = requests.get(f"{API_BASE_URL}/catalogo/testes", headers=_headers_autenticados(), timeout=10)
+        if resp_cat.status_code != 200:
+            return False, f"Erro ao carregar catálogo ({resp_cat.status_code})."
+
+        resp_res = requests.get(
+            f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados",
+            headers=_headers_autenticados(),
+            timeout=10,
+        )
+        catalogo = resp_cat.json()
+        resultados = resp_res.json() if resp_res.status_code == 200 else []
+
+        # Mapeia teste_id -> último resultado registrado
+        mapa_resultados = {int(r["teste_id"]): r for r in resultados if "teste_id" in r}
+
+        return True, {
+            "catalogo": catalogo,
+            "mapa_resultados": mapa_resultados,
+        }
+    except Exception:
+        return False, "Falha de comunicação ao carregar catálogo e progresso da API."
+
+
+def sinalizar_avaliacao_professor(avaliacao_id: str, motivo: str) -> tuple[bool, str]:
+    """Envia POST para sinalizar a avaliação ao professor (ORT-15 / Tela de Seleção)."""
+    try:
+        resp = requests.post(
+            f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/sinalizar",
+            json={"motivo": motivo.strip() or "Solicitação de revisão pelo aluno."},
+            headers=_headers_autenticados(),
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            return True, "Avaliação sinalizada ao professor com sucesso."
+        return False, "Não foi possível sinalizar a avaliação."
+    except Exception:
+        return False, "Erro de conexão ao sinalizar avaliação."
