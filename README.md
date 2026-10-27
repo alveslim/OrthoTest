@@ -116,31 +116,31 @@ Etiquetas: **[A]** dados/backend/IA, **[B]** app/design, **[G]** grupo inteiro (
 
 **Etapa A: Fundamentos**
 - [x] **ORT-00** Revisão inicial do projeto, mockups e arquitetura (ver `docs/revisao.md`).
-- [ ] **ORT-01** [G] Confirmar as regras de negócio acima e registrar em `docs/decisoes.md`. Definir datas reais: pré-projeto, dia da comunidade, entrega final.
-- [ ] **ORT-02** [G] Corrigir os .docx (colagem do Lasègue/Patrick; Adams: tórax ou coluna) e incluir referências bibliográficas em cada ficha.
-- [ ] **ORT-03** [A] Criar o repositório, `.env.example` e `requirements.txt` com versões fixas.
-- [ ] **ORT-04** [B] Definir paleta, tipografia e tema Flet (Material 3 com cor-semente). Validar contraste mínimo de 4,5:1.
-- [ ] **ORT-05** [A] Escrever `dados_ficticios/gerar_dados.py` (semente fixa, ~60 participantes com resultados plausíveis) para alimentar o desenvolvimento.
+- [x] **ORT-01** [G] Confirmar as regras de negócio acima e registrar em `docs/decisoes.md`. Definir datas reais: pré-projeto, dia da comunidade, entrega final.
+- [x] **ORT-02** [G] Corrigir os .docx (colagem do Lasègue/Patrick; Adams: tórax ou coluna) e incluir referências bibliográficas em cada ficha.
+- [x] **ORT-03** [A] Criar o repositório, `.env.example` e `requirements.txt` com versões fixas.
+- [x] **ORT-04** [B] Definir paleta, tipografia e tema Flet (Material 3 com cor-semente). Validar contraste mínimo de 4,5:1.
+- [x] **ORT-05** [A] Escrever `dados_ficticios/gerar_dados.py` (semente fixa, ~60 participantes com resultados plausíveis) para alimentar o desenvolvimento.
 
 **Etapa B: Banco de dados (Supabase)**
-- [ ] **ORT-06** [A] Escrever `database/schema.sql` com PK, FK, `NOT NULL` e `CHECK` (dor entre 0 e 10, `lado` e `resultado` válidos, idade > 0, altura entre 0,5 e 2,5).
-- [ ] **ORT-07** [A] Usar `TIMESTAMPTZ` e exclusão lógica (`excluido_em`).
-- [ ] **ORT-08** [A] Carregar `seed_catalogo.sql` com os 16 testes a partir das fichas.
-- [ ] **ORT-09** [A] Ativar **RLS** em todas as tabelas: aluno vê o que criou, professor vê tudo. Criar `perfis` e papéis no Supabase Auth.
-- [ ] **ORT-10** [A] Criar views: `vw_positivos_por_teste`, `vw_positivos_por_regiao`, `vw_participantes_faixa_etaria`.
+- [x] **ORT-06** [A] Escrever `database/schema.sql` com PK, FK, `NOT NULL` e `CHECK` (dor entre 0 e 10, `lado` e `resultado` válidos, idade > 0, altura entre 0,5 e 2,5).
+- [x] **ORT-07** [A] Usar `TIMESTAMPTZ` e exclusão lógica (`excluido_em`).
+- [x] **ORT-08** [A] Carregar `seed_catalogo.sql` com os 16 testes a partir das fichas.
+- [x] **ORT-09** [A] Ativar **RLS** em todas as tabelas: aluno vê o que criou, professor vê tudo. Criar `perfis` e papéis no Supabase Auth.
+- [x] **ORT-10** [A] Criar views: `vw_positivos_por_teste`, `vw_positivos_por_regiao`, `vw_participantes_faixa_etaria`.
 
 **Etapa C: Backend**
-- [ ] **ORT-11** [A] Schemas Pydantic de todas as entidades (valida resultado, lado, dor).
-- [ ] **ORT-12** [A] Middleware que valida o JWT do Supabase e o papel do usuário.
-- [ ] **ORT-13** [A] Endpoints: participantes, avaliações, resultados (salvar vários de uma vez), catálogo.
-- [ ] **ORT-14** [A] Calcular `status` e progresso ("2 de 6 testes") no backend.
-- [ ] **ORT-15** [A] Endpoint "sinalizar ao professor".
-- [ ] **ORT-16** [A] Documentar a API (lista de endpoints em `docs/api.md`) para o app consumir sem esperar o backend.
+- [x] **ORT-11** [A] Schemas Pydantic de todas as entidades (valida resultado, lado, dor).
+- [x] **ORT-12** [A] Middleware que valida o JWT do Supabase e o papel do usuário.
+- [x] **ORT-13** [A] Endpoints: participantes, avaliações, resultados (salvar vários de uma vez), catálogo.
+- [x] **ORT-14** [A] Calcular `status` e progresso ("2 de 6 testes") no backend.
+- [x] **ORT-15** [A] Endpoint "sinalizar ao professor".
+- [x] **ORT-16** [A] Documentar a API (lista de endpoints em `docs/api.md`) para o app consumir sem esperar o backend.
 
 **Etapa D: App (Flet)**
-- [ ] **ORT-17** [B] Desenhar as telas **em formato celular** (check-up, teste, lista, dashboard) e só depois adaptar ao desktop.
-- [ ] **ORT-18** [B] Login e consentimento (checkbox + data) antes do primeiro teste.
-- [ ] **ORT-19** [B] Lista de participantes por código, com status e botão claro "Novo participante".
+- [x] **ORT-17** [B] Desenhar as telas **em formato celular** (check-up, teste, lista, dashboard) e só depois adaptar ao desktop.
+- [x] **ORT-18** [B] Login e consentimento (checkbox + data) antes do primeiro teste.
+- [x] **ORT-19** [B] Lista de participantes por código, com status e botão claro "Novo participante".
 - [ ] **ORT-20** [B] Tela de seleção de testes com progresso e separação visual entre "feito" e "resultado".
 - [ ] **ORT-21** [B] Tela do teste: seletor Positivo/Negativo/Não realizado, D/E/Bilateral, slider de dor 0–10, observações e botão "?" com a ficha. Alvos de toque de 44–48 px.
 - [ ] **ORT-22** [B] Ações destrutivas (Excluir) separadas do Salvar, com confirmação.
