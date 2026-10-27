@@ -26,20 +26,30 @@ def obter_cliente_supabase() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 def autenticar_usuario(email: str, senha: str) -> tuple[bool, str]:
-    """Autentica no Supabase Auth e guarda o JWT na sessão."""
+    """Autentica via API REST do Supabase Auth e guarda o JWT na sessão."""
+    if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+        return False, "Configure SUPABASE_URL e SUPABASE_ANON_KEY no ficheiro .env"
     try:
-        sb = obter_cliente_supabase()
-        resposta = sb.auth.sign_in_with_password({"email": email.strip(), "password": senha})
-        if resposta.session:
-            sessao["access_token"] = resposta.session.access_token
-            sessao["user_id"] = str(resposta.user.id)
-            sessao["email"] = resposta.user.email
+        url = f"{SUPABASE_URL.rstrip('/')}/auth/v1/token?grant_type=password"
+        headers = {
+            "apikey": SUPABASE_ANON_KEY,
+            "Content-Type": "application/json",
+        }
+        resp = requests.post(
+            url,
+            headers=headers,
+            json={"email": email.strip(), "password": senha},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            dados = resp.json()
+            sessao["access_token"] = dados.get("access_token")
+            usuario = dados.get("user") or {}
+            sessao["user_id"] = str(usuario.get("id", ""))
+            sessao["email"] = usuario.get("email", email.strip())
             return True, "Autenticado com sucesso."
-        return False, "Sessão não iniciada. Verifique as credenciais."
-    except Exception as erro:
-        msg = str(erro)
-        if "Invalid login credentials" in msg:
-            return False, "E-mail ou palavra-passe incorretos."
+        return False, "E-mail ou palavra-passe incorretos."
+    except Exception:
         return False, "Erro ao conectar ao servidor de autenticação."
 
 def registrar_consentimento_sessao():
