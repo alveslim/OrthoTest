@@ -1,4 +1,5 @@
 import os
+import requests
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from supabase import create_client, Client
@@ -56,3 +57,73 @@ def limpar_sessao():
         "participante_atual": None,
         "avaliacao_atual": None,
     })
+
+def _headers_autenticados() -> dict:
+    return {
+        "Authorization": f"Bearer {sessao['access_token']}",
+        "Content-Type": "application/json",
+    }
+
+def buscar_participantes_e_avaliacoes() -> tuple[bool, list | str]:
+    """Busca participantes e cruza com as avaliações do utilizador na API."""
+    try:
+        resp_p = requests.get(f"{API_BASE_URL}/participantes", headers=_headers_autenticados(), timeout=10)
+        resp_a = requests.get(f"{API_BASE_URL}/avaliacoes", headers=_headers_autenticados(), timeout=10)
+
+        if resp_p.status_code != 200:
+            return False, f"Erro ao carregar participantes ({resp_p.status_code})."
+
+        participantes = resp_p.json()
+        avaliacoes = resp_a.json() if resp_a.status_code == 200 else []
+
+        # Mapeia a avaliação mais recente por participante_id
+        mapa_aval = {str(a["participante_id"]): a for a in avaliacoes}
+
+        for p in participantes:
+            aval = mapa_aval.get(str(p["id"]))
+            p["avaliacao"] = aval
+
+        return True, participantes
+    except Exception:
+        return False, "Não foi possível ligar à API FastAPI. Verifique se o servidor está em execução."
+
+def criar_novo_participante(codigo: str, idade: int, peso_kg: float | None, altura_m: float | None) -> tuple[bool, dict | str]:
+    """Envia POST para registar o participante com o consentimento da sessão."""
+    payload = {
+        "codigo": codigo.strip().upper(),
+        "idade": idade,
+        "peso_kg": peso_kg,
+        "altura_m": altura_m,
+        "consentimento": bool(sessao["consentimento_aceito"]),
+        "data_consentimento": sessao["data_consentimento"],
+    }
+    try:
+        resp = requests.post(
+            f"{API_BASE_URL}/participantes",
+            json=payload,
+            headers=_headers_autenticados(),
+            timeout=10,
+        )
+        if resp.status_code in (200, 201):
+            return True, resp.json()
+        detalhe = resp.json().get("detail", "Erro ao validar os dados do participante.")
+        return False, str(detalhe)
+    except Exception:
+        return False, "Falha de comunicação ao gravar participante na API."
+
+def garantir_avaliacao_ativa(participante_id: str, avaliacao_existente: dict | None) -> tuple[bool, dict | str]:
+    """Retorna a avaliação existente ou inicia uma nova ficha via POST /avaliacoes."""
+    if avaliacao_existente:
+        return True, avaliacao_existente
+    try:
+        resp = requests.post(
+            f"{API_BASE_URL}/avaliacoes",
+            json={"participante_id": str(participante_id)},
+            headers=_headers_autenticados(),
+            timeout=10,
+        )
+        if resp.status_code in (200, 201):
+            return True, resp.json()
+        return False, "Não foi possível iniciar a ficha de avaliação."
+    except Exception:
+        return False, "Erro de ligação ao iniciar avaliação."
