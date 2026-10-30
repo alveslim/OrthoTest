@@ -1,7 +1,7 @@
 import flet as ft
 import requests
 from theme import PRIMARY, SURFACE, CARD_BORDER, TEXT_PRIMARY, TEXT_SECONDARY, REVIEW_TEXT
-from estado import sessao, API_BASE_URL, _headers_autenticados
+from estado import sessao, API_BASE_URL, _headers_autenticados, excluir_resultado_teste_api
 
 def render_teste(page: ft.Page, navegar):
     # Carrega os dados do teste selecionado na tela anterior (ORT-20)
@@ -147,19 +147,61 @@ def render_teste(page: ft.Page, navegar):
 
     subtitulo = ft.Text(f"{teste.get('regiao', 'Geral')} • Estrutura: {teste.get('estrutura', 'N/A')}", size=13, color=TEXT_SECONDARY, text_align=ft.TextAlign.CENTER)
 
+    # ==========================================
+    # MODAL DE EXCLUSÃO (ORT-22)
+    # ==========================================
+    def confirmar_exclusao(e):
+        def executar_exclusao(e2):
+            fechar_dialogo_exclusao()
+            sucesso, msg = excluir_resultado_teste_api(str(sessao["avaliacao_atual"]["id"]), int(teste["id"]))
+            if sucesso:
+                navegar("selecao")
+            else:
+                feedback_msg.value = msg
+                feedback_msg.visible = True
+                page.update()
+
+        def fechar_dialogo_exclusao(e2=None):
+            dlg_exclusao.open = False
+            page.update()
+
+        dlg_exclusao = ft.AlertDialog(
+            title=ft.Text("Excluir registo?", weight=ft.FontWeight.BOLD, color=ft.colors.ERROR),
+            content=ft.Text("Tem a certeza que deseja excluir o resultado deste teste? Esta ação atualizará o progresso da avaliação e não pode ser desfeita."),
+            actions=[
+                ft.TextButton("Cancelar", on_click=fechar_dialogo_exclusao),
+                ft.FilledButton("Excluir", bgcolor=ft.colors.ERROR, color=ft.colors.WHITE, on_click=executar_exclusao),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        page.dialog = dlg_exclusao
+        dlg_exclusao.open = True
+        page.update()
+
     rodape_acoes = ft.Row(
         controls=[
-            ft.TextButton("Voltar", style=ft.ButtonStyle(color=TEXT_SECONDARY), on_click=lambda _: navegar("selecao")),
-            ft.Button(
-                content=ft.Text("Salvar e próximo >", weight=ft.FontWeight.BOLD),
-                bgcolor=PRIMARY, color="white",
-                style=ft.ButtonStyle(padding=ft.Padding(left=20, top=12, right=20, bottom=12)),
-                on_click=salvar_e_proximo
-            )
+            # Botão de excluir isolado à esquerda (só visível se o teste já foi guardado antes)
+            ft.IconButton(
+                icon="delete_outline",
+                icon_color=ft.colors.ERROR,
+                tooltip="Excluir resultado",
+                visible=bool(resultado_salvo),
+                on_click=confirmar_exclusao
+            ),
+            # Botões de navegação e gravação à direita
+            ft.Row([
+                ft.TextButton("Voltar", style=ft.ButtonStyle(color=TEXT_SECONDARY), on_click=lambda _: navegar("selecao")),
+                ft.Button(
+                    content=ft.Text("Salvar e próximo >", weight=ft.FontWeight.BOLD),
+                    bgcolor=PRIMARY, color="white",
+                    style=ft.ButtonStyle(padding=ft.Padding(left=20, top=12, right=20, bottom=12)),
+                    on_click=salvar_e_proximo
+                )
+            ])
         ],
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN
     )
-
+    
     page.add(
         cabecalho,
         ft.Container(content=subtitulo, alignment=ft.Alignment(0, 0), margin=ft.Margin(left=0, top=0, right=0, bottom=10)),

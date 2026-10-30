@@ -140,3 +140,17 @@ def sinalizar_avaliacao_professor(avaliacao_id: str, motivo: str) -> tuple[bool,
         return False, "Não foi possível sinalizar a avaliação."
     except Exception:
         return False, "Erro de conexão ao sinalizar avaliação."
+    
+def excluir_resultado_teste_api(avaliacao_id: str, teste_id: int) -> tuple[bool, str]:
+    """Envia pedido DELETE para remover um resultado registado."""
+    try:
+        resp = requests.delete(
+            f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados/{teste_id}",
+            headers=_headers_autenticados(),
+            timeout=10
+        )
+        if resp.status_code == 200:
+            return True, "Resultado excluído."
+        return False, "Não foi possível excluir o resultado."
+    except Exception:
+        return False, "Erro de comunicação ao excluir."

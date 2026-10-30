@@ -246,3 +246,44 @@ def sinalizar_avaliacao(
         timeout=10,
     )
     return {"mensagem": "Avaliação sinalizada com sucesso para o professor."}
+
+@router.delete("/avaliacoes/{avaliacao_id}/resultados/{teste_id}", status_code=status.HTTP_200_OK)
+def excluir_resultado_teste(
+    avaliacao_id: UUID,
+    teste_id: int,
+    user_payload: dict = Depends(validar_auth),
+):
+
+    """exclusao do resultado e recalculo do progresso ORT-22"""
+    requests.delete(
+        _sb_url("resultados_testes"),
+        headers=_sb_headers(),
+        params={
+            "avaliacao_id": f"eq.{avaliacao_id}",
+            "teste_id": f"aq.{teste_id}",
+        },
+    timeout=10
+    )
+
+    # recalcula o progresso
+    cat_resp = requests.get(_sb_url("testes_catalogo"), headers=_sb_headers(), params={"select": "id"}, timeout=10)
+    res_resp = requests.get(
+        _sb_url("resultados_testes"),
+        headers=_sb_headers(),
+        params={"select": "id", "avaliacao_id": f"eq.{avaliacao_id}"},
+        timeout=10,
+    )
+    n_cat = len(cat_resp.json()) if cat_resp.status_code == 200 and cat_resp.json() else 16
+    n_res = len(res_resp.json()) if res_resp.status_code == 200 else 0
+
+    perc = round((n_res / n_cat) * 100, 1) if n_cat > 0 else 0.0
+    novo_status = "concluido" if n_res >= n_cat else ("em_andamento" if n_res > 0 else "pendente")
+
+    requests.patch(
+        _sb_url("avaliacoes"),
+        headers=_sb_headers(),
+        params={"id": f"eq.{avaliacao_id}"},
+        json={"progresso_percentual": perc, "status": novo_status},
+        timeout=10,
+    )
+    return {"mensagem": "Resultado excluído com sucesso."}
