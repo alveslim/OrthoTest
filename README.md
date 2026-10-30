@@ -141,11 +141,11 @@ Etiquetas: **[A]** dados/backend/IA, **[B]** app/design, **[G]** grupo inteiro (
 - [x] **ORT-17** [B] Desenhar as telas **em formato celular** (check-up, teste, lista, dashboard) e só depois adaptar ao desktop.
 - [x] **ORT-18** [B] Login e consentimento (checkbox + data) antes do primeiro teste.
 - [x] **ORT-19** [B] Lista de participantes por código, com status e botão claro "Novo participante".
-- [ ] **ORT-20** [B] Tela de seleção de testes com progresso e separação visual entre "feito" e "resultado".
-- [ ] **ORT-21** [B] Tela do teste: seletor Positivo/Negativo/Não realizado, D/E/Bilateral, slider de dor 0–10, observações e botão "?" com a ficha. Alvos de toque de 44–48 px.
-- [ ] **ORT-22** [B] Ações destrutivas (Excluir) separadas do Salvar, com confirmação.
-- [ ] **ORT-23** [B] Traduzir toda a interface para português (sem "Search", "Hello", "Passed/Unpassed").
-- [ ] **ORT-24** [B] Rodar com dados fictícios em JSON e depois trocar pela API.
+- [x] **ORT-20** [B] Tela de seleção de testes com progresso e separação visual entre "feito" e "resultado".
+- [x] **ORT-21** [B] Tela do teste: seletor Positivo/Negativo/Não realizado, D/E/Bilateral, slider de dor 0–10, observações e botão "?" com a ficha. Alvos de toque de 44–48 px.
+- [x] **ORT-22** [B] Ações destrutivas (Excluir) separadas do Salvar, com confirmação.
+- [x] **ORT-23** [B] Traduzir toda a interface para português (sem "Search", "Hello", "Passed/Unpassed").
+- [x] **ORT-24** [B] Rodar com dados fictícios em JSON e depois trocar pela API.
 - [ ] **ORT-25** [B] Testar o build web, desktop e APK (`flet build apk`). Anotar o que não funciona.
 
 **Etapa E: Dashboard e relatórios**
