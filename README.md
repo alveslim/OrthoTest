@@ -146,7 +146,7 @@ Etiquetas: **[A]** dados/backend/IA, **[B]** app/design, **[G]** grupo inteiro (
 - [x] **ORT-22** [B] Ações destrutivas (Excluir) separadas do Salvar, com confirmação.
 - [x] **ORT-23** [B] Traduzir toda a interface para português (sem "Search", "Hello", "Passed/Unpassed").
 - [x] **ORT-24** [B] Rodar com dados fictícios em JSON e depois trocar pela API.
-- [ ] **ORT-25** [B] Testar o build web, desktop e APK (`flet build apk`). Anotar o que não funciona.
+- [X] **ORT-25** [B] Testar o build web, desktop e APK (`flet build apk`). Anotar o que não funciona.
 
 **Etapa E: Dashboard e relatórios**
 - [ ] **ORT-26** [A] Calcular KPIs com Pandas ou SQL: participantes avaliados, % de avaliações completas, % positivo por teste e por região, dor média.
