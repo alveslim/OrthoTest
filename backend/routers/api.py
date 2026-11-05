@@ -376,16 +376,30 @@ def calcular_kpis_agregados(user_payload: dict = Depends(validar_auth)):
     # Calcula a dor média (Novamente, protegendo contra divisão por zero)
     dor_media = round(soma_dor / testes_com_dor_avaliada, 1) if testes_com_dor_avaliada > 0 else 0.0
 
+# ---------------------------------------------------------
+    # PARTE 4: FORMATAÇÃO FINAL E REGRA DE PRIVACIDADE (ORT-27)
     # ---------------------------------------------------------
-    # PARTE 4: FORMATAÇÃO FINAL DOS DADOS PARA O DASHBOARD
-    # ---------------------------------------------------------
-    # Transforma o nosso dicionário de agrupamento numa lista formatada e calcula a percentagem final
     positivos_por_regiao = []
+    
+    # Variáveis acumuladoras para o grupo de segurança (Outros)
+    ocultos_positivos = 0
+    ocultos_total = 0
+
     for regiao, contadores in agrupamento_regioes.items():
         total_valido = contadores["total_valido"]
         positivos = contadores["positivos"]
-        perc_positivo = round((positivos / total_valido) * 100, 1) if total_valido > 0 else 0.0
         
+        # AULA DE PRIVACIDADE (K-Anonimato): 
+        # Se o grupo tiver menos de 3 testes válidos, é perigoso exibi-lo isoladamente.
+        if total_valido < 3:
+            # Em vez de adicionar à lista principal, guardamos os dados no nosso "saco" de ocultos.
+            ocultos_total += total_valido
+            ocultos_positivos += positivos
+            # O comando 'continue' faz o loop saltar para a próxima região sem ler as linhas abaixo.
+            continue 
+            
+        # Se chegou aqui, o grupo tem 3 ou mais pessoas (é seguro exibir!)
+        perc_positivo = round((positivos / total_valido) * 100, 1)
         positivos_por_regiao.append({
             "regiao": regiao,
             "total_valido": total_valido,
@@ -393,7 +407,18 @@ def calcular_kpis_agregados(user_payload: dict = Depends(validar_auth)):
             "percentual_positivo": perc_positivo
         })
 
-    # Retorna o JSON estruturado que será consumido pelos cartões e gráficos do Flet (ORT-28)
+    # No final do loop, verificamos se sobrou algo no nosso "saco" de segurança.
+    # Se sim, criamos a barra agregada "Outros (Privacidade)" para não perdermos a estatística geral.
+    if ocultos_total > 0:
+        perc_ocultos = round((ocultos_positivos / ocultos_total) * 100, 1) if ocultos_total > 0 else 0.0
+        positivos_por_regiao.append({
+            "regiao": "Outros (Privacidade < 3)",
+            "total_valido": ocultos_total,
+            "positivos": ocultos_positivos,
+            "percentual_positivo": perc_ocultos
+        })
+
+    # Retorna o JSON estruturado e seguro
     return {
         "participantes_avaliados": total_avaliacoes,
         "percentual_avaliacoes_completas": perc_completas,
