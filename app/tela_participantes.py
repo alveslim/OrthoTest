@@ -214,6 +214,7 @@ def render_participantes(page: ft.Page, navegar):
         controls=[
             ft.Text("Participantes", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM),
             ft.IconButton(icon=ft.Icons.LOGOUT, icon_color=TEXT_PRIMARY, on_click=lambda _: navegar("login")),
+            ft.IconButton(icon=ft.Icons.BAR_CHART, tooltip="Ver Dashboard", on_click=lambda _: navegar("dashboard"))
         ],
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
     )

@@ -162,3 +162,26 @@ def excluir_resultado_teste_api(avaliacao_id: str, teste_id: int) -> tuple[bool,
         return False, "Não foi possível excluir o resultado."
     except Exception:
         return False, "Erro de comunicação ao excluir."
+    
+def buscar_kpis_dashboard() -> tuple[bool, dict | str]:
+    """AULA: Esta função atua como 'carteiro'. Vai à API buscar os dados calculados na ORT-26."""
+    if MODO_OFFLINE:
+        # Se não houver API ligada, devolvemos dados fictícios instantaneamente para desenhar o ecrã.
+        return True, {
+            "participantes_avaliados": 12,
+            "percentual_avaliacoes_completas": 75.0,
+            "dor_media_geral": 4.2,
+            "positividade_por_regiao": [
+                {"regiao": "Joelho", "percentual_positivo": 65.0},
+                {"regiao": "Ombro", "percentual_positivo": 20.0},
+                {"regiao": "Outros (Privacidade < 3)", "percentual_positivo": 15.0}
+            ]
+        }
+    try:
+        # Faz o pedido GET à rota que criámos no backend
+        resp = requests.get(f"{API_BASE_URL}/dashboard/kpis", headers=_headers_autenticados(), timeout=10)
+        if resp.status_code == 200:
+            return True, resp.json()
+        return False, "Não foi possível carregar os dados do Dashboard."
+    except Exception:
+        return False, "Erro de comunicação ao aceder aos KPIs."
