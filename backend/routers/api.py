@@ -4,6 +4,7 @@ import csv
 from typing import List
 from uuid import UUID
 import requests
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, status
 
