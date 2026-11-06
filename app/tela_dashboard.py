@@ -1,6 +1,7 @@
 import flet as ft
 from theme import PRIMARY, SURFACE, CARD_BORDER, TEXT_PRIMARY, TEXT_SECONDARY
 from estado import buscar_kpis_dashboard
+from estado import buscar_kpis_dashboard, exportar_relatorio_dashboard
 
 def render_dashboard(page: ft.Page, navegar):
     # ---------------------------------------------------------
@@ -93,14 +94,31 @@ def render_dashboard(page: ft.Page, navegar):
         size=11, color=TEXT_SECONDARY, italic=True, text_align=ft.TextAlign.CENTER
     )
 
+# ---------------------------------------------------------
+    # 5. MONTAGEM FINAL DO ECRÃ E EXPORTAÇÃO
     # ---------------------------------------------------------
-    # 5. MONTAGEM FINAL DO ECRÃ
-    # ---------------------------------------------------------
+    def lidar_exportacao(e):
+        e.control.disabled = True
+        e.control.text = "A exportar..."
+        page.update()
+        sucesso, msg = exportar_relatorio_dashboard()
+        
+        # Mostra o resultado numa barra de notificação (SnackBar)
+        page.snack_bar = ft.SnackBar(ft.Text(msg), bgcolor=ft.colors.GREEN_800 if sucesso else ft.colors.ERROR)
+        page.snack_bar.open = True
+        e.control.disabled = False
+        e.control.text = "Exportar CSV"
+        page.update()
+
     page.add(
         ft.Row([
-            ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda _: navegar("participantes")),
-            ft.Text("Dashboard Clínico", size=20, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY)
-        ]),
+            ft.Row([
+                ft.IconButton("arrow_back", on_click=lambda _: navegar("participantes")),
+                ft.Text("Dashboard Clínico", size=20, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY)
+            ]),
+            # AULA: Adicionamos o botão de ação no lado direito do cabeçalho
+            ft.ElevatedButton("Exportar CSV", icon="download", on_click=lidar_exportacao, bgcolor=PRIMARY, color="white")
+        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         ft.Divider(color="transparent"),
         linha_kpis,
         ft.Divider(height=20, color="transparent"),
