@@ -1,4 +1,6 @@
 import os
+import io
+import csv
 from typing import List
 from uuid import UUID
 import requests
@@ -425,3 +427,68 @@ def calcular_kpis_agregados(user_payload: dict = Depends(validar_auth)):
         "dor_media_geral": dor_media,
         "positividade_por_regiao": positivos_por_regiao
     }
+    
+# ==========================================
+# EXPORTAÇÃO E STORAGE (ORT-29)
+# ==========================================
+@router.post("/dashboard/exportar/csv")
+def exportar_relatorio_csv(user_payload: dict = Depends(validar_auth)):
+    """
+    Gera um relatório CSV em memória e envia para o Supabase Storage.
+    Garante a privacidade ao basear-se estritamente nos KPIs já agregados (ORT-27)[cite: 6].
+    """
+    
+    # 1. AULA: Reutilizamos a lógica existente! Chamamos a função da ORT-26/27 
+    # para garantir que os dados já vêm calculados e com os grupos pequenos ocultos.
+    kpis = calcular_kpis_agregados(user_payload)
+    
+    # 2. Criação do CSV em Memória RAM (sem gravar no disco rígido do servidor)
+    saida_memoria = io.StringIO()
+    # Usamos ponto e vírgula para não haver conflitos com casas decimais no Excel europeu/brasileiro
+    escritor_csv = csv.writer(saida_memoria, delimiter=';') 
+    
+    # Escrevemos o cabeçalho e os indicadores gerais
+    escritor_csv.writerow(["RELATÓRIO AGREGADO DE AVALIAÇÕES ORTOPÉDICAS"])
+    escritor_csv.writerow(["Data de Geração", datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M")])
+    escritor_csv.writerow([])
+    escritor_csv.writerow(["MÉTRICAS GERAIS"])
+    escritor_csv.writerow(["Total de Participantes", kpis["participantes_avaliados"]])
+    escritor_csv.writerow(["Avaliações Concluídas (%)", kpis["percentual_avaliacoes_completas"]])
+    escritor_csv.writerow(["Dor Média Geral (0-10)", kpis["dor_media_geral"]])
+    escritor_csv.writerow([])
+    
+    # Escrevemos a tabela de resultados por região
+    escritor_csv.writerow(["POSITIVIDADE POR REGIÃO"])
+    escritor_csv.writerow(["Região", "Total de Testes Válidos", "Testes Positivos", "Taxa de Positividade (%)"])
+    
+    for regiao in kpis["positividade_por_regiao"]:
+        escritor_csv.writerow([
+            regiao["regiao"],
+            regiao["total_valido"],
+            regiao["positivos"],
+            regiao["percentual_positivo"]
+        ])
+    
+    conteudo_ficheiro = saida_memoria.getvalue()
+    
+    # 3. Envio para o Supabase Storage API
+    user_id = user_payload.get("sub")
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    nome_ficheiro = f"relatorio_{user_id}_{timestamp}.csv"
+    
+    # A URL do storage exige limpar o "/rest/v1" da base de dados e apontar para "/storage/v1/object/"
+    base_storage_url = SUPABASE_URL.replace("/rest/v1", "")
+    url_upload = f"{base_storage_url}/storage/v1/object/relatorios/{nome_ficheiro}"
+    
+    headers_storage = _sb_headers()
+    headers_storage["Content-Type"] = "text/csv"
+    
+    try:
+        # AULA: O método POST no storage envia o ficheiro bruto no parâmetro 'data' em vez de 'json'
+        resp = requests.post(url_upload, headers=headers_storage, data=conteudo_ficheiro.encode('utf-8'), timeout=10)
+        
+        if resp.status_code in (200, 201):
+            return {"sucesso": True, "mensagem": "Relatório CSV gerado e armazenado com sucesso no Supabase!"}
+        return {"sucesso": False, "mensagem": f"Erro do Storage: {resp.text}"}
+    except Exception as e:
+        return {"sucesso": False, "mensagem": "Falha de ligação ao exportar para o Storage."}
