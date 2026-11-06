@@ -185,3 +185,15 @@ def buscar_kpis_dashboard() -> tuple[bool, dict | str]:
         return False, "Não foi possível carregar os dados do Dashboard."
     except Exception:
         return False, "Erro de comunicação ao aceder aos KPIs."
+    
+def exportar_relatorio_dashboard() -> tuple[bool, str]:
+    if MODO_OFFLINE:
+        return True, "Relatório simulado exportado com sucesso (Modo Offline)!"
+    try:
+        resp = requests.post(f"{API_BASE_URL}/dashboard/exportar/csv", headers=_headers_autenticados(), timeout=10)
+        dados = resp.json()
+        if resp.status_code in (200, 201) and dados.get("sucesso"):
+            return True, dados.get("mensagem", "Exportado com sucesso.")
+        return False, dados.get("mensagem", "Erro ao exportar.")
+    except Exception:
+        return False, "Falha de comunicação ao solicitar exportação."
