@@ -575,3 +575,116 @@ def gerar_achados_clinicos(avaliacao_id: str, user_payload: dict = Depends(valid
         "aviso_legal": base_conhecimento.get("_aviso_legal"),
         "achados": achados_gerados
     }
+    
+# ==========================================
+# INTEGRAÇÃO COM LLM (RESUMO DESIDENTIFICADO) - ORT-32
+# ==========================================
+@router.post("/avaliacoes/{avaliacao_id}/resumo-ia")
+def gerar_resumo_ia(avaliacao_id: str, user_payload: dict = Depends(validar_auth)):
+    """
+    AULA: Esta rota consome os achados da ORT-31, junta os dados desidentificados 
+    do paciente e envia para um modelo de linguagem (LLM) redigir um rascunho.
+    """
+    
+    # 1. OBTER DADOS DESIDENTIFICADOS (Apenas Idade e Peso/Altura, NUNCA nomes)
+    resp_aval = requests.get(_sb_url("avaliacoes"), headers=_sb_headers(), params={"id": f"eq.{avaliacao_id}"}, timeout=10)
+    avaliacao_dados = resp_aval.json()[0] if resp_aval.status_code == 200 and resp_aval.json() else {}
+    participante_id = avaliacao_dados.get("participante_id")
+    
+    idade, peso, altura = "N/A", "N/A", "N/A"
+    if participante_id:
+        resp_part = requests.get(_sb_url("participantes"), headers=_sb_headers(), params={"id": f"eq.{participante_id}"}, timeout=10)
+        part_dados = resp_part.json()[0] if resp_part.status_code == 200 and resp_part.json() else {}
+        idade = part_dados.get("idade", "N/A")
+        peso = part_dados.get("peso_kg", "N/A")
+        altura = part_dados.get("altura_m", "N/A")
+
+    # 2. OBTER ACHADOS DA ORT-31
+    # Chamamos a nossa própria função para garantir rastreabilidade determinística
+    achados_paciente = gerar_achados_clinicos(avaliacao_id, user_payload).get("achados", [])
+    
+    if not achados_paciente:
+        return {"sucesso": False, "resumo": "Não há testes suficientes com gatilhos positivos para a IA analisar."}
+
+    lista_formatada = "\n".join([f"- {a['teste_origem']} ({a['resultado']}): {a['achado']}" for a in achados_paciente])
+
+    # ---------------------------------------------------------
+    # 3. ENGENHARIA DE PROMPT (O Segredo da Segurança)
+    # ---------------------------------------------------------
+    prompt_sistema = """Você é um assistente acadêmico de fisioterapia. 
+    Sua ÚNICA função é redigir um parágrafo de resumo estruturado com base nos achados fornecidos.
+    REGRAS ABSOLUTAS:
+    1. NÃO confirme diagnósticos médicos.
+    2. NÃO prescreva tratamentos, exercícios, exames ou medicações.
+    3. Use linguagem descritiva e impessoal.
+    4. O seu texto final DEVE incluir obrigatoriamente a seguinte frase exata no final: 'NOTA: Este é um rascunho gerado por IA para revisão humana e não constitui diagnóstico clínico.'"""
+        
+    dados_entrada = f"Dados do Paciente: Idade {idade}, Peso {peso}kg, Altura {altura}m.\nAchados Clínicos:\n{lista_formatada}"
+    prompt_completo = f"{prompt_sistema}\n\nAnalise e resuma o seguinte:\n{dados_entrada}"
+
+    # ---------------------------------------------------------
+    # 4. ESTRATÉGIA DE FALLBACK EM CASCATA (Gemma Local -> Nemotron Nuvem -> Falha Segura)
+    # ---------------------------------------------------------
+    texto_resumo = ""
+    aviso_geracao = ""
+
+    # TENTATIVA 1: OLLAMA LOCAL (Gemma)
+    try:
+        url_local = os.getenv("LLM_API_URL", "http://127.0.0.1:11434/api/generate")
+        modelo_local = os.getenv("LLM_MODEL", "gemma")
+        
+        resp_local = requests.post(
+            url_local, 
+            json={"model": modelo_local, "prompt": prompt_completo, "stream": False}, 
+            timeout=10 # Timeout curto para desistir rápido se o Ollama estiver desligado
+        )
+        
+        if resp_local.status_code == 200:
+            texto_resumo = resp_local.json().get("response", "")
+            aviso_geracao = "Gerado via IA Local (Gemma)."
+        else:
+            raise ValueError("Ollama respondeu com erro.")
+            
+    except Exception as e_local:
+        print(f"[Aviso] IA Local falhou ({e_local}). A tentar NVIDIA Nemotron...")
+        
+        # TENTATIVA 2: NVIDIA (Nemotron)
+        try:
+            url_nvidia = os.getenv("NVIDIA_API_URL")
+            chave_nvidia = os.getenv("NVIDIA_API_KEY")
+            modelo_nvidia = os.getenv("NVIDIA_MODEL", "nvidia/nemotron-4-340b-instruct")
+            
+            # A API da Nvidia (formato OpenAI) usa uma lista de "messages"
+            payload_nvidia = {
+                "model": modelo_nvidia,
+                "messages": [
+                    {"role": "system", "content": prompt_sistema},
+                    {"role": "user", "content": dados_entrada}
+                ],
+                "max_tokens": 400
+            }
+            headers_nvidia = {
+                "Authorization": f"Bearer {chave_nvidia}",
+                "Content-Type": "application/json"
+            }
+            
+            resp_nvidia = requests.post(url_nvidia, headers=headers_nvidia, json=payload_nvidia, timeout=20)
+            
+            if resp_nvidia.status_code == 200:
+                # O formato de resposta da Nvidia/OpenAI guarda o texto dentro de choices[0].message.content
+                texto_resumo = resp_nvidia.json()["choices"][0]["message"]["content"]
+                aviso_geracao = "Gerado via IA Nuvem (Nemotron)."
+            else:
+                raise ValueError(f"Nvidia respondeu com erro: {resp_nvidia.text}")
+                
+        except Exception as e_nvidia:
+            print(f"[Erro] NVIDIA também falhou ({e_nvidia}). Disparando Falha Segura.")
+            
+            # TENTATIVA 3: FALHA SEGURA (Safe Fallback)
+            return {
+                "sucesso": False, 
+                "resumo": "SERVIÇO DE IA INDISPONÍVEL: Os motores de IA Local e em Nuvem não estão a responder. Reveja os achados estruturados manualmente."
+            }
+
+    # Se chegar aqui, alguma IA (Gemma ou Nemotron) funcionou com sucesso!
+    return {"sucesso": True, "resumo": texto_resumo, "aviso": aviso_geracao}
