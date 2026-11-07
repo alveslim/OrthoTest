@@ -493,3 +493,85 @@ def exportar_relatorio_csv(user_payload: dict = Depends(validar_auth)):
         return {"sucesso": False, "mensagem": f"Erro do Storage: {resp.text}"}
     except Exception as e:
         return {"sucesso": False, "mensagem": "Falha de ligação ao exportar para o Storage."}
+    
+import json
+import os
+
+# ==========================================
+# MOTOR DETERMINÍSTICO DE ACHADOS CLÍNICOS (ORT-31)
+# ==========================================
+@router.get("/avaliacoes/{avaliacao_id}/achados")
+def gerar_achados_clinicos(avaliacao_id: str, user_payload: dict = Depends(validar_auth)):
+    """
+    AULA: Este é o nosso Motor de Regras. Ele lê os resultados do paciente
+    e cruza com a base de conhecimento (JSON), garantindo reprodutibilidade e rastreabilidade[cite: 8].
+    """
+    
+    # 1. Carregar a Base de Conhecimento (Ground Truth)
+    # Procuramos o ficheiro JSON que criámos na ORT-30, assumindo que a API corre na raiz do projeto.
+    caminho_json = "ai/regras_clinicas.json"
+    try:
+        with open(caminho_json, 'r', encoding='utf-8') as f:
+            base_conhecimento = json.load(f)
+    except FileNotFoundError:
+        return {"sucesso": False, "mensagem": "Base de conhecimento (JSON) não encontrada."}
+
+    regras_clinicas = base_conhecimento.get("regras", [])
+    mensagem_fallback = base_conhecimento.get("ausencia_de_regra_confiavel", "Sem regra.")
+
+    # 2. Buscar os Resultados do Paciente (O que aconteceu na clínica?)
+    resp_res = requests.get(
+        _sb_url("resultados_testes"),
+        headers=_sb_headers(),
+        params={"avaliacao_id": f"eq.{avaliacao_id}"},
+        timeout=10
+    )
+    resultados_paciente = resp_res.json() if resp_res.status_code == 200 else []
+
+    # 3. Buscar o Catálogo de Testes (Para sabermos o nome de cada teste pelo ID)
+    resp_cat = requests.get(_sb_url("testes_catalogo"), headers=_sb_headers(), timeout=10)
+    catalogo = {t["id"]: t["nome"] for t in (resp_cat.json() if resp_cat.status_code == 200 else [])}
+
+    # 4. Motor de Cruzamento Lógico (Match Determinístico)
+    achados_gerados = []
+
+    for res in resultados_paciente:
+        teste_nome = catalogo.get(res["teste_id"], "Desconhecido")
+        resultado_atual = res.get("resultado")
+
+        # AULA: Normalmente só geramos achados para testes Positivos ou Inconclusivos.
+        # Testes 'Não realizados' ou 'Negativos' são ignorados nesta etapa para não poluir o relatório.
+        if resultado_atual in ["Não realizado", "Negativo"]:
+            continue
+
+        # AULA: Aqui acontece a magia determinística. 
+        # Procuramos na nossa lista de regras UMA regra em que o nome do teste E o resultado coincidam.
+        regra_encontrada = next((r for r in regras_clinicas if r["teste"] == teste_nome and r["resultado_gatilho"] == resultado_atual), None)
+
+        if regra_encontrada:
+            # Caso 1: Encontrámos uma regra. Criamos um achado perfeitamente rastreável[cite: 8].
+            achados_gerados.append({
+                "teste_origem": teste_nome,
+                "resultado": resultado_atual,
+                "achado": regra_encontrada["achado_sugerido"],
+                "referencia": regra_encontrada["referencia_bibliografica"],
+                "status": "Regra Aplicada"
+            })
+        else:
+            # Caso 2: O teste foi positivo, mas não está no JSON.
+            # Cumprimos o critério: "casos sem regra são tratados sem gerar afirmações inventadas"[cite: 8].
+            achados_gerados.append({
+                "teste_origem": teste_nome,
+                "resultado": resultado_atual,
+                "achado": mensagem_fallback,
+                "referencia": "N/A",
+                "status": "Ausência de Regra"
+            })
+
+    # Retorna o pacote completo, incluindo sempre o aviso legal para proteção jurídica do software[cite: 8]
+    return {
+        "sucesso": True,
+        "avaliacao_id": avaliacao_id,
+        "aviso_legal": base_conhecimento.get("_aviso_legal"),
+        "achados": achados_gerados
+    }
