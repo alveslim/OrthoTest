@@ -1,0 +1,31 @@
+{
+  "_aviso_legal": "O aplicativo não confirma diagnósticos nem prescreve tratamento. Os achados sugeridos servem apenas como rascunho para revisão humana acadêmica.",
+  "_nota_do_professor": "Esta chave 'ausencia_de_regra_confiavel' é crucial. Ela instrui o sistema de IA a admitir que não sabe a resposta caso o teste não esteja nesta lista, evitando que invente referências (alucinação).",
+  "ausencia_de_regra_confiavel": "Se o teste ortopédico avaliado não constar no array 'regras' abaixo, a IA deve declarar explicitamente: 'Não há regra clínica fiável documentada no sistema para este teste'. Não extrapolar.",
+  "regras": [
+    {
+      "teste": "Teste de Lachman",
+      "regiao": "Joelho",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Possível frouxidão, indicando suspeita de lesão do Ligamento Cruzado Anterior (LCA).",
+      "referencia_bibliografica": "Magee, D. J. (2014). Orthopedic Physical Assessment (6th ed.). Elsevier Health Sciences.",
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Teste de Neer",
+      "regiao": "Ombro",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Sugere impacto subacromial ou compressão das estruturas do manguito rotador.",
+      "referencia_bibliografica": "Magee, D. J. (2014). Orthopedic Physical Assessment (6th ed.). Elsevier Health Sciences.",
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Teste de Thompson",
+      "regiao": "Tornozelo",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Ausência de flexão plantar, sugerindo possível rutura do tendão de Aquiles.",
+      "referencia_bibliografica": "Dutton, M. (2012). Dutton's Orthopaedic Examination, Evaluation, and Intervention (3rd ed.). McGraw-Hill Medical.",
+      "afirma_diagnostico": false
+    }
+  ]
+}
