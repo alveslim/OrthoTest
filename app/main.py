@@ -5,6 +5,7 @@ from tela_participantes import render_participantes
 from tela_selecao import render_selecao
 from tela_teste import render_teste
 from estado import sessao, limpar_sessao
+from tela_resumo_ia import render_resumo_ia
 from tela_dashboard import render_dashboard
 
 def main(page: ft.Page):
@@ -20,7 +21,8 @@ def main(page: ft.Page):
         "participantes": lambda: render_participantes(page, navegar),
         "selecao": lambda: render_selecao(page, navegar),
         "teste": lambda: render_teste(page, navegar),
-        "dashboard": lambda: render_dashboard(page, navegar)
+        "dashboard": lambda: render_dashboard(page, navegar),
+        "resumo_ia": lambda: render_resumo_ia(page, navegar)
     }
 
     def navegar(nome_rota: str):

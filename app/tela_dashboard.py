@@ -104,7 +104,7 @@ def render_dashboard(page: ft.Page, navegar):
         sucesso, msg = exportar_relatorio_dashboard()
         
         # Mostra o resultado numa barra de notificação (SnackBar)
-        page.snack_bar = ft.SnackBar(ft.Text(msg), bgcolor=ft.colors.GREEN_800 if sucesso else ft.colors.ERROR)
+        page.snack_bar = ft.SnackBar(ft.Text(msg), bgcolor=ft.Colors.GREEN_800 if sucesso else ft.Colors.ERROR)
         page.snack_bar.open = True
         e.control.disabled = False
         e.control.text = "Exportar CSV"
@@ -113,11 +113,11 @@ def render_dashboard(page: ft.Page, navegar):
     page.add(
         ft.Row([
             ft.Row([
-                ft.IconButton("arrow_back", on_click=lambda _: navegar("participantes")),
+                ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda _: navegar("participantes")),
                 ft.Text("Dashboard Clínico", size=20, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY)
             ]),
             # AULA: Adicionamos o botão de ação no lado direito do cabeçalho
-            ft.ElevatedButton("Exportar CSV", icon="download", on_click=lidar_exportacao, bgcolor=PRIMARY, color="white")
+            ft.FilledButton("Exportar CSV", icon="download", on_click=lidar_exportacao, bgcolor=PRIMARY, color="white")
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         ft.Divider(color="transparent"),
         linha_kpis,

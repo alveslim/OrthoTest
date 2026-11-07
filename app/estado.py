@@ -197,3 +197,18 @@ def exportar_relatorio_dashboard() -> tuple[bool, str]:
         return False, dados.get("mensagem", "Erro ao exportar.")
     except Exception:
         return False, "Falha de comunicação ao solicitar exportação."
+    
+def solicitar_resumo_ia(avaliacao_id: str) -> tuple[bool, str, str]:
+    """AULA: Pede à nossa API (que usa Ollama/Nvidia) para gerar o rascunho."""
+    if MODO_OFFLINE:
+        # Resumo de mentira para conseguirmos testar a interface gráfica sem a API ligada
+        return True, "Os achados sugerem possível frouxidão no joelho direito.\n\nNOTA: Este é um rascunho gerado por IA para revisão humana e não constitui diagnóstico clínico.", "Gerado via IA Local (Mock)"
+    try:
+        # Aumentamos o timeout para 30s porque as IAs em nuvem podem demorar a responder
+        resp = requests.post(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resumo-ia", headers=_headers_autenticados(), timeout=30)
+        if resp.status_code == 200:
+            dados = resp.json()
+            return dados.get("sucesso", False), dados.get("resumo", ""), dados.get("aviso", "")
+        return False, "Erro ao contactar o motor de IA.", ""
+    except Exception:
+        return False, "Erro de comunicação de rede.", ""
