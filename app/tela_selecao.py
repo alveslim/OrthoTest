@@ -109,7 +109,7 @@ def render_selecao(page: ft.Page, navegar):
                 ft.TextButton(
                     f"{nome_reg} ({resp_reg}/{len(lista_t)})",
                     on_click=lambda _, r=nome_reg: selecionar_regiao(r),
-                    style=ft.ButtonStyle(color=PRIMARY if regiao_selecionada["valor"] == r else TEXT_SECONDARY),
+                    style=ft.ButtonStyle(color=PRIMARY if regiao_selecionada["valor"] == nome_reg else TEXT_SECONDARY),
                 )
             )
 
@@ -186,7 +186,7 @@ def render_selecao(page: ft.Page, navegar):
 
     cabecalho = ft.Row(
         controls=[
-            ft.IconButton(icon="arrow_back_ios", icon_color=TEXT_PRIMARY, on_click=lambda _: navegar("participantes")),
+            ft.IconButton(icon=ft.Icons.ARROW_BACK, icon_color=TEXT_PRIMARY, on_click=lambda _: navegar("participantes")),
             ft.Text(
                 f"Avaliação • {participante['codigo']}",
                 size=20,
@@ -195,7 +195,7 @@ def render_selecao(page: ft.Page, navegar):
                 expand=True,
                 text_align=ft.TextAlign.CENTER,
             ),
-            ft.IconButton(icon="refresh", icon_color=TEXT_PRIMARY, tooltip="Atualizar", on_click=lambda _: carregar_dados()),
+            ft.IconButton(icon=ft.Icons.REFRESH, icon_color=TEXT_PRIMARY, tooltip="Atualizar", on_click=lambda _: carregar_dados()),
         ],
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
     )
