@@ -1,6 +1,9 @@
+import pytest
 from backend.progresso import calcular_progresso
 from backend.schemas import ResultadoTeste
 
+[pytest]
+pythonpath = 
 
 def registro(
     teste_id: int,
