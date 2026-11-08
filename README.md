@@ -149,21 +149,21 @@ Etiquetas: **[A]** dados/backend/IA, **[B]** app/design, **[G]** grupo inteiro (
 - [X] **ORT-25** [B] Testar o build web, desktop e APK (`flet build apk`). Anotar o que não funciona.
 
 **Etapa E: Dashboard e relatórios**
-- [ ] **ORT-26** [A] Calcular KPIs com Pandas ou SQL: participantes avaliados, % de avaliações completas, % positivo por teste e por região, dor média.
-- [ ] **ORT-27** [A] Aplicar a regra de n < 3 (ocultar ou agrupar).
-- [ ] **ORT-28** [B] Gráficos: cartões de KPI, barras horizontais por teste, positivos por região, faixa etária e IMC, filtros (região, lado, faixa etária). Remover o template financeiro.
-- [ ] **ORT-29** [A] Gerar relatório CSV/PDF **sem identificação individual** e guardar no Supabase Storage.
+- [x] **ORT-26** [A] Calcular KPIs com Pandas ou SQL: participantes avaliados, % de avaliações completas, % positivo por teste e por região, dor média.
+- [x] **ORT-27** [A] Aplicar a regra de n < 3 (ocultar ou agrupar).
+- [x] **ORT-28** [B] Gráficos: cartões de KPI, barras horizontais por teste, positivos por região, faixa etária e IMC, filtros (região, lado, faixa etária). Remover o template financeiro.
+- [x] **ORT-29** [A] Gerar relatório CSV/PDF **sem identificação individual** e guardar no Supabase Storage.
 
 **Etapa F: IA de apoio**
-- [ ] **ORT-30** [G] Escrever `ai/regras_clinicas.json`: teste positivo → estrutura sugerida, **com referência** (nunca inventada).
-- [ ] **ORT-31** [A] Motor de regras em Python que lê as regras e gera os "achados" de uma avaliação.
-- [ ] **ORT-32** [A] LLM só para redigir o resumo a partir dos achados e dos dados **desidentificados**. Prompt proíbe diagnóstico. Testar com modelo local (Ollama) ou API gratuita.
-- [ ] **ORT-33** [B] Painel "Assistente de IA": mostra o rascunho, o aviso "rascunho para revisão" e botões Revisar/Aprovar. Renomear "Sugerir Diagnóstico" para "Gerar resumo para discussão".
-- [ ] **ORT-34** [A] Registrar `revisado_por` e `aprovado` em `ia_rascunhos`.
-- [ ] **ORT-35** [A] Se usar Colab + ngrok: endpoint protegido por chave. Nunca enviar nome ou contato.
+- [x] **ORT-30** [G] Escrever `ai/regras_clinicas.json`: teste positivo → estrutura sugerida, **com referência** (nunca inventada).
+- [x] **ORT-31** [A] Motor de regras em Python que lê as regras e gera os "achados" de uma avaliação.
+- [x] **ORT-32** [A] LLM só para redigir o resumo a partir dos achados e dos dados **desidentificados**. Prompt proíbe diagnóstico. Testar com modelo local (Ollama) ou API gratuita.
+- [x] **ORT-33** [B] Painel "Assistente de IA": mostra o rascunho, o aviso "rascunho para revisão" e botões Revisar/Aprovar. Renomear "Sugerir Diagnóstico" para "Gerar resumo para discussão".
+- [x] **ORT-34** [A] Registrar `revisado_por` e `aprovado` em `ia_rascunhos`.
+- [x] **ORT-35** [A] Se usar Colab + ngrok: endpoint protegido por chave. Nunca enviar nome ou contato.
 
 **Etapa G: Testes**
-- [ ] **ORT-36** [A] `pytest` das regras (status, IMC, n < 3, validações Pydantic), incluindo casos de borda.
+- [x] **ORT-36** [A] `pytest` das regras (status, IMC, n < 3, validações Pydantic), incluindo casos de borda.
 - [ ] **ORT-37** [A] Testes de dados: nenhum resultado sem avaliação, sem duplicidade de (avaliação, teste, lado), dor dentro de 0–10.
 - [ ] **ORT-38** [A] **Teste de RLS:** um aluno não consegue ler dados de outro aluno.
 - [ ] **ORT-39** [A] Reconciliação: total de resultados no banco = no dashboard = no relatório (diferença zero).
