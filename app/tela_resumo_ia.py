@@ -1,6 +1,6 @@
 import flet as ft
 from theme import PRIMARY, SURFACE, TEXT_PRIMARY, TEXT_SECONDARY, CARD_BORDER
-from estado import sessao, solicitar_resumo_ia
+from estado import sessao, solicitar_resumo_ia, aprovar_resumo_ia_api
 
 def render_resumo_ia(page: ft.Page, navegar):
     avaliacao_atual = sessao.get("avaliacao_atual")
@@ -74,11 +74,29 @@ def render_resumo_ia(page: ft.Page, navegar):
         page.update()
 
     def aprovar_clique(e):
-        # AULA: Ação explícita de Aprovação[cite: 9].
-        # Num sistema real completo, aqui faríamos um PATCH à API para gravar o caixa_texto.value na Base de Dados.
-        page.snack_bar = ft.SnackBar(ft.Text("Revisão concluída! Resumo aprovado e anexado à ficha do paciente."), bgcolor=ft.Colors.GREEN_800)
+        # AULA: Bloqueamos a interface para evitar duplo clique
+        btn_aprovar.disabled = True
+        btn_aprovar.text = "A registar auditoria..."
+        page.update()
+        
+        # Extraímos o texto que o utilizador eventualmente alterou na caixa de texto
+        texto_revisado = caixa_texto.value
+        
+        sucesso, msg = aprovar_resumo_ia_api(avaliacao_id, texto_revisado)
+        
+        page.snack_bar = ft.SnackBar(
+            ft.Text(msg), 
+            bgcolor=ft.colors.GREEN_800 if sucesso else ft.colors.ERROR
+        )
         page.snack_bar.open = True
-        navegar("participantes")
+        
+        if sucesso:
+            navegar("participantes")
+        else:
+            # Se falhar, devolvemos o botão ao estado normal para ele tentar novamente
+            btn_aprovar.disabled = False
+            btn_aprovar.text = "Aprovar Resumo Final"
+            page.update()
 
     # AULA: Botão renomeado conforme exigido no requisito[cite: 9]. Sem a palavra "Diagnóstico".
     btn_gerar = ft.ElevatedButton("Gerar resumo para discussão", on_click=gerar_clique, icon=ft.Icons.AUTO_AWESOME, bgcolor=PRIMARY, color="white")

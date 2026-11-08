@@ -212,3 +212,22 @@ def solicitar_resumo_ia(avaliacao_id: str) -> tuple[bool, str, str]:
         return False, "Erro ao contactar o motor de IA.", ""
     except Exception:
         return False, "Erro de comunicação de rede.", ""
+    
+def aprovar_resumo_ia_api(avaliacao_id: str, texto_final: str) -> tuple[bool, str]:
+    """AULA: Envia o texto editado pelo profissional para ser auditado e guardado no backend."""
+    if MODO_OFFLINE:
+        return True, "Resumo aprovado e auditado com sucesso (Modo Offline)!"
+    try:
+        payload = {"texto_final": texto_final}
+        resp = requests.post(
+            f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/aprovar-resumo", 
+            headers=_headers_autenticados(), 
+            json=payload, 
+            timeout=10
+        )
+        dados = resp.json()
+        if resp.status_code == 200 and dados.get("sucesso"):
+            return True, dados.get("mensagem")
+        return False, dados.get("mensagem", "Erro ao aprovar resumo.")
+    except Exception:
+        return False, "Erro de rede ao tentar aprovar o resumo."

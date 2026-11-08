@@ -688,3 +688,46 @@ def gerar_resumo_ia(avaliacao_id: str, user_payload: dict = Depends(validar_auth
 
     # Se chegar aqui, alguma IA (Gemma ou Nemotron) funcionou com sucesso!
     return {"sucesso": True, "resumo": texto_resumo, "aviso": aviso_geracao}
+
+# ==========================================
+# AUDITORIA E APROVAÇÃO DE RASCUNHOS IA (ORT-34)
+# ==========================================
+@router.post("/avaliacoes/{avaliacao_id}/aprovar-resumo")
+def aprovar_resumo_ia_auditoria(avaliacao_id: str, payload: dict, user_payload: dict = Depends(validar_auth)):
+    """
+    AULA: Esta rota recebe o texto final que o humano editou e guardá-o na tabela ia_rascunhos.
+    A garantia de auditoria faz-se extraindo o ID do utilizador do token de segurança (user_payload).
+    """
+    texto_final = payload.get("texto_final", "").strip()
+    
+    if not texto_final:
+        return {"sucesso": False, "mensagem": "O texto do resumo não pode estar vazio."}
+        
+    # Extraímos a identidade do profissional que está a fazer a requisição (o 'revisor')
+    revisor_id = user_payload.get("sub")
+    
+    # Preparamos o pacote de dados exigido pela ORT-34
+    dados_auditoria = {
+        "avaliacao_id": avaliacao_id,
+        "texto_gerado": texto_final,
+        "revisado_por": revisor_id, # Vinculação ao utilizador autorizado exigida pelo critério de aceite
+        "aprovado": True,           # Estado persistido de aprovação
+        "data_aprovacao": datetime.now(timezone.utc).isoformat()
+    }
+    
+    try:
+        # Fazemos o POST para a tabela 'ia_rascunhos' no Supabase
+        resp = requests.post(
+            _sb_url("ia_rascunhos"),
+            headers=_sb_headers(),
+            json=dados_auditoria,
+            timeout=10
+        )
+        
+        if resp.status_code in (200, 201):
+            return {"sucesso": True, "mensagem": "Resumo aprovado e registado com sucesso na ficha do paciente."}
+        else:
+            return {"sucesso": False, "mensagem": f"Erro ao guardar na base de dados: {resp.text}"}
+            
+    except Exception as e:
+        return {"sucesso": False, "mensagem": "Falha de comunicação ao tentar auditar o registo."}
