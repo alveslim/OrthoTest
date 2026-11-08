@@ -9,3 +9,5 @@ __pycache__/
 schema.sql
 testes_schema.sql
 .flet
+__pycache__/
+*.pyc
