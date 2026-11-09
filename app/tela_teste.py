@@ -1,11 +1,9 @@
 import flet as ft
-import requests
-
 from theme import (
     PRIMARY, SURFACE, CARD_BORDER, TEXT_PRIMARY, TEXT_SECONDARY, REVIEW_TEXT
 )
 from estado import (
-    sessao, API_BASE_URL, _headers_autenticados, excluir_resultado_teste_api
+    sessao, salvar_resultado_teste_api, excluir_resultado_teste_api
 )
 
 
@@ -150,26 +148,12 @@ def render_teste(page: ft.Page, navegar):
             "dor_0_10": dor_atual,
             "observacoes": (txt_obs.value or "").strip() or None,
         }
-        try:
-            response = requests.post(
-                f"{API_BASE_URL}/avaliacoes/{avaliacao['id']}/resultados",
-                json=payload,
-                headers=_headers_autenticados(),
-                timeout=15,
-            )
-            if response.status_code in (200, 201):
-                sessao["resultado_atual"] = None
-                navegar("selecao")
-                return
-            try:
-                detail = response.json().get("detail", "Não foi possível salvar o resultado.")
-            except ValueError:
-                detail = "Não foi possível salvar o resultado."
-            feedback_msg.value = f"Falha ao salvar ({response.status_code}): {detail}"
-        except requests.RequestException:
-            feedback_msg.value = (
-                "Falha de comunicação com a API. Verifique a conexão e tente novamente."
-            )
+        sucesso, mensagem = salvar_resultado_teste_api(str(avaliacao["id"]), payload)
+        if sucesso:
+            sessao["resultado_atual"] = None
+            navegar("selecao")
+            return
+        feedback_msg.value = mensagem
         feedback_msg.visible = True
         page.update()
 
