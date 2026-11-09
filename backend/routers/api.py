@@ -17,6 +17,7 @@ import requests
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from backend.auth import requer_professor, validar as validar_auth
+from backend.progresso import aplicar_progresso_em_memoria
 from backend.schemas import (
     AvaliacaoEntrada,
     AvaliacaoSinalizar,
