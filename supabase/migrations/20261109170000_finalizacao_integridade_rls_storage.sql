@@ -100,6 +100,32 @@ ALTER TABLE public.ia_rascunhos ADD COLUMN IF NOT EXISTS gerado_em TIMESTAMPTZ N
 ALTER TABLE public.ia_rascunhos ADD COLUMN IF NOT EXISTS revisado_por UUID REFERENCES auth.users(id);
 ALTER TABLE public.ia_rascunhos ADD COLUMN IF NOT EXISTS aprovado BOOLEAN NOT NULL DEFAULT FALSE;
 
+-- A ficha atualizada amplia as regiões em relação ao CHECK antigo (Joelho/Tornozelo/
+-- Ombro/Punho/Coluna). Remove apenas CHECKs associados à coluna regiao e recria a lista.
+DO $
+DECLARE constraint_row RECORD;
+BEGIN
+  FOR constraint_row IN
+    SELECT conname
+    FROM pg_constraint
+    WHERE conrelid = 'public.testes_catalogo'::regclass
+      AND contype = 'c'
+      AND pg_get_constraintdef(oid) ILIKE '%regiao%'
+  LOOP
+    EXECUTE format(
+      'ALTER TABLE public.testes_catalogo DROP CONSTRAINT %I',
+      constraint_row.conname
+    );
+  END LOOP;
+END $;
+
+ALTER TABLE public.testes_catalogo
+  ADD CONSTRAINT ck_testes_catalogo_regiao
+  CHECK (regiao IN (
+    'Joelho', 'Tornozelo', 'Quadril', 'Ombro', 'Cotovelo', 'Punho',
+    'Coluna', 'Coluna lombar', 'Coluna cervical', 'Tórax'
+  ));
+
 -- Corrige a divergência histórica entre avaliador_id e user_id sem atribuir registros
 -- órfãos arbitrariamente a quem executa a migration.
 UPDATE public.avaliacoes
@@ -159,6 +185,28 @@ ALTER TABLE public.testes_catalogo ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.avaliacoes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.resultados_testes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ia_rascunhos ENABLE ROW LEVEL SECURITY;
+
+-- Remove políticas antigas de estas tabelas antes de instalar o conjunto fechado abaixo.
+-- Isso impede que uma política permissiva antiga continue valendo por OR.
+DO $
+DECLARE policy_row RECORD;
+BEGIN
+  FOR policy_row IN
+    SELECT tablename, policyname
+    FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename IN (
+        'perfis', 'participantes', 'testes_catalogo',
+        'avaliacoes', 'resultados_testes', 'ia_rascunhos'
+      )
+  LOOP
+    EXECUTE format(
+      'DROP POLICY IF EXISTS %I ON public.%I',
+      policy_row.policyname,
+      policy_row.tablename
+    );
+  END LOOP;
+END $;
 
 -- Apaga apenas as políticas com estes nomes para permitir reaplicar esta migration.
 DROP POLICY IF EXISTS "perfil_proprio_ou_professor" ON public.perfis;
