@@ -23,3 +23,23 @@ Só vale se o grupo precisar analisar por posição.
 ## Catálogo (ORT-05/08)
 - Os textos do catálogo são copiados das fichas de Sabrina e Vinícius (`database/seed_catalogo.sql`).
 - `referencia` fica `NULL` até o ORT-02 trazer a fonte bibliográfica verificada.
+
+# Registo de Decisões Arquiteturais e de Governança (ADR)
+
+## ADR-047: Política de Destino, Retenção e Descarte de Dados Pós-Projeto (ORT-47)
+
+- **Data:** Novembro de 2026
+- **Status:** Aprovado pelo Grupo e Orientação Académica
+- **Responsável pela Execução:** Flávio Alves (Administrador do Banco / Backend)[cite: 22]
+- **Momento de Execução:** Até 7 dias corridos após a apresentação final e consolidação das notas da disciplina (Data limite prevista: 12/11/2026)[cite: 22].
+
+### 1. Decisão de Tratamento dos Dados
+Em conformidade com o princípio da minimização e limitação de armazenamento:
+1. **Preservação de Agregados Estatísticos:** Os relatórios CSV/PDF agregados (protegidos pela regra de K-Anonimato $n < 3$) serão exportados e mantidos no repositório académico como evidência estatística do estudo[cite: 22].
+2. **Eliminação de Dados Individuais:** Todos os registos individuais nas tabelas `participantes`, `avaliacoes`, `resultados_testes` e `ia_rascunhos`, bem como os ficheiros brutos no bucket `relatorios` do Supabase Storage, serão permanentemente eliminados[cite: 22].
+3. **Descarte de Formulários Físicos (Plano B):** Caso fichas impressas de contingência (ORT-43) tenham sido utilizadas, serão fragmentadas fisicamente logo após a validação da transcrição.
+
+### 2. Procedimento Técnico de Expurgo (SQL)
+No momento definido, o responsável executará a limpeza definitiva no Supabase SQL Editor:
+```sql
+TRUNCATE TABLE public.ia_rascunhos, public.resultados_testes, public.avaliacoes, public.participantes RESTART IDENTITY CASCADE;
