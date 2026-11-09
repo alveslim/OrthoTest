@@ -60,6 +60,7 @@ class Regiao(str, Enum):
     OMBRO = "Ombro"
     COTOVELO = "Cotovelo"
     PUNHO = "Punho"
+    COLUNA = "Coluna"
     COLUNA_LOMBAR = "Coluna lombar"
     COLUNA_CERVICAL = "Coluna cervical"
     TORAX = "Tórax"
