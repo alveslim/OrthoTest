@@ -65,7 +65,7 @@ def render_resumo_ia(page: ft.Page, navegar):
         if sucesso:
             indicador_estado.value = f"Status: {aviso} - Aguardando sua revisão."
             indicador_estado.color = ft.Colors.GREEN_700
-            btn_aprovar.disabled = False # Só permitimos aprovar DEPOIS de gerar algo
+            btn_aprovar.disabled = not pode_aprovar  # Apenas professor pode aprovar após gerar o rascunho
         else:
             indicador_estado.value = "Falha ao contactar servidor de IA."
             indicador_estado.color = ft.Colors.ERROR
@@ -102,7 +102,7 @@ def render_resumo_ia(page: ft.Page, navegar):
     btn_gerar = ft.ElevatedButton("Gerar resumo para discussão", on_click=gerar_clique, icon=ft.Icons.AUTO_AWESOME, bgcolor=PRIMARY, color="white")
     
     # Botão de aprovação fica bloqueado até o rascunho existir[cite: 9].
-    btn_aprovar = ft.FilledButton("Aprovar Resumo Final", on_click=aprovar_clique, icon=ft.Icons.CHECK_CIRCLE, disabled=True or not pode_aprovar, bgcolor=ft.Colors.GREEN_600)
+    btn_aprovar = ft.FilledButton("Aprovar Resumo Final", on_click=aprovar_clique, icon=ft.Icons.CHECK_CIRCLE, disabled=True, bgcolor=ft.Colors.GREEN_600)
 
     # ---------------------------------------------------------
     # MONTAGEM FINAL DO ECRÃ
