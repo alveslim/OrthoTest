@@ -1,37 +1,52 @@
 import flet as ft
 import requests
-from theme import PRIMARY, SURFACE, CARD_BORDER, TEXT_PRIMARY, TEXT_SECONDARY, REVIEW_TEXT
-from estado import sessao, API_BASE_URL, _headers_autenticados, excluir_resultado_teste_api
+
+from theme import (
+    PRIMARY, SURFACE, CARD_BORDER, TEXT_PRIMARY, TEXT_SECONDARY, REVIEW_TEXT
+)
+from estado import (
+    sessao, API_BASE_URL, _headers_autenticados, excluir_resultado_teste_api
+)
+
 
 def render_teste(page: ft.Page, navegar):
-    # Carrega os dados do teste selecionado na tela anterior (ORT-20)
-    teste = sessao.get("teste_atual") or {
-        "id": 1, "nome": "Teste", "regiao": "Região", "estrutura": "Estrutura", "como_fazer": "Instruções não disponíveis."
-    }
-    
-    # Se já houver um resultado salvo para este teste, preenche os campos
-    resultado_salvo = sessao.get("resultado_atual") or {}
+    teste = sessao.get("teste_atual")
+    if not teste or not teste.get("id"):
+        page.add(
+            ft.Text("Nenhum teste foi selecionado.", color=REVIEW_TEXT),
+            ft.TextButton("Voltar aos testes", on_click=lambda _: navegar("selecao")),
+        )
+        return
 
-    # Estados locais do formulário
+    resultado_salvo = sessao.get("resultado_atual") or {}
     lado_selecionado = {"valor": resultado_salvo.get("lado", "Direito")}
     resultado_selecionado = {"valor": resultado_salvo.get("resultado", "Não realizado")}
-    dor_atual = int(resultado_salvo.get("dor_0_10", 0))
+    dor_atual = int(resultado_salvo.get("dor_0_10") or 0)
 
-    valor_dor_txt = ft.Text(f"{dor_atual}/10", weight=ft.FontWeight.BOLD, size=16, color=PRIMARY)
-    
-    def atualizar_dor_ui(novo_valor: int):
-        global dor_atual
-        dor_atual = novo_valor
-        valor_dor_txt.value = f"{novo_valor}/10"
+    valor_dor_txt = ft.Text(
+        f"{dor_atual}/10", weight=ft.FontWeight.BOLD, size=16, color=PRIMARY
+    )
+    feedback_msg = ft.Text("", size=12, color=REVIEW_TEXT, visible=False)
+
+    def atualizar_dor_ui(event):
+        nonlocal dor_atual
+        dor_atual = int(round(float(event.control.value)))
+        valor_dor_txt.value = f"{dor_atual}/10"
         page.update()
 
     slider_dor = ft.Slider(
-        min=0, max=10, divisions=10, value=dor_atual, label="{value}",
-        active_color=PRIMARY, inactive_color=CARD_BORDER,
-        on_change=lambda e: atualizar_dor_ui(int(e.control.value))
+        min=0,
+        max=10,
+        divisions=10,
+        value=dor_atual,
+        label="{value}",
+        active_color=PRIMARY,
+        inactive_color=CARD_BORDER,
+        on_change=atualizar_dor_ui,
     )
 
     dropdown_resultado = ft.Dropdown(
+        label="Resultado do teste",
         value=resultado_selecionado["valor"],
         options=[
             ft.dropdown.Option("Positivo"),
@@ -42,51 +57,88 @@ def render_teste(page: ft.Page, navegar):
         border_color=CARD_BORDER,
         bgcolor=SURFACE,
         color=TEXT_PRIMARY,
-        on_change=lambda e: (resultado_selecionado.update({"valor": e.control.value}))
+        on_change=lambda event: resultado_selecionado.update(
+            {"valor": event.control.value}
+        ),
+    )
+
+    # Dropdown nativo substitui o SegmentedButton, que causava a exceção
+    # observada na gravação de tela em Flet 1.0.4.
+    dropdown_lado = ft.Dropdown(
+        label="Lado testado",
+        value=lado_selecionado["valor"],
+        options=[
+            ft.dropdown.Option("Direito"),
+            ft.dropdown.Option("Esquerdo"),
+            ft.dropdown.Option("Bilateral"),
+        ],
+        border_color=CARD_BORDER,
+        bgcolor=SURFACE,
+        color=TEXT_PRIMARY,
+        on_change=lambda event: lado_selecionado.update(
+            {"valor": event.control.value}
+        ),
     )
 
     txt_obs = ft.TextField(
         value=resultado_salvo.get("observacoes", ""),
-        hint_text="Ex.: dor ao final da tração, clique articular...",
-        multiline=True, min_lines=2, max_lines=4,
-        border_color=CARD_BORDER, bgcolor=SURFACE, text_size=14
+        label="Observações",
+        hint_text="Registre somente observações relevantes à avaliação.",
+        multiline=True,
+        min_lines=2,
+        max_lines=4,
+        border_color=CARD_BORDER,
+        bgcolor=SURFACE,
+        text_size=14,
     )
 
-    feedback_msg = ft.Text("", size=12, color=REVIEW_TEXT, visible=False)
+    def fechar_dialogo(dialog):
+        dialog.open = False
+        page.update()
 
-    # ==========================================
-    # MODAL DA FICHA CLÍNICA (BOTÃO DE AJUDA ?)
-    # ==========================================
-    def abrir_ficha_clinica(e):
+    def abrir_ficha_clinica(_):
         dlg = ft.AlertDialog(
-            title=ft.Text(f"Ficha Clínica: {teste['nome']}", weight=ft.FontWeight.BOLD),
-            content=ft.Column([
-                ft.Text(f"Região / Estrutura: {teste.get('regiao')} • {teste.get('estrutura')}", weight=ft.FontWeight.BOLD, color=PRIMARY),
-                ft.Divider(height=10, color="transparent"),
-                ft.Text("Como executar:", weight=ft.FontWeight.BOLD),
-                ft.Text(teste.get("como_fazer", "Sem descrição detalhada."), size=13),
-                ft.Divider(height=10, color="transparent"),
-                ft.Text("Lembrete: Comparar sempre com o lado contralateral. Esta aplicação possui fins exclusivamente académicos.", size=11, color=TEXT_SECONDARY),
-            ], tight=True, spacing=5),
-            actions=[ft.TextButton("Fechar", on_click=lambda _: fechar_dialogo(dlg))]
+            title=ft.Text(f"Ficha clínica: {teste.get('nome', 'Teste')}"),
+            content=ft.Column(
+                [
+                    ft.Text(
+                        f"{teste.get('regiao', '')} • {teste.get('estrutura', '')}",
+                        weight=ft.FontWeight.BOLD,
+                        color=PRIMARY,
+                    ),
+                    ft.Text("Definição", weight=ft.FontWeight.BOLD),
+                    ft.Text(teste.get("definicao") or "Não informada.", size=13),
+                    ft.Text("Objetivo", weight=ft.FontWeight.BOLD),
+                    ft.Text(teste.get("objetivo") or "Não informado.", size=13),
+                    ft.Text("Como é feito", weight=ft.FontWeight.BOLD),
+                    ft.Text(teste.get("como_fazer") or "Não informado.", size=13),
+                    ft.Text("Resultado positivo", weight=ft.FontWeight.BOLD),
+                    ft.Text(teste.get("positivo_se") or "Não informado.", size=13),
+                    ft.Text(
+                        "Material acadêmico. A aplicação dos testes deve ser feita "
+                        "por profissional capacitado, com consentimento e respeitando "
+                        "a tolerância do participante. O resultado isolado não confirma diagnóstico.",
+                        size=11,
+                        color=TEXT_SECONDARY,
+                    ),
+                ],
+                tight=True,
+                spacing=7,
+                scroll=ft.ScrollMode.AUTO,
+            ),
+            actions=[
+                ft.TextButton("Fechar", on_click=lambda _: fechar_dialogo(dlg))
+            ],
         )
         page.dialog = dlg
         dlg.open = True
         page.update()
 
-    def fechar_dialogo(dlg):
-        dlg.open = False
-        page.update()
-
-    # ==========================================
-    # GRAVAÇÃO NA API (POST /resultados)
-    # ==========================================
-    def salvar_e_proximo(e):
+    def salvar_e_proximo(_):
         feedback_msg.visible = False
         avaliacao = sessao.get("avaliacao_atual")
-        
-        if not avaliacao:
-            feedback_msg.value = "Erro: Nenhuma avaliação ativa na sessão."
+        if not avaliacao or not avaliacao.get("id"):
+            feedback_msg.value = "Não existe avaliação ativa nesta sessão."
             feedback_msg.visible = True
             page.update()
             return
@@ -95,125 +147,168 @@ def render_teste(page: ft.Page, navegar):
             "teste_id": int(teste["id"]),
             "lado": lado_selecionado["valor"],
             "resultado": resultado_selecionado["valor"],
-            "dor_0_10": int(slider_dor.value),
-            "observacoes": txt_obs.value.strip() or None
+            "dor_0_10": dor_atual,
+            "observacoes": (txt_obs.value or "").strip() or None,
         }
-
         try:
-            resp = requests.post(
+            response = requests.post(
                 f"{API_BASE_URL}/avaliacoes/{avaliacao['id']}/resultados",
                 json=payload,
                 headers=_headers_autenticados(),
-                timeout=10
+                timeout=15,
             )
-            if resp.status_code in (200, 201):
-                # Voltar à lista de testes (que irá carregar os dados atualizados)
+            if response.status_code in (200, 201):
+                sessao["resultado_atual"] = None
                 navegar("selecao")
-            else:
-                feedback_msg.value = f"Erro ao salvar: {resp.text}"
-                feedback_msg.visible = True
-                page.update()
-        except Exception:
-            feedback_msg.value = "Falha de comunicação ao gravar o resultado na API."
+                return
+            try:
+                detail = response.json().get("detail", "Não foi possível salvar o resultado.")
+            except ValueError:
+                detail = "Não foi possível salvar o resultado."
+            feedback_msg.value = f"Falha ao salvar ({response.status_code}): {detail}"
+        except requests.RequestException:
+            feedback_msg.value = (
+                "Falha de comunicação com a API. Verifique a conexão e tente novamente."
+            )
+        feedback_msg.visible = True
+        page.update()
+
+    def confirmar_exclusao(_):
+        def executar_exclusao(_):
+            fechar_dialogo(dlg)
+            avaliacao = sessao.get("avaliacao_atual") or {}
+            sucesso, mensagem = excluir_resultado_teste_api(
+                str(avaliacao.get("id", "")), int(teste["id"])
+            )
+            if sucesso:
+                sessao["resultado_atual"] = None
+                navegar("selecao")
+                return
+            feedback_msg.value = mensagem
             feedback_msg.visible = True
             page.update()
 
-    # SegmentedButton para o Lado
-    def mudar_lado(e):
-        lado_selecionado["valor"] = e.control.selected.pop() if e.control.selected else "Direito"
-
-    secao_lado = ft.Column([
-        ft.Text("Lado testado", weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
-        ft.SegmentedButton(
-            selected={lado_selecionado["valor"]},
-            on_change=mudar_lado,
-            segments=[
-                ft.Segment(value="Direito", label=ft.Text("Direito")),
-                ft.Segment(value="Esquerdo", label=ft.Text("Esquerdo")),
-                ft.Segment(value="Bilateral", label=ft.Text("Bilateral")),
+        dlg = ft.AlertDialog(
+            title=ft.Text("Excluir resultado?"),
+            content=ft.Text(
+                "O resultado deste teste será removido da avaliação. "
+                "Esta ação não pode ser desfeita."
+            ),
+            actions=[
+                ft.TextButton("Cancelar", on_click=lambda _: fechar_dialogo(dlg)),
+                ft.FilledButton(
+                    "Excluir",
+                    bgcolor=ft.Colors.ERROR,
+                    color=ft.Colors.WHITE,
+                    on_click=executar_exclusao,
+                ),
             ],
-            expand=True
         )
-    ])
+        page.dialog = dlg
+        dlg.open = True
+        page.update()
 
     cabecalho = ft.Row(
         controls=[
-            ft.IconButton(icon="arrow_back_ios", icon_size=18, icon_color=TEXT_PRIMARY, on_click=lambda _: navegar("selecao")),
-            ft.Text(teste["nome"], size=18, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY, expand=True, text_align=ft.TextAlign.CENTER),
-            ft.IconButton(icon="help_outline", icon_size=22, icon_color=TEXT_PRIMARY, tooltip="Ficha Clínica", on_click=abrir_ficha_clinica),
+            ft.IconButton(
+                icon=ft.Icons.ARROW_BACK,
+                icon_color=TEXT_PRIMARY,
+                on_click=lambda _: navegar("selecao"),
+            ),
+            ft.Text(
+                teste.get("nome", "Teste"),
+                size=18,
+                weight=ft.FontWeight.BOLD,
+                color=TEXT_PRIMARY,
+                expand=True,
+                text_align=ft.TextAlign.CENTER,
+            ),
+            ft.IconButton(
+                icon=ft.Icons.HELP_OUTLINE,
+                icon_color=TEXT_PRIMARY,
+                tooltip="Ficha clínica",
+                on_click=abrir_ficha_clinica,
+            ),
         ],
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
     )
 
-    subtitulo = ft.Text(f"{teste.get('regiao', 'Geral')} • Estrutura: {teste.get('estrutura', 'N/A')}", size=13, color=TEXT_SECONDARY, text_align=ft.TextAlign.CENTER)
+    subtitulo = ft.Text(
+        f"{teste.get('regiao', 'Geral')} • {teste.get('estrutura', 'Estrutura não informada')}",
+        size=13,
+        color=TEXT_SECONDARY,
+        text_align=ft.TextAlign.CENTER,
+    )
 
-    # ==========================================
-    # MODAL DE EXCLUSÃO (ORT-22)
-    # ==========================================
-    def confirmar_exclusao(e):
-        def executar_exclusao(e2):
-            fechar_dialogo_exclusao()
-            sucesso, msg = excluir_resultado_teste_api(str(sessao["avaliacao_atual"]["id"]), int(teste["id"]))
-            if sucesso:
-                navegar("selecao")
-            else:
-                feedback_msg.value = msg
-                feedback_msg.visible = True
-                page.update()
-
-        def fechar_dialogo_exclusao(e2=None):
-            dlg_exclusao.open = False
-            page.update()
-
-        dlg_exclusao = ft.AlertDialog(
-            title=ft.Text("Excluir registo?", weight=ft.FontWeight.BOLD, color=ft.colors.ERROR),
-            content=ft.Text("Tem a certeza que deseja excluir o resultado deste teste? Esta ação atualizará o progresso da avaliação e não pode ser desfeita."),
-            actions=[
-                ft.TextButton("Cancelar", on_click=fechar_dialogo_exclusao),
-                ft.FilledButton("Excluir", bgcolor=ft.colors.ERROR, color=ft.colors.WHITE, on_click=executar_exclusao),
+    ficha_resumo = ft.Container(
+        bgcolor=SURFACE,
+        border=ft.Border.all(width=1, color=CARD_BORDER),
+        border_radius=12,
+        padding=12,
+        content=ft.Column(
+            [
+                ft.Text("Objetivo", weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
+                ft.Text(teste.get("objetivo") or "Consulte a ficha clínica.", size=13),
+                ft.Text("Critério de resultado positivo", weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
+                ft.Text(teste.get("positivo_se") or "Consulte a ficha clínica.", size=13),
             ],
-            actions_alignment=ft.MainAxisAlignment.END,
-        )
-        page.dialog = dlg_exclusao
-        dlg_exclusao.open = True
-        page.update()
+            spacing=5,
+        ),
+    )
 
     rodape_acoes = ft.Row(
         controls=[
-            # Botão de excluir isolado à esquerda (só visível se o teste já foi guardado antes)
             ft.IconButton(
-                icon="delete_outline",
-                icon_color=ft.colors.ERROR,
+                icon=ft.Icons.DELETE_OUTLINE,
+                icon_color=ft.Colors.ERROR,
                 tooltip="Excluir resultado",
                 visible=bool(resultado_salvo),
-                on_click=confirmar_exclusao
+                on_click=confirmar_exclusao,
             ),
-            # Botões de navegação e gravação à direita
-            ft.Row([
-                ft.TextButton("Voltar", style=ft.ButtonStyle(color=TEXT_SECONDARY), on_click=lambda _: navegar("selecao")),
-                ft.Button(
-                    content=ft.Text("Salvar e próximo >", weight=ft.FontWeight.BOLD),
-                    bgcolor=PRIMARY, color="white",
-                    style=ft.ButtonStyle(padding=ft.Padding(left=20, top=12, right=20, bottom=12)),
-                    on_click=salvar_e_proximo
-                )
-            ])
+            ft.Row(
+                [
+                    ft.TextButton(
+                        "Voltar",
+                        style=ft.ButtonStyle(color=TEXT_SECONDARY),
+                        on_click=lambda _: navegar("selecao"),
+                    ),
+                    ft.FilledButton(
+                        "Salvar resultado",
+                        icon=ft.Icons.SAVE,
+                        bgcolor=PRIMARY,
+                        color=ft.Colors.WHITE,
+                        on_click=salvar_e_proximo,
+                    ),
+                ],
+                spacing=8,
+            ),
         ],
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
     )
-    
+
     page.add(
         cabecalho,
-        ft.Container(content=subtitulo, alignment=ft.Alignment(0, 0), margin=ft.Margin(left=0, top=0, right=0, bottom=10)),
+        ft.Container(content=subtitulo, alignment=ft.Alignment(0, 0)),
+        ficha_resumo,
         feedback_msg,
-        ft.Divider(height=10, color="transparent"),
-        secao_lado,
-        ft.Divider(height=15, color="transparent"),
-        ft.Column([ft.Text("Resultado", weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY), dropdown_resultado]),
-        ft.Divider(height=15, color="transparent"),
-        ft.Column([ft.Row([ft.Text("Dor durante o teste", weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY), valor_dor_txt], alignment=ft.MainAxisAlignment.SPACE_BETWEEN), slider_dor], spacing=4),
-        ft.Divider(height=15, color="transparent"),
-        ft.Column([ft.Text("Observações", weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY), txt_obs]),
-        ft.Divider(height=25, color="transparent"),
-        rodape_acoes
+        ft.Divider(height=8, color="transparent"),
+        dropdown_lado,
+        dropdown_resultado,
+        ft.Column(
+            [
+                ft.Row(
+                    [
+                        ft.Text("Dor durante o teste", weight=ft.FontWeight.BOLD),
+                        valor_dor_txt,
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                ),
+                slider_dor,
+            ],
+            spacing=4,
+        ),
+        txt_obs,
+        ft.TextButton("Consultar ficha clínica completa", icon=ft.Icons.HELP_OUTLINE, on_click=abrir_ficha_clinica),
+        ft.Divider(height=8, color="transparent"),
+        rodape_acoes,
     )
