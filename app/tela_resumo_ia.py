@@ -26,7 +26,7 @@ def render_resumo_ia(page: ft.Page, navegar):
                 color=ft.Colors.AMBER_900, weight=ft.FontWeight.BOLD, size=12, expand=True
             )
         ]),
-        bgcolor=ft.Colors.AMBER_100, padding=10, border_radius=8, border=ft.border.all(1, ft.Colors.AMBER_300)
+        bgcolor=ft.Colors.AMBER_100, padding=10, border_radius=8, border=ft.Border.all(1, ft.Colors.AMBER_300)
     )
 
     # AULA: A caixa de texto é multiline (permite parágrafos) e é EDITÁVEL. 
@@ -91,7 +91,7 @@ def render_resumo_ia(page: ft.Page, navegar):
         
         page.snack_bar = ft.SnackBar(
             ft.Text(msg), 
-            bgcolor=ft.colors.GREEN_800 if sucesso else ft.colors.ERROR
+            bgcolor=ft.Colors.GREEN_800 if sucesso else ft.Colors.ERROR
         )
         page.snack_bar.open = True
         
