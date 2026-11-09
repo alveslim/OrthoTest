@@ -1,9 +1,9 @@
 from uuid import UUID
 from datetime import datetime
 from enum import Enum
+
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-# Codigo do Paulo
 
 class Resultado(str, Enum):
     POSITIVO = "Positivo"
@@ -11,58 +11,71 @@ class Resultado(str, Enum):
     NAO_REALIZADO = "Não realizado"
     INCONCLUSIVO = "Inconclusivo"
 
+
 class Lado(str, Enum):
     DIREITO = "Direito"
     ESQUERDO = "Esquerdo"
     BILATERAL = "Bilateral"
 
+
 class ResultadoTeste(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    avaliacao_id: str
-    teste_id: int
+    # A avaliação já vem pela URL; opcional para manter compatibilidade com clientes antigos.
+    avaliacao_id: str | None = None
+    teste_id: int = Field(gt=0)
     lado: Lado
     resultado: Resultado
     dor_0_10: int | None = Field(default=None, ge=0, le=10)
     valor_medido: float | None = None
     observacoes: str | None = Field(default=None, max_length=500)
 
+
 class ParticipanteEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    codigo: str = Field(min_length=1, max_length=20)
+    codigo: str = Field(min_length=1, max_length=20, pattern=r"^[A-Za-z0-9_-]+$")
     idade: int = Field(gt=0, lt=120)
-    peso_kg: float | None = Field(default=None, gt=0)
-    altura_m: float | None = Field(default=None, gt=0)
+    peso_kg: float | None = Field(default=None, gt=0, lt=400)
+    altura_m: float | None = Field(default=None, ge=0.5, le=2.5)
     consentimento: bool = False
     data_consentimento: datetime | None = None
 
     @model_validator(mode="after")
     def validar_consentimento(self) -> "ParticipanteEntrada":
-        if self.consentimento and self.data_consentimento is None:
-            raise ValueError("Consentimento marcado exige data_consentimento")
+        if not self.consentimento:
+            raise ValueError("O consentimento é obrigatório antes de cadastrar.")
+        if self.data_consentimento is None:
+            raise ValueError("Consentimento marcado exige data_consentimento.")
         return self
+
 
 class AvaliacaoEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
     participante_id: UUID
+
 
 class Regiao(str, Enum):
     JOELHO = "Joelho"
     TORNOZELO = "Tornozelo"
+    QUADRIL = "Quadril"
     OMBRO = "Ombro"
+    COTOVELO = "Cotovelo"
     PUNHO = "Punho"
-    COLUNA = "Coluna"
+    COLUNA_LOMBAR = "Coluna lombar"
+    COLUNA_CERVICAL = "Coluna cervical"
+    TORAX = "Tórax"
+
 
 class TesteCatalogo(BaseModel):
     id: int = Field(gt=0)
     regiao: Regiao
     nome: str = Field(min_length=1, max_length=100)
-    estrutura: str | None = Field(default=None, max_length=100)
+    estrutura: str | None = Field(default=None, max_length=150)
     definicao: str = Field(min_length=1)
     objetivo: str = Field(min_length=1)
     como_fazer: str = Field(min_length=1)
     positivo_se: str = Field(min_length=1)
     referencia: str | None = None
+
 
 class RascunhoIA(BaseModel):
     id: UUID
@@ -75,8 +88,9 @@ class RascunhoIA(BaseModel):
     @model_validator(mode="after")
     def validar_aprovacao(self) -> "RascunhoIA":
         if self.aprovado and self.revisado_por is None:
-            raise ValueError("Rascunho aprovado exige revisado_por")
+            raise ValueError("Rascunho aprovado exige revisado_por.")
         return self
+
 
 class Papel(str, Enum):
     ALUNO = "aluno"
@@ -88,26 +102,27 @@ class Perfil(BaseModel):
     nome_exibicao: str = Field(min_length=1)
     papel: Papel
 
-# Parte do Flávio XD
+
 class ParticipanteSaida(ParticipanteEntrada):
     id: UUID
+    user_id: UUID
     criado_em: datetime
-    # adicionou o user_id na tabela participantes na ORT-09
-    user_id: UUID # adicionado para vincular o participante ao usuário que o criou
+
 
 class AvaliacaoSaida(AvaliacaoEntrada):
     id: UUID
     avaliador_id: UUID
     data_avaliacao: datetime
-    flag_professor: bool
-    flag_motivo: str | None
+    flag_professor: bool = False
+    flag_motivo: str | None = None
     status: str = "pendente"
     progresso_percentual: float = 0.0
+
 
 class ResultadoTesteSaida(ResultadoTeste):
     id: UUID
 
-# validar payload enviado pelo frontend do aluno que quiser deixar uma justificacao
+
 class AvaliacaoSinalizar(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    motivo: str | None = Field(default=None, max_length=500, description="Motivo da sinalização ou dúvida")
+    motivo: str | None = Field(default=None, max_length=500)
