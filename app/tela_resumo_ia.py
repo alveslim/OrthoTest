@@ -41,7 +41,7 @@ def render_resumo_ia(page: ft.Page, navegar):
         border_color=PRIMARY
     )
 
-    indicador_estado = ft.Text(visible=False, size=12, italic=True)
+    indicador_estado = ft.Text(visible=False, size=12, italic=True)\n    pode_aprovar = sessao.get("papel") == "professor"\n    texto_permissao = ft.Text(\n        "Somente um usuário com papel de professor pode aprovar e registrar o resumo. Você pode gerar e revisar o rascunho.",\n        size=11, color=TEXT_SECONDARY, visible=not pode_aprovar\n    )
 
     # ---------------------------------------------------------
     # AÇÕES DOS BOTÕES
@@ -102,7 +102,7 @@ def render_resumo_ia(page: ft.Page, navegar):
     btn_gerar = ft.ElevatedButton("Gerar resumo para discussão", on_click=gerar_clique, icon=ft.Icons.AUTO_AWESOME, bgcolor=PRIMARY, color="white")
     
     # Botão de aprovação fica bloqueado até o rascunho existir[cite: 9].
-    btn_aprovar = ft.FilledButton("Aprovar Resumo Final", on_click=aprovar_clique, icon=ft.Icons.CHECK_CIRCLE, disabled=True, bgcolor=ft.Colors.GREEN_600)
+    btn_aprovar = ft.FilledButton("Aprovar Resumo Final", on_click=aprovar_clique, icon=ft.Icons.CHECK_CIRCLE, disabled=True or not pode_aprovar, bgcolor=ft.Colors.GREEN_600)
 
     # ---------------------------------------------------------
     # MONTAGEM FINAL DO ECRÃ
@@ -117,5 +117,5 @@ def render_resumo_ia(page: ft.Page, navegar):
         ft.Divider(height=10, color="transparent"),
         ft.Row([btn_gerar, indicador_estado], alignment=ft.MainAxisAlignment.START),
         ft.Container(content=caixa_texto, padding=ft.padding.only(top=15, bottom=15), expand=True),
-        ft.Row([btn_aprovar], alignment=ft.MainAxisAlignment.END)
+        texto_permissao,\n        ft.Row([btn_aprovar], alignment=ft.MainAxisAlignment.END)
     )
