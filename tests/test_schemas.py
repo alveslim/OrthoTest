@@ -192,3 +192,38 @@ def test_dor_fora_dos_limites_e_rejeitada(dor):
 def test_resultado_desconhecido_e_rejeitado():
     with pytest.raises(ValidationError):
         ResultadoTeste.model_validate({**BASE, "resultado": "Talvez"})
+
+def test_resultado_da_tela_pode_omitir_avaliacao_id():
+    payload = {
+        "teste_id": 1,
+        "lado": "Direito",
+        "resultado": "Positivo",
+        "dor_0_10": 4,
+    }
+    registro = ResultadoTeste.model_validate(payload)
+    assert registro.avaliacao_id is None
+    assert registro.teste_id == 1
+
+
+def test_participante_sem_consentimento_e_rejeitado():
+    with pytest.raises(ValidationError, match="consentimento é obrigatório"):
+        ParticipanteEntrada(codigo="P-004", idade=20)
+
+
+@pytest.mark.parametrize(
+    "regiao",
+    [
+        "Joelho",
+        "Tornozelo",
+        "Quadril",
+        "Ombro",
+        "Cotovelo",
+        "Punho",
+        "Coluna lombar",
+        "Coluna cervical",
+        "Tórax",
+    ],
+)
+def test_catalogo_aceita_regioes_dos_documentos_atualizados(regiao):
+    teste = schemas.TesteCatalogo.model_validate({**CATALOGO_BASE, "regiao": regiao})
+    assert teste.regiao.value == regiao
