@@ -61,13 +61,14 @@ def _request(
     raw_body: bytes | None = None,
     extra_headers: dict[str, str] | None = None,
     expected: tuple[int, ...] = (200, 201, 204),
+    prefer: str = "return=representation",
 ):
     if not SUPABASE_URL:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="SUPABASE_URL não foi configurada.",
         )
-    headers = _headers(user_payload)
+    headers = _headers(user_payload, prefer=prefer)
     if extra_headers:
         headers.update(extra_headers)
     url = f"{SUPABASE_URL}/rest/v1/{table}"
@@ -110,8 +111,8 @@ def _select(table: str, user_payload: dict, params: dict | None = None) -> list[
     return result if isinstance(result, list) else []
 
 
-def _insert(table: str, user_payload: dict, body: dict, params: dict | None = None) -> list[dict]:
-    result = _request("POST", table, user_payload, params=params, body=body)
+def _insert(table: str, user_payload: dict, body: dict, params: dict | None = None, prefer: str = "return=representation") -> list[dict]:
+    result = _request("POST", table, user_payload, params=params, body=body, prefer=prefer)
     return result if isinstance(result, list) else []
 
 
@@ -298,10 +299,8 @@ def registar_resultado_teste(
         user_payload,
         dados,
         params={"on_conflict": "avaliacao_id,teste_id,lado"},
+        prefer="resolution=merge-duplicates,return=representation",
     )
-    # Atualiza resultado existente em vez de criar registro duplicado.
-    # A opção resolution=merge-duplicates é enviada no Prefer.
-    # O header especial é aplicado pela chamada abaixo se o servidor suportar upsert.
     progresso = _recalcular_progresso(str(avaliacao_id), user_payload)
     return {
         "mensagem": "Resultado salvo com sucesso.",
