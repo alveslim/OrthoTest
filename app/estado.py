@@ -88,8 +88,14 @@ def buscar_participantes_e_avaliacoes() -> tuple[bool, list | str]:
             return False, f"Erro ao carregar participantes ({resp_p.status_code})."
         
         participantes = resp_p.json()
-        if resp_a.status_code != 200:\n            return False, f"Erro ao carregar avaliações ({resp_a.status_code})."\n        avaliacoes = resp_a.json()
-        # A API ordena avaliações da mais recente para a mais antiga.\n        # setdefault preserva a primeira, evitando reabrir uma avaliação antiga.\n        mapa_aval = {}\n        for avaliacao in avaliacoes:\n            mapa_aval.setdefault(str(avaliacao["participante_id"]), avaliacao)
+        if resp_a.status_code != 200:
+            return False, f"Erro ao carregar avaliações ({resp_a.status_code})."
+        avaliacoes = resp_a.json()
+        # A API ordena avaliações da mais recente para a mais antiga.
+        # setdefault preserva a primeira, evitando reabrir uma avaliação antiga.
+        mapa_aval = {}
+        for avaliacao in avaliacoes:
+            mapa_aval.setdefault(str(avaliacao["participante_id"]), avaliacao)
         
         for p in participantes:
             p["avaliacao"] = mapa_aval.get(str(p["id"]))
@@ -140,7 +146,9 @@ def buscar_catalogo_e_resultados(avaliacao_id: str) -> tuple[bool, dict | str]:
         
         resp_res = requests.get(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados", headers=_headers_autenticados(), timeout=10)
         catalogo = resp_cat.json()
-        if resp_res.status_code != 200:\n            return False, f"Erro ao carregar resultados ({resp_res.status_code})."\n        resultados = resp_res.json()
+        if resp_res.status_code != 200:
+            return False, f"Erro ao carregar resultados ({resp_res.status_code})."
+        resultados = resp_res.json()
         mapa_resultados = {int(r["teste_id"]): r for r in resultados if "teste_id" in r}
         
         return True, {"catalogo": catalogo, "mapa_resultados": mapa_resultados}
