@@ -89,7 +89,7 @@ def buscar_participantes_e_avaliacoes() -> tuple[bool, list | str]:
         
         participantes = resp_p.json()
         if resp_a.status_code != 200:\n            return False, f"Erro ao carregar avaliações ({resp_a.status_code})."\n        avaliacoes = resp_a.json()
-        mapa_aval = {str(a["participante_id"]): a for a in avaliacoes}
+        # A API ordena avaliações da mais recente para a mais antiga.\n        # setdefault preserva a primeira, evitando reabrir uma avaliação antiga.\n        mapa_aval = {}\n        for avaliacao in avaliacoes:\n            mapa_aval.setdefault(str(avaliacao["participante_id"]), avaliacao)
         
         for p in participantes:
             p["avaliacao"] = mapa_aval.get(str(p["id"]))
