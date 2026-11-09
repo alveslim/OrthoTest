@@ -272,7 +272,25 @@ def listar_avaliacoes(user_payload: dict = Depends(validar_auth)):
         "order": "data_avaliacao.desc",
         **_owner_filter(user_payload),
     }
-    return _select("avaliacoes", user_payload, params)
+    avaliacoes = _select("avaliacoes", user_payload, params)
+    if not avaliacoes:
+        return []
+
+    catalogo = _catalogo(user_payload)
+    ids = [str(item["id"]) for item in avaliacoes]
+    resultados = _select(
+        "resultados_testes",
+        user_payload,
+        {
+            "select": "avaliacao_id,teste_id,resultado",
+            "avaliacao_id": f"in.({','.join(ids)})",
+        },
+    )
+    return aplicar_progresso_em_memoria(
+        avaliacoes,
+        [item["id"] for item in catalogo],
+        resultados,
+    )
 
 
 @router.post(
@@ -425,6 +443,13 @@ def _dados_dashboard(user_payload: dict) -> dict:
         if resultado.get("dor_0_10") is not None:
             dores.append(int(resultado["dor_0_10"]))
 
+    # Recalcula o status com o catálogo ativo; não confia em progresso antigo
+    # armazenado antes da ampliação das fichas.
+    avaliacoes = aplicar_progresso_em_memoria(
+        avaliacoes,
+        [item["id"] for item in catalogo],
+        resultados,
+    )
     total_avaliacoes = len(avaliacoes)
     completas = sum(1 for item in avaliacoes if item.get("status") == "concluido")
     percentual_completas = (
