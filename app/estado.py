@@ -16,6 +16,7 @@ sessao = {
     "access_token": None,
     "user_id": None,
     "email": None,
+    "papel": "aluno",
     "consentimento_aceito": False,
     "data_consentimento": None,
     "participante_atual": None,
@@ -23,6 +24,28 @@ sessao = {
     "teste_atual": None,
     "resultado_atual": None,
 }
+
+OFFLINE_PARTICIPANTES = [
+    {"id": "1", "codigo": "P-MOCK1", "idade": 22, "peso_kg": 70, "altura_m": 1.75},
+    {"id": "2", "codigo": "P-MOCK2", "idade": 30, "peso_kg": 82, "altura_m": 1.80},
+]
+OFFLINE_AVALIACOES = [
+    {"id": "mock_aval_id", "participante_id": "1", "status": "pendente", "progresso_percentual": 0.0}
+]
+OFFLINE_CATALOGO = [
+    {
+        "id": 1,
+        "nome": "Lachman",
+        "regiao": "Joelho",
+        "estrutura": "Ligamento cruzado anterior (LCA)",
+        "definicao": "Teste demonstrativo do catálogo offline.",
+        "objetivo": "Avaliar a estabilidade anterior do joelho.",
+        "como_fazer": "Consulte a ficha clínica completa no catálogo do projeto.",
+        "positivo_se": "Aumento da translação anterior em comparação ao lado oposto.",
+    }
+]
+OFFLINE_RESULTADOS = {"mock_aval_id": {}}
+
 
 def _headers_autenticados() -> dict:
     return {
@@ -35,7 +58,8 @@ def autenticar_usuario(email: str, senha: str) -> tuple[bool, str]:
         sessao["access_token"] = "mock_token_123"
         sessao["user_id"] = "mock_user_id"
         sessao["email"] = email
-        return True, "Autenticado em MODO OFFLINE (Sem API)."
+        sessao["papel"] = "aluno"
+        return True, "Autenticado em MODO OFFLINE (dados demonstrativos; não são enviados ao Supabase)."
     
     if not SUPABASE_URL or not SUPABASE_ANON_KEY:
         return False, "Configure SUPABASE_URL e SUPABASE_ANON_KEY no ficheiro .env"
@@ -45,7 +69,10 @@ def autenticar_usuario(email: str, senha: str) -> tuple[bool, str]:
         if resp.status_code == 200:
             dados = resp.json()
             sessao["access_token"] = dados.get("access_token")
-            sessao["user_id"] = str(dados.get("user", {}).get("id", ""))
+            usuario = dados.get("user", {})
+            sessao["user_id"] = str(usuario.get("id", ""))
+            sessao["email"] = usuario.get("email", email.strip())
+            sessao["papel"] = (usuario.get("app_metadata") or {}).get("role", "aluno")
             return True, "Autenticado com sucesso."
         return False, "E-mail ou palavra-passe incorretos."
     except Exception:
@@ -60,6 +87,7 @@ def limpar_sessao():
         "access_token": None,
         "user_id": None,
         "email": None,
+        "papel": "aluno",
         "consentimento_aceito": False,
         "data_consentimento": None,
         "participante_atual": None,
@@ -70,11 +98,16 @@ def limpar_sessao():
 
 def buscar_participantes_e_avaliacoes() -> tuple[bool, list | str]:
     if MODO_OFFLINE:
-        mock_data = [
-            {"id": "1", "codigo": "P-MOCK1", "idade": 22, "peso_kg": 70, "altura_m": 1.75, "avaliacao": {"id": "a1", "status": "pendente", "progresso_percentual": 25.0}},
-            {"id": "2", "codigo": "P-MOCK2", "idade": 30, "peso_kg": 82, "altura_m": 1.80, "avaliacao": None}
-        ]
-        return True, mock_data
+        participantes = []
+        for participante in OFFLINE_PARTICIPANTES:
+            item = participante.copy()
+            avaliacoes = [
+                a for a in OFFLINE_AVALIACOES
+                if str(a.get("participante_id")) == str(participante["id"])
+            ]
+            item["avaliacao"] = avaliacoes[-1].copy() if avaliacoes else None
+            participantes.append(item)
+        return True, participantes
     try:
         resp_p = requests.get(f"{API_BASE_URL}/participantes", headers=_headers_autenticados(), timeout=10)
         resp_a = requests.get(f"{API_BASE_URL}/avaliacoes", headers=_headers_autenticados(), timeout=10)
@@ -82,18 +115,32 @@ def buscar_participantes_e_avaliacoes() -> tuple[bool, list | str]:
             return False, f"Erro ao carregar participantes ({resp_p.status_code})."
         
         participantes = resp_p.json()
-        avaliacoes = resp_a.json() if resp_a.status_code == 200 else []
-        mapa_aval = {str(a["participante_id"]): a for a in avaliacoes}
+        if resp_a.status_code != 200:
+            return False, f"Erro ao carregar avaliações ({resp_a.status_code})."
+        avaliacoes = resp_a.json()
+        # A API ordena avaliações da mais recente para a mais antiga.
+        # setdefault preserva a primeira, evitando reabrir uma avaliação antiga.
+        mapa_aval = {}
+        for avaliacao in avaliacoes:
+            mapa_aval.setdefault(str(avaliacao["participante_id"]), avaliacao)
         
         for p in participantes:
             p["avaliacao"] = mapa_aval.get(str(p["id"]))
         return True, participantes
     except Exception:
-        return False, "Não foi possível ligar à API FastAPI. Verifique se o servidor está em execução."
+        return False, "Não foi possível comunicar com a API. Verifique API_BASE_URL e se o servidor está em execução."
 
 def criar_novo_participante(codigo: str, idade: int, peso_kg: float | None, altura_m: float | None) -> tuple[bool, dict | str]:
     if MODO_OFFLINE:
-        return True, {"id": "mock_novo", "codigo": codigo.strip().upper(), "idade": idade, "peso_kg": peso_kg, "altura_m": altura_m}
+        participante = {
+            "id": f"mock_{len(OFFLINE_PARTICIPANTES) + 1}",
+            "codigo": codigo.strip().upper(),
+            "idade": idade,
+            "peso_kg": peso_kg,
+            "altura_m": altura_m,
+        }
+        OFFLINE_PARTICIPANTES.append(participante)
+        return True, participante.copy()
     payload = {
         "codigo": codigo.strip().upper(),
         "idade": idade,
@@ -112,7 +159,17 @@ def criar_novo_participante(codigo: str, idade: int, peso_kg: float | None, altu
 
 def garantir_avaliacao_ativa(participante_id: str, avaliacao_existente: dict | None) -> tuple[bool, dict | str]:
     if MODO_OFFLINE:
-        return True, avaliacao_existente or {"id": "mock_aval_id", "status": "pendente", "progresso_percentual": 0}
+        if avaliacao_existente:
+            return True, avaliacao_existente
+        avaliacao = {
+            "id": f"mock_aval_{len(OFFLINE_AVALIACOES) + 1}",
+            "participante_id": str(participante_id),
+            "status": "pendente",
+            "progresso_percentual": 0.0,
+        }
+        OFFLINE_AVALIACOES.append(avaliacao)
+        OFFLINE_RESULTADOS.setdefault(avaliacao["id"], {})
+        return True, avaliacao.copy()
     if avaliacao_existente:
         return True, avaliacao_existente
     try:
@@ -125,8 +182,8 @@ def garantir_avaliacao_ativa(participante_id: str, avaliacao_existente: dict | N
 
 def buscar_catalogo_e_resultados(avaliacao_id: str) -> tuple[bool, dict | str]:
     if MODO_OFFLINE:
-        catalogo_mock = [{"id": 1, "nome": "Lachman (Mock)", "regiao": "Joelho", "estrutura": "LCA"}]
-        return True, {"catalogo": catalogo_mock, "mapa_resultados": {1: {"resultado": "Positivo", "lado": "Direito"}}}
+        mapa = OFFLINE_RESULTADOS.get(str(avaliacao_id), {}).copy()
+        return True, {"catalogo": [item.copy() for item in OFFLINE_CATALOGO], "mapa_resultados": mapa}
     try:
         resp_cat = requests.get(f"{API_BASE_URL}/catalogo/testes", headers=_headers_autenticados(), timeout=10)
         if resp_cat.status_code != 200:
@@ -134,7 +191,9 @@ def buscar_catalogo_e_resultados(avaliacao_id: str) -> tuple[bool, dict | str]:
         
         resp_res = requests.get(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados", headers=_headers_autenticados(), timeout=10)
         catalogo = resp_cat.json()
-        resultados = resp_res.json() if resp_res.status_code == 200 else []
+        if resp_res.status_code != 200:
+            return False, f"Erro ao carregar resultados ({resp_res.status_code})."
+        resultados = resp_res.json()
         mapa_resultados = {int(r["teste_id"]): r for r in resultados if "teste_id" in r}
         
         return True, {"catalogo": catalogo, "mapa_resultados": mapa_resultados}
@@ -143,7 +202,12 @@ def buscar_catalogo_e_resultados(avaliacao_id: str) -> tuple[bool, dict | str]:
 
 def sinalizar_avaliacao_professor(avaliacao_id: str, motivo: str) -> tuple[bool, str]:
     if MODO_OFFLINE:
-        return True, "Avaliação sinalizada (Mock)."
+        avaliacao = next((a for a in OFFLINE_AVALIACOES if str(a["id"]) == str(avaliacao_id)), None)
+        if not avaliacao:
+            return False, "Avaliação demonstrativa não encontrada."
+        avaliacao["flag_professor"] = True
+        avaliacao["flag_motivo"] = motivo.strip() or "Solicitação de revisão."
+        return True, "Avaliação sinalizada (somente em memória no modo demonstrativo)."
     try:
         resp = requests.post(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/sinalizar", json={"motivo": motivo.strip() or "Solicitação de revisão pelo aluno."}, headers=_headers_autenticados(), timeout=10)
         if resp.status_code == 200:
@@ -152,9 +216,48 @@ def sinalizar_avaliacao_professor(avaliacao_id: str, motivo: str) -> tuple[bool,
     except Exception:
         return False, "Erro de conexão ao sinalizar avaliação."
 
+def atualizar_progresso_offline(avaliacao_id: str) -> None:
+    resultados = OFFLINE_RESULTADOS.get(avaliacao_id, {})
+    total = len(OFFLINE_CATALOGO)
+    respondidos = len(resultados)
+    percentual = round(respondidos / total * 100, 1) if total else 0.0
+    avaliacao = next((a for a in OFFLINE_AVALIACOES if str(a["id"]) == avaliacao_id), None)
+    if avaliacao:
+        avaliacao["progresso_percentual"] = percentual
+        avaliacao["status"] = "concluido" if respondidos == total and total else "em_andamento" if respondidos else "pendente"
+
+
+def salvar_resultado_teste_api(avaliacao_id: str, payload: dict) -> tuple[bool, str]:
+    if MODO_OFFLINE:
+        if not any(str(a["id"]) == str(avaliacao_id) for a in OFFLINE_AVALIACOES):
+            return False, "Avaliação demonstrativa não encontrada."
+        resultados = OFFLINE_RESULTADOS.setdefault(str(avaliacao_id), {})
+        resultados[int(payload["teste_id"])] = payload.copy()
+        atualizar_progresso_offline(str(avaliacao_id))
+        return True, "Resultado salvo somente em memória (modo demonstrativo)."
+    try:
+        resp = requests.post(
+            f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados",
+            json=payload,
+            headers=_headers_autenticados(),
+            timeout=15,
+        )
+        if resp.status_code in (200, 201):
+            return True, "Resultado salvo com sucesso."
+        try:
+            return False, str(resp.json().get("detail", "Não foi possível salvar o resultado."))
+        except ValueError:
+            return False, "Não foi possível salvar o resultado."
+    except requests.RequestException:
+        return False, "Falha de comunicação com a API ao salvar o resultado."
+
+
 def excluir_resultado_teste_api(avaliacao_id: str, teste_id: int) -> tuple[bool, str]:
     if MODO_OFFLINE:
-        return True, "Resultado excluído (Mock)."
+        resultados = OFFLINE_RESULTADOS.setdefault(str(avaliacao_id), {})
+        resultados.pop(int(teste_id), None)
+        atualizar_progresso_offline(str(avaliacao_id))
+        return True, "Resultado excluído da demonstração (somente em memória)."
     try:
         resp = requests.delete(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados/{teste_id}", headers=_headers_autenticados(), timeout=10)
         if resp.status_code == 200:

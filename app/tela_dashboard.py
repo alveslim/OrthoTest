@@ -90,7 +90,7 @@ def render_dashboard(page: ft.Page, navegar):
     # 4. NOTA DE PRIVACIDADE
     # ---------------------------------------------------------
     nota_privacidade = ft.Text(
-        "Nota: Grupos com menos de 3 resultados (n<3) são agregados em 'Outros' para garantir o K-Anonimato e proteger a privacidade individual.",
+        "Nota: Regiões com menos de 3 participantes distintos não são exibidas isoladamente. Grupos ocultos só são agregados quando o grupo combinado também alcança 3 participantes.",
         size=11, color=TEXT_SECONDARY, italic=True, text_align=ft.TextAlign.CENTER
     )
 

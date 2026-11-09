@@ -1,219 +1,331 @@
-import os
-import io
+"""Rotas REST do OrthoTest.
+
+Todas as chamadas ao PostgREST usam o access token do usuário autenticado (e a
+chave anon). Assim, a autorização real é aplicada pelo RLS do PostgreSQL.
+Nenhuma rota utiliza service_role para operações feitas em nome de um aluno.
+"""
 import csv
-from typing import List
-from uuid import UUID
-import requests
+import io
+import json
+import os
 from datetime import datetime, timezone
-from dotenv import load_dotenv
+from pathlib import Path
+from typing import Any
+from uuid import UUID
+
+import requests
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from backend.auth import requer_professor, validar as validar_auth
+from backend.progresso import aplicar_progresso_em_memoria
 from backend.schemas import (
-    ParticipanteEntrada,
-    ParticipanteSaida,
     AvaliacaoEntrada,
-    AvaliacaoSaida,
     AvaliacaoSinalizar,
+    ParticipanteEntrada,
     ResultadoTeste,
-    TesteCatalogo,
 )
 
+load_dotenv = None
 try:
-    from backend.auth import validar as validar_auth
+    from dotenv import load_dotenv
+    load_dotenv()
 except ImportError:
-    from backend.auth import validar_token as validar_auth
-
-load_dotenv()
+    pass
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY", "")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
+router = APIRouter(prefix="/api/v1", tags=["OrthoTest"])
 
 
-def _sb_headers(prefer: str = "return=representation") -> dict:
-    if not SUPABASE_URL or not SUPABASE_KEY:
+def _headers(user_payload: dict, prefer: str = "return=representation") -> dict[str, str]:
+    token = user_payload.get("access_token")
+    if not SUPABASE_URL or not SUPABASE_ANON_KEY or not token:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Configure SUPABASE_URL e SUPABASE_ANON_KEY (ou SUPABASE_SERVICE_ROLE_KEY) no .env",
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Supabase não configurado ou sessão ausente no backend.",
         )
     return {
-        "apikey": SUPABASE_KEY,
-        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
         "Prefer": prefer,
     }
 
 
-def _sb_url(tabela: str) -> str:
-    return f"{SUPABASE_URL}/rest/v1/{tabela}"
+def _request(
+    method: str,
+    table: str,
+    user_payload: dict,
+    *,
+    params: dict | None = None,
+    body: Any = None,
+    raw_body: bytes | None = None,
+    extra_headers: dict[str, str] | None = None,
+    expected: tuple[int, ...] = (200, 201, 204),
+    prefer: str = "return=representation",
+):
+    if not SUPABASE_URL:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="SUPABASE_URL não foi configurada.",
+        )
+    headers = _headers(user_payload, prefer=prefer)
+    if extra_headers:
+        headers.update(extra_headers)
+    url = f"{SUPABASE_URL}/rest/v1/{table}"
+    try:
+        response = requests.request(
+            method,
+            url,
+            headers=headers,
+            params=params,
+            json=body,
+            data=raw_body,
+            timeout=12,
+        )
+    except requests.RequestException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Falha de comunicação com o Supabase.",
+        ) from exc
+
+    if response.status_code not in expected:
+        # Evita devolver detalhes internos/SQL do Postgres para a interface.
+        detail = "O Supabase recusou a operação."
+        try:
+            parsed = response.json()
+            detail = parsed.get("message") or parsed.get("details") or detail
+        except ValueError:
+            pass
+        raise HTTPException(status_code=response.status_code, detail=detail)
+
+    if response.status_code == 204 or not response.content:
+        return None
+    try:
+        return response.json()
+    except ValueError:
+        return response.text
 
 
-router = APIRouter(prefix="/api/v1", tags=["OrthoTest"])
+def _select(table: str, user_payload: dict, params: dict | None = None) -> list[dict]:
+    result = _request("GET", table, user_payload, params=params or {"select": "*"})
+    return result if isinstance(result, list) else []
 
 
-# ----------------
-# CATÁLOGO
-# ----------------
-@router.get("/catalogo/testes", response_model=List[TesteCatalogo])
-def listar_catalogo_testes(user_payload: dict = Depends(validar_auth)):
-    """Retorna a lista dos testes ortopédicos do catálogo."""
-    resp = requests.get(
-        _sb_url("testes_catalogo"),
-        headers=_sb_headers(),
-        params={"select": "*", "order": "id.asc"},
-        timeout=10,
+def _insert(table: str, user_payload: dict, body: dict, params: dict | None = None, prefer: str = "return=representation") -> list[dict]:
+    result = _request("POST", table, user_payload, params=params, body=body, prefer=prefer)
+    return result if isinstance(result, list) else []
+
+
+def _update(table: str, user_payload: dict, params: dict, body: dict) -> list[dict]:
+    result = _request("PATCH", table, user_payload, params=params, body=body)
+    return result if isinstance(result, list) else []
+
+
+def _delete(table: str, user_payload: dict, params: dict):
+    return _request("DELETE", table, user_payload, params=params, expected=(200, 204))
+
+
+def _is_professor(user_payload: dict) -> bool:
+    return (user_payload.get("app_metadata") or {}).get("role") == "professor"
+
+
+def _owner_filter(user_payload: dict, field: str = "avaliador_id") -> dict:
+    return {} if _is_professor(user_payload) else {field: f"eq.{user_payload['sub']}"}
+
+
+def _get_assessment(avaliacao_id: UUID | str, user_payload: dict) -> dict:
+    params = {
+        "select": "id,participante_id,avaliador_id,status,progresso_percentual",
+        "id": f"eq.{avaliacao_id}",
+        **_owner_filter(user_payload),
+    }
+    rows = _select("avaliacoes", user_payload, params)
+    if not rows:
+        # Não revelar se a avaliação existe para outro usuário.
+        raise HTTPException(status_code=404, detail="Avaliação não encontrada.")
+    return rows[0]
+
+
+def _catalogo(user_payload: dict) -> list[dict]:
+    return _select(
+        "testes_catalogo",
+        user_payload,
+        {"select": "*", "ativo": "eq.true", "order": "id.asc"},
     )
-    if resp.status_code != 200:
-        raise HTTPException(status_code=resp.status_code, detail=resp.text)
-    return resp.json()
 
 
-# ----------------
-# PARTICIPANTES
-# ----------------
-@router.post("/participantes", response_model=ParticipanteSaida, status_code=status.HTTP_201_CREATED)
+def _recalcular_progresso(avaliacao_id: str, user_payload: dict) -> dict:
+    catalogo = _catalogo(user_payload)
+    resultados = _select(
+        "resultados_testes",
+        user_payload,
+        {"select": "teste_id,resultado,lado", "avaliacao_id": f"eq.{avaliacao_id}"},
+    )
+    ids_esperados = {int(item["id"]) for item in catalogo}
+    ids_respondidos = {
+        int(item["teste_id"])
+        for item in resultados
+        if item.get("resultado") in ("Positivo", "Negativo", "Não realizado", "Inconclusivo")
+        and int(item["teste_id"]) in ids_esperados
+    }
+    total = len(ids_esperados)
+    respondidos = len(ids_respondidos)
+    percentual = round((respondidos / total) * 100, 1) if total else 0.0
+    status_atual = (
+        "concluido" if total > 0 and respondidos == total
+        else "em_andamento" if respondidos
+        else "pendente"
+    )
+    _update(
+        "avaliacoes",
+        user_payload,
+        {"id": f"eq.{avaliacao_id}", **_owner_filter(user_payload)},
+        {"status": status_atual, "progresso_percentual": percentual},
+    )
+    return {
+        "status": status_atual,
+        "respondidos": respondidos,
+        "total": total,
+        "progresso_percentual": percentual,
+    }
+
+
+@router.get("/health")
+def api_health():
+    return {"status": "ok"}
+
+
+@router.get("/catalogo/testes")
+def listar_catalogo_testes(user_payload: dict = Depends(validar_auth)):
+    """Retorna somente os testes ativos do catálogo."""
+    return _catalogo(user_payload)
+
+
+@router.post(
+    "/participantes",
+    status_code=status.HTTP_201_CREATED,
+)
 def criar_participante(
     participante: ParticipanteEntrada,
     user_payload: dict = Depends(validar_auth),
 ):
-    """Registra novo participante vinculado ao avaliador autenticado."""
-    user_id = user_payload.get("sub")
     dados = participante.model_dump(mode="json", exclude_none=True)
-    dados["user_id"] = user_id
-
-    resp = requests.post(
-        _sb_url("participantes"),
-        headers=_sb_headers(),
-        json=dados,
-        timeout=10,
-    )
-    if resp.status_code not in (200, 201) or not resp.json():
-        raise HTTPException(status_code=400, detail=f"Erro ao criar participante: {resp.text}")
-    return resp.json()[0]
+    dados["codigo"] = dados["codigo"].strip().upper()
+    dados["user_id"] = user_payload["sub"]
+    rows = _insert("participantes", user_payload, dados)
+    if not rows:
+        raise HTTPException(status_code=500, detail="O participante não foi confirmado pelo banco.")
+    return rows[0]
 
 
-@router.get("/participantes", response_model=List[ParticipanteSaida])
+@router.get("/participantes")
 def listar_participantes(user_payload: dict = Depends(validar_auth)):
-    """Lista os participantes do avaliador autenticado."""
-    user_id = user_payload.get("sub")
-    resp = requests.get(
-        _sb_url("participantes"),
-        headers=_sb_headers(),
-        params={"select": "*", "user_id": f"eq.{user_id}", "order": "criado_em.desc"},
-        timeout=10,
-    )
-    if resp.status_code != 200:
-        raise HTTPException(status_code=resp.status_code, detail=resp.text)
-    return resp.json()
+    params = {
+        "select": "*",
+        "excluido_em": "is.null",
+        "order": "criado_em.desc",
+        **_owner_filter(user_payload, "user_id"),
+    }
+    return _select("participantes", user_payload, params)
 
 
-# ----------------
-# AVALIAÇÕES E RESULTADOS
-# ----------------
-@router.post("/avaliacoes", response_model=AvaliacaoSaida, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/avaliacoes",
+    status_code=status.HTTP_201_CREATED,
+)
 def iniciar_avaliacao(
     avaliacao: AvaliacaoEntrada,
     user_payload: dict = Depends(validar_auth),
 ):
-    """Cria uma nova ficha de avaliação para um participante."""
-    user_id = user_payload.get("sub")
-    dados = {
-        "participante_id": str(avaliacao.participante_id),
-        "avaliador_id": user_id,
-        "status": "pendente",
-        "progresso_percentual": 0.0,
+    participante_params = {
+        "select": "id,user_id",
+        "id": f"eq.{avaliacao.participante_id}",
+        "excluido_em": "is.null",
+        **_owner_filter(user_payload, "user_id"),
     }
-    resp = requests.post(
-        _sb_url("avaliacoes"),
-        headers=_sb_headers(),
-        json=dados,
-        timeout=10,
+    participantes = _select("participantes", user_payload, participante_params)
+    if not participantes:
+        raise HTTPException(status_code=404, detail="Participante não encontrado.")
+
+    user_id = user_payload["sub"]
+    rows = _insert(
+        "avaliacoes",
+        user_payload,
+        {
+            "participante_id": str(avaliacao.participante_id),
+            "avaliador_id": user_id,
+            "user_id": user_id,
+            "status": "pendente",
+            "progresso_percentual": 0,
+        },
     )
-    if resp.status_code not in (200, 201) or not resp.json():
-        raise HTTPException(status_code=400, detail=f"Erro ao iniciar avaliação: {resp.text}")
-    return resp.json()[0]
+    if not rows:
+        raise HTTPException(status_code=500, detail="A avaliação não foi confirmada pelo banco.")
+    return rows[0]
 
 
-@router.get("/avaliacoes", response_model=List[AvaliacaoSaida])
+@router.get("/avaliacoes")
 def listar_avaliacoes(user_payload: dict = Depends(validar_auth)):
-    """Lista avaliações do utilizador atual."""
-    user_id = user_payload.get("sub")
-    resp = requests.get(
-        _sb_url("avaliacoes"),
-        headers=_sb_headers(),
-        params={"select": "*", "avaliador_id": f"eq.{user_id}"},
-        timeout=10,
+    params = {
+        "select": "*",
+        "excluido_em": "is.null",
+        "order": "data_avaliacao.desc",
+        **_owner_filter(user_payload),
+    }
+    avaliacoes = _select("avaliacoes", user_payload, params)
+    if not avaliacoes:
+        return []
+
+    catalogo = _catalogo(user_payload)
+    ids = [str(item["id"]) for item in avaliacoes]
+    resultados = _select(
+        "resultados_testes",
+        user_payload,
+        {
+            "select": "avaliacao_id,teste_id,resultado",
+            "avaliacao_id": f"in.({','.join(ids)})",
+        },
     )
-    if resp.status_code != 200:
-        raise HTTPException(status_code=resp.status_code, detail=resp.text)
-    return resp.json()
+    return aplicar_progresso_em_memoria(
+        avaliacoes,
+        [item["id"] for item in catalogo],
+        resultados,
+    )
 
 
-@router.post("/avaliacoes/{avaliacao_id}/resultados", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/avaliacoes/{avaliacao_id}/resultados",
+    status_code=status.HTTP_201_CREATED,
+)
 def registar_resultado_teste(
     avaliacao_id: UUID,
     resultado: ResultadoTeste,
     user_payload: dict = Depends(validar_auth),
 ):
-    """Regista ou atualiza o resultado de um teste específico e recalcula o progresso."""
+    _get_assessment(avaliacao_id, user_payload)
+    catalogo_ids = {int(item["id"]) for item in _catalogo(user_payload)}
+    if resultado.teste_id not in catalogo_ids:
+        raise HTTPException(status_code=422, detail="O teste não existe ou está inativo no catálogo.")
+
     dados = resultado.model_dump(mode="json", exclude_none=True)
+    dados.pop("avaliacao_id", None)
     dados["avaliacao_id"] = str(avaliacao_id)
-
-    # Verifica se já existe resultado para este teste nesta avaliação
-    check = requests.get(
-        _sb_url("resultados_testes"),
-        headers=_sb_headers(),
-        params={
-            "select": "id",
-            "avaliacao_id": f"eq.{avaliacao_id}",
-            "teste_id": f"eq.{resultado.teste_id}",
-        },
-        timeout=10,
+    # Upsert respeita a chave única (avaliação, teste e lado) e evita duplicidade
+    # quando o usuário salva novamente o mesmo resultado.
+    rows = _insert(
+        "resultados_testes",
+        user_payload,
+        dados,
+        params={"on_conflict": "avaliacao_id,teste_id,lado"},
+        prefer="resolution=merge-duplicates,return=representation",
     )
-    existentes = check.json() if check.status_code == 200 else []
-
-    if existentes:
-        res_id = existentes[0]["id"]
-        requests.patch(
-            _sb_url("resultados_testes"),
-            headers=_sb_headers(),
-            params={"id": f"eq.{res_id}"},
-            json=dados,
-            timeout=10,
-        )
-    else:
-        requests.post(
-            _sb_url("resultados_testes"),
-            headers=_sb_headers(),
-            json=dados,
-            timeout=10,
-        )
-
-    # Recalcula o progresso da avaliação
-    cat_resp = requests.get(_sb_url("testes_catalogo"), headers=_sb_headers(), params={"select": "id"}, timeout=10)
-    res_resp = requests.get(
-        _sb_url("resultados_testes"),
-        headers=_sb_headers(),
-        params={"select": "id", "avaliacao_id": f"eq.{avaliacao_id}"},
-        timeout=10,
-    )
-    n_cat = len(cat_resp.json()) if cat_resp.status_code == 200 and cat_resp.json() else 16
-    n_res = len(res_resp.json()) if res_resp.status_code == 200 else 0
-
-    perc = round((n_res / n_cat) * 100, 1) if n_cat > 0 else 0.0
-    novo_status = "concluido" if n_res >= n_cat else ("em_andamento" if n_res > 0 else "pendente")
-
-    requests.patch(
-        _sb_url("avaliacoes"),
-        headers=_sb_headers(),
-        params={"id": f"eq.{avaliacao_id}"},
-        json={"progresso_percentual": perc, "status": novo_status},
-        timeout=10,
-    )
-
+    progresso = _recalcular_progresso(str(avaliacao_id), user_payload)
     return {
         "mensagem": "Resultado salvo com sucesso.",
-        "progresso_percentual": perc,
-        "status": novo_status,
+        "progresso_percentual": progresso["progresso_percentual"],
+        "status": progresso["status"],
+        "resultado": rows[0] if rows else None,
     }
 
 
@@ -222,512 +334,372 @@ def listar_resultados_avaliacao(
     avaliacao_id: UUID,
     user_payload: dict = Depends(validar_auth),
 ):
-    """Retorna os resultados já gravados para uma avaliação específica."""
-    resp = requests.get(
-        _sb_url("resultados_testes"),
-        headers=_sb_headers(),
-        params={"select": "*", "avaliacao_id": f"eq.{avaliacao_id}"},
-        timeout=10,
+    _get_assessment(avaliacao_id, user_payload)
+    return _select(
+        "resultados_testes",
+        user_payload,
+        {
+            "select": "*",
+            "avaliacao_id": f"eq.{avaliacao_id}",
+            "order": "teste_id.asc",
+        },
     )
-    if resp.status_code != 200:
-        raise HTTPException(status_code=resp.status_code, detail=resp.text)
-    return resp.json()
 
 
-@router.post("/avaliacoes/{avaliacao_id}/sinalizar", status_code=status.HTTP_200_OK)
+@router.post("/avaliacoes/{avaliacao_id}/sinalizar")
 def sinalizar_avaliacao(
     avaliacao_id: UUID,
     sinalizacao: AvaliacaoSinalizar,
     user_payload: dict = Depends(validar_auth),
 ):
-    """Sinaliza uma avaliação para revisão do professor."""
-    requests.patch(
-        _sb_url("avaliacoes"),
-        headers=_sb_headers(),
-        params={"id": f"eq.{avaliacao_id}"},
-        json={"flag_professor": True, "flag_motivo": sinalizacao.motivo},
-        timeout=10,
+    _get_assessment(avaliacao_id, user_payload)
+    rows = _update(
+        "avaliacoes",
+        user_payload,
+        {"id": f"eq.{avaliacao_id}", **_owner_filter(user_payload)},
+        {
+            "flag_professor": True,
+            "flag_motivo": (sinalizacao.motivo or "").strip() or "Solicitação de revisão.",
+        },
     )
-    return {"mensagem": "Avaliação sinalizada com sucesso para o professor."}
+    if not rows and not _is_professor(user_payload):
+        # Em RLS, uma linha bloqueada também pode resultar em retorno vazio.
+        raise HTTPException(status_code=403, detail="Não foi possível sinalizar esta avaliação.")
+    return {"mensagem": "Avaliação sinalizada para revisão do professor."}
 
-@router.delete("/avaliacoes/{avaliacao_id}/resultados/{teste_id}", status_code=status.HTTP_200_OK)
+
+@router.delete("/avaliacoes/{avaliacao_id}/resultados/{teste_id}")
 def excluir_resultado_teste(
     avaliacao_id: UUID,
     teste_id: int,
     user_payload: dict = Depends(validar_auth),
 ):
-
-    """exclusao do resultado e recalculo do progresso ORT-22"""
-    requests.delete(
-        _sb_url("resultados_testes"),
-        headers=_sb_headers(),
-        params={
+    _get_assessment(avaliacao_id, user_payload)
+    # Exclui todos os lados registrados para o teste desta avaliação.
+    _delete(
+        "resultados_testes",
+        user_payload,
+        {
             "avaliacao_id": f"eq.{avaliacao_id}",
-            "teste_id": f"aq.{teste_id}",
+            "teste_id": f"eq.{teste_id}",
         },
-    timeout=10
     )
+    progresso = _recalcular_progresso(str(avaliacao_id), user_payload)
+    return {
+        "mensagem": "Resultado excluído com sucesso.",
+        "progresso_percentual": progresso["progresso_percentual"],
+        "status": progresso["status"],
+    }
 
-    # recalcula o progresso
-    cat_resp = requests.get(_sb_url("testes_catalogo"), headers=_sb_headers(), params={"select": "id"}, timeout=10)
-    res_resp = requests.get(
-        _sb_url("resultados_testes"),
-        headers=_sb_headers(),
-        params={"select": "id", "avaliacao_id": f"eq.{avaliacao_id}"},
-        timeout=10,
+
+def _dados_dashboard(user_payload: dict) -> dict:
+    params_aval = {
+        "select": "id,participante_id,status",
+        "excluido_em": "is.null",
+        **_owner_filter(user_payload),
+    }
+    avaliacoes = _select("avaliacoes", user_payload, params_aval)
+    ids_avaliacoes = [str(item["id"]) for item in avaliacoes]
+    mapa_participantes = {
+        str(item["id"]): str(item["participante_id"])
+        for item in avaliacoes
+    }
+    participantes_unicos = set(mapa_participantes.values())
+
+    if ids_avaliacoes:
+        # UUIDs vêm do banco e são usados exclusivamente na cláusula IN.
+        in_values = ",".join(ids_avaliacoes)
+        resultados = _select(
+            "resultados_testes",
+            user_payload,
+            {
+                "select": "avaliacao_id,teste_id,resultado,dor_0_10",
+                "avaliacao_id": f"in.({in_values})",
+            },
+        )
+    else:
+        resultados = []
+
+    catalogo = _catalogo(user_payload)
+    mapa_regiao = {int(item["id"]): item["regiao"] for item in catalogo}
+    grupos: dict[str, dict] = {}
+    dores = []
+
+    for resultado in resultados:
+        if resultado.get("resultado") == "Não realizado":
+            continue
+        avaliacao_ref = str(resultado.get("avaliacao_id"))
+        participante_id = mapa_participantes.get(avaliacao_ref)
+        regiao = mapa_regiao.get(int(resultado["teste_id"]))
+        if not participante_id or not regiao:
+            continue
+        grupo = grupos.setdefault(
+            regiao,
+            {"participantes": set(), "positivos": 0, "total": 0},
+        )
+        grupo["participantes"].add(participante_id)
+        grupo["total"] += 1
+        if resultado.get("resultado") == "Positivo":
+            grupo["positivos"] += 1
+        if resultado.get("dor_0_10") is not None:
+            dores.append(int(resultado["dor_0_10"]))
+
+    # Recalcula o status com o catálogo ativo; não confia em progresso antigo
+    # armazenado antes da ampliação das fichas.
+    avaliacoes = aplicar_progresso_em_memoria(
+        avaliacoes,
+        [item["id"] for item in catalogo],
+        resultados,
     )
-    n_cat = len(cat_resp.json()) if cat_resp.status_code == 200 and cat_resp.json() else 16
-    n_res = len(res_resp.json()) if res_resp.status_code == 200 else 0
-
-    perc = round((n_res / n_cat) * 100, 1) if n_cat > 0 else 0.0
-    novo_status = "concluido" if n_res >= n_cat else ("em_andamento" if n_res > 0 else "pendente")
-
-    requests.patch(
-        _sb_url("avaliacoes"),
-        headers=_sb_headers(),
-        params={"id": f"eq.{avaliacao_id}"},
-        json={"progresso_percentual": perc, "status": novo_status},
-        timeout=10,
+    total_avaliacoes = len(avaliacoes)
+    completas = sum(1 for item in avaliacoes if item.get("status") == "concluido")
+    percentual_completas = (
+        round(completas / total_avaliacoes * 100, 1)
+        if total_avaliacoes else 0.0
     )
-    return {"mensagem": "Resultado excluído com sucesso."}
+    dor_media = round(sum(dores) / len(dores), 1) if dores else 0.0
 
-# ==========================================
-# DASHBOARD E KPIs (ORT-26)
-# ==========================================
+    # A privacidade é calculada pelo número de PARTICIPANTES distintos, não pela
+    # quantidade de registros. Regiões pequenas só entram em "Outros" se o grupo
+    # agregado também alcançar pelo menos três pessoas.
+    exibidos = []
+    participantes_ocultos = set()
+    total_oculto = positivos_ocultos = 0
+    for regiao, valores in grupos.items():
+        total_pessoas = len(valores["participantes"])
+        if total_pessoas < 3:
+            participantes_ocultos.update(valores["participantes"])
+            total_oculto += valores["total"]
+            positivos_ocultos += valores["positivos"]
+            continue
+        exibidos.append({
+            "regiao": regiao,
+            "participantes": total_pessoas,
+            "total_valido": valores["total"],
+            "positivos": valores["positivos"],
+            "percentual_positivo": round(
+                valores["positivos"] / valores["total"] * 100, 1
+            ) if valores["total"] else 0.0,
+        })
+
+    if len(participantes_ocultos) >= 3 and total_oculto:
+        exibidos.append({
+            "regiao": "Outros (privacidade)",
+            "participantes": len(participantes_ocultos),
+            "total_valido": total_oculto,
+            "positivos": positivos_ocultos,
+            "percentual_positivo": round(positivos_ocultos / total_oculto * 100, 1),
+        })
+
+    return {
+        "participantes_avaliados": len(participantes_unicos),
+        "avaliacoes_registradas": total_avaliacoes,
+        "percentual_avaliacoes_completas": percentual_completas,
+        "dor_media_geral": dor_media,
+        "positividade_por_regiao": exibidos,
+        "nota_privacidade": "Grupos com menos de 3 participantes não são exibidos isoladamente.",
+    }
+
+
 @router.get("/dashboard/kpis")
 def calcular_kpis_agregados(user_payload: dict = Depends(validar_auth)):
-    """
-    Calcula os KPIs agregados da clínica.
-    Nesta rota, simulamos o comportamento de agregação de bibliotecas como o Pandas ou agrupamentos SQL,
-    mas utilizando dicionários nativos do Python para máxima compatibilidade e rapidez.
-    """
-    
-    # ---------------------------------------------------------
-    # PARTE 1: EXTRAÇÃO DE DADOS (O equivalente a SELECTs no SQL)
-    # ---------------------------------------------------------
-    # Buscamos todas as avaliações feitas pelo utilizador atual
-    user_id = user_payload.get("sub")
-    resp_aval = requests.get(
-        _sb_url("avaliacoes"),
-        headers=_sb_headers(),
-        params={"select": "*", "avaliador_id": f"eq.{user_id}"},
-        timeout=10
-    )
-    avaliacoes = resp_aval.json() if resp_aval.status_code == 200 else []
-
-    # Buscamos todos os resultados de testes já registados
-    resp_res = requests.get(_sb_url("resultados_testes"), headers=_sb_headers(), timeout=10)
-    resultados = resp_res.json() if resp_res.status_code == 200 else []
-
-    # Buscamos o catálogo para saber a que "Região" pertence cada teste
-    resp_cat = requests.get(_sb_url("testes_catalogo"), headers=_sb_headers(), timeout=10)
-    catalogo = resp_cat.json() if resp_cat.status_code == 200 else []
-
-    # Criamos um "dicionário de mapeamento" (Equivalente a um JOIN em SQL ou merge no Pandas)
-    # Exemplo: mapa_regioes[1] = "Joelho"
-    mapa_regioes = {t["id"]: t["regiao"] for t in catalogo}
+    return _dados_dashboard(user_payload)
 
 
-    # ---------------------------------------------------------
-    # PARTE 2: CÁLCULO DE KPIs GERAIS (Avaliações e Dor)
-    # ---------------------------------------------------------
-    total_avaliacoes = len(avaliacoes)
-    
-    # List Comprehension: Filtra apenas as avaliações que têm o status exato "concluido"
-    avaliacoes_completas = len([a for a in avaliacoes if a.get("status") == "concluido"])
-    
-    # Evita a temida "Divisão por Zero". Se não houver avaliações, o percentual é 0.
-    perc_completas = round((avaliacoes_completas / total_avaliacoes) * 100, 1) if total_avaliacoes > 0 else 0.0
-
-    # Variáveis acumuladoras para a Dor Média
-    soma_dor = 0
-    testes_com_dor_avaliada = 0
-
-    # ---------------------------------------------------------
-    # PARTE 3: CÁLCULO DE POSITIVIDADE POR REGIÃO
-    # ---------------------------------------------------------
-    # Vamos criar um dicionário para contar o total de testes válidos e positivos por região.
-    # Estrutura esperada: {"Joelho": {"positivos": 5, "total_valido": 10}, ...}
-    agrupamento_regioes = {}
-
-    for res in resultados:
-        resultado_texto = res.get("resultado")
-        
-        # REGRA DE NEGÓCIO DA ORT-26: "Não realizado" é ignorado dos percentuais!
-        if resultado_texto == "Não realizado":
-            continue  # O comando 'continue' salta para o próximo item do loop ignorando o resto.
-
-        # Se passou pelo if acima, o teste foi realizado (Positivo, Negativo ou Inconclusivo)
-        testes_com_dor_avaliada += 1
-        soma_dor += int(res.get("dor_0_10", 0))
-
-        # Descobrimos a região deste teste usando o nosso mapa criado na Parte 1
-        teste_id = int(res.get("teste_id"))
-        regiao = mapa_regioes.get(teste_id, "Desconhecida")
-
-        # Inicializa a região no dicionário se ela ainda não existir
-        if regiao not in agrupamento_regioes:
-            agrupamento_regioes[regiao] = {"positivos": 0, "total_valido": 0}
-
-        # Incrementamos o denominador (Total válido)
-        agrupamento_regioes[regiao]["total_valido"] += 1
-
-        # Incrementamos o numerador apenas se o resultado for estritamente "Positivo"
-        if resultado_texto == "Positivo":
-            agrupamento_regioes[regiao]["positivos"] += 1
-
-    # Calcula a dor média (Novamente, protegendo contra divisão por zero)
-    dor_media = round(soma_dor / testes_com_dor_avaliada, 1) if testes_com_dor_avaliada > 0 else 0.0
-
-# ---------------------------------------------------------
-    # PARTE 4: FORMATAÇÃO FINAL E REGRA DE PRIVACIDADE (ORT-27)
-    # ---------------------------------------------------------
-    positivos_por_regiao = []
-    
-    # Variáveis acumuladoras para o grupo de segurança (Outros)
-    ocultos_positivos = 0
-    ocultos_total = 0
-
-    for regiao, contadores in agrupamento_regioes.items():
-        total_valido = contadores["total_valido"]
-        positivos = contadores["positivos"]
-        
-        # AULA DE PRIVACIDADE (K-Anonimato): 
-        # Se o grupo tiver menos de 3 testes válidos, é perigoso exibi-lo isoladamente.
-        if total_valido < 3:
-            # Em vez de adicionar à lista principal, guardamos os dados no nosso "saco" de ocultos.
-            ocultos_total += total_valido
-            ocultos_positivos += positivos
-            # O comando 'continue' faz o loop saltar para a próxima região sem ler as linhas abaixo.
-            continue 
-            
-        # Se chegou aqui, o grupo tem 3 ou mais pessoas (é seguro exibir!)
-        perc_positivo = round((positivos / total_valido) * 100, 1)
-        positivos_por_regiao.append({
-            "regiao": regiao,
-            "total_valido": total_valido,
-            "positivos": positivos,
-            "percentual_positivo": perc_positivo
-        })
-
-    # No final do loop, verificamos se sobrou algo no nosso "saco" de segurança.
-    # Se sim, criamos a barra agregada "Outros (Privacidade)" para não perdermos a estatística geral.
-    if ocultos_total > 0:
-        perc_ocultos = round((ocultos_positivos / ocultos_total) * 100, 1) if ocultos_total > 0 else 0.0
-        positivos_por_regiao.append({
-            "regiao": "Outros (Privacidade < 3)",
-            "total_valido": ocultos_total,
-            "positivos": ocultos_positivos,
-            "percentual_positivo": perc_ocultos
-        })
-
-    # Retorna o JSON estruturado e seguro
-    return {
-        "participantes_avaliados": total_avaliacoes,
-        "percentual_avaliacoes_completas": perc_completas,
-        "dor_media_geral": dor_media,
-        "positividade_por_regiao": positivos_por_regiao
-    }
-    
-# ==========================================
-# EXPORTAÇÃO E STORAGE (ORT-29)
-# ==========================================
 @router.post("/dashboard/exportar/csv")
 def exportar_relatorio_csv(user_payload: dict = Depends(validar_auth)):
-    """
-    Gera um relatório CSV em memória e envia para o Supabase Storage.
-    Garante a privacidade ao basear-se estritamente nos KPIs já agregados (ORT-27)[cite: 6].
-    """
-    
-    # 1. AULA: Reutilizamos a lógica existente! Chamamos a função da ORT-26/27 
-    # para garantir que os dados já vêm calculados e com os grupos pequenos ocultos.
-    kpis = calcular_kpis_agregados(user_payload)
-    
-    # 2. Criação do CSV em Memória RAM (sem gravar no disco rígido do servidor)
-    saida_memoria = io.StringIO()
-    # Usamos ponto e vírgula para não haver conflitos com casas decimais no Excel europeu/brasileiro
-    escritor_csv = csv.writer(saida_memoria, delimiter=';') 
-    
-    # Escrevemos o cabeçalho e os indicadores gerais
-    escritor_csv.writerow(["RELATÓRIO AGREGADO DE AVALIAÇÕES ORTOPÉDICAS"])
-    escritor_csv.writerow(["Data de Geração", datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M")])
-    escritor_csv.writerow([])
-    escritor_csv.writerow(["MÉTRICAS GERAIS"])
-    escritor_csv.writerow(["Total de Participantes", kpis["participantes_avaliados"]])
-    escritor_csv.writerow(["Avaliações Concluídas (%)", kpis["percentual_avaliacoes_completas"]])
-    escritor_csv.writerow(["Dor Média Geral (0-10)", kpis["dor_media_geral"]])
-    escritor_csv.writerow([])
-    
-    # Escrevemos a tabela de resultados por região
-    escritor_csv.writerow(["POSITIVIDADE POR REGIÃO"])
-    escritor_csv.writerow(["Região", "Total de Testes Válidos", "Testes Positivos", "Taxa de Positividade (%)"])
-    
-    for regiao in kpis["positividade_por_regiao"]:
-        escritor_csv.writerow([
-            regiao["regiao"],
-            regiao["total_valido"],
-            regiao["positivos"],
-            regiao["percentual_positivo"]
+    """Gera CSV agregado e armazena em pasta exclusiva do usuário autenticado."""
+    kpis = _dados_dashboard(user_payload)
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, delimiter=";")
+    writer.writerow(["RELATÓRIO AGREGADO DE AVALIAÇÕES ORTOPÉDICAS"])
+    writer.writerow(["Data de geração", datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")])
+    writer.writerow(["Participantes avaliados", kpis["participantes_avaliados"]])
+    writer.writerow(["Avaliações completas (%)", kpis["percentual_avaliacoes_completas"]])
+    writer.writerow(["Dor média (0–10)", kpis["dor_media_geral"]])
+    writer.writerow([])
+    writer.writerow(["Região", "Participantes", "Testes válidos", "Positivos", "Positividade (%)"])
+    for item in kpis["positividade_por_regiao"]:
+        writer.writerow([
+            item["regiao"], item["participantes"], item["total_valido"],
+            item["positivos"], item["percentual_positivo"],
         ])
-    
-    conteudo_ficheiro = saida_memoria.getvalue()
-    
-    # 3. Envio para o Supabase Storage API
-    user_id = user_payload.get("sub")
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    nome_ficheiro = f"relatorio_{user_id}_{timestamp}.csv"
-    
-    # A URL do storage exige limpar o "/rest/v1" da base de dados e apontar para "/storage/v1/object/"
-    base_storage_url = SUPABASE_URL.replace("/rest/v1", "")
-    url_upload = f"{base_storage_url}/storage/v1/object/relatorios/{nome_ficheiro}"
-    
-    headers_storage = _sb_headers()
-    headers_storage["Content-Type"] = "text/csv"
-    
+
+    uid = user_payload["sub"]
+    filename = f"{datetime.now(timezone.utc):%Y%m%d_%H%M%S_%f}_relatorio.csv"
+    object_path = f"{uid}/{filename}"
     try:
-        # AULA: O método POST no storage envia o ficheiro bruto no parâmetro 'data' em vez de 'json'
-        resp = requests.post(url_upload, headers=headers_storage, data=conteudo_ficheiro.encode('utf-8'), timeout=10)
-        
-        if resp.status_code in (200, 201):
-            return {"sucesso": True, "mensagem": "Relatório CSV gerado e armazenado com sucesso no Supabase!"}
-        return {"sucesso": False, "mensagem": f"Erro do Storage: {resp.text}"}
-    except Exception as e:
-        return {"sucesso": False, "mensagem": "Falha de ligação ao exportar para o Storage."}
-    
-import json
-import os
+        response = requests.post(
+            f"{SUPABASE_URL}/storage/v1/object/relatorios/{object_path}",
+            headers={
+                "apikey": SUPABASE_ANON_KEY,
+                "Authorization": f"Bearer {user_payload['access_token']}",
+                "Content-Type": "text/csv; charset=utf-8",
+            },
+            data=buffer.getvalue().encode("utf-8-sig"),
+            timeout=15,
+        )
+    except requests.RequestException as exc:
+        raise HTTPException(status_code=503, detail="Falha ao enviar o relatório para o Storage.") from exc
+    if response.status_code not in (200, 201):
+        return {
+            "sucesso": False,
+            "mensagem": "Não foi possível armazenar o relatório. Confira o bucket e as políticas de Storage.",
+        }
+    return {
+        "sucesso": True,
+        "mensagem": f"Relatório CSV armazenado no Supabase Storage ({filename}).",
+        "caminho": object_path,
+    }
 
-# ==========================================
-# MOTOR DETERMINÍSTICO DE ACHADOS CLÍNICOS (ORT-31)
-# ==========================================
-@router.get("/avaliacoes/{avaliacao_id}/achados")
-def gerar_achados_clinicos(avaliacao_id: str, user_payload: dict = Depends(validar_auth)):
-    """
-    AULA: Este é o nosso Motor de Regras. Ele lê os resultados do paciente
-    e cruza com a base de conhecimento (JSON), garantindo reprodutibilidade e rastreabilidade[cite: 8].
-    """
-    
-    # 1. Carregar a Base de Conhecimento (Ground Truth)
-    # Procuramos o ficheiro JSON que criámos na ORT-30, assumindo que a API corre na raiz do projeto.
-    caminho_json = "ai/regras_clinicas.json"
+
+def _carregar_regras() -> dict:
+    caminho = Path(__file__).resolve().parents[2] / "ai" / "regras_clinicas.json"
     try:
-        with open(caminho_json, 'r', encoding='utf-8') as f:
-            base_conhecimento = json.load(f)
-    except FileNotFoundError:
-        return {"sucesso": False, "mensagem": "Base de conhecimento (JSON) não encontrada."}
+        return json.loads(caminho.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {
+            "regras": [],
+            "ausencia_de_regra_confiavel": "Não há regra clínica documentada no sistema para este teste.",
+            "_aviso_legal": "O sistema não confirma diagnósticos.",
+        }
 
-    regras_clinicas = base_conhecimento.get("regras", [])
-    mensagem_fallback = base_conhecimento.get("ausencia_de_regra_confiavel", "Sem regra.")
 
-    # 2. Buscar os Resultados do Paciente (O que aconteceu na clínica?)
-    resp_res = requests.get(
-        _sb_url("resultados_testes"),
-        headers=_sb_headers(),
-        params={"avaliacao_id": f"eq.{avaliacao_id}"},
-        timeout=10
+def _gerar_achados(avaliacao_id: str, user_payload: dict) -> dict:
+    _get_assessment(avaliacao_id, user_payload)
+    resultados = _select(
+        "resultados_testes",
+        user_payload,
+        {"select": "teste_id,resultado,lado,dor_0_10", "avaliacao_id": f"eq.{avaliacao_id}"},
     )
-    resultados_paciente = resp_res.json() if resp_res.status_code == 200 else []
+    catalogo = _catalogo(user_payload)
+    mapa_testes = {int(item["id"]): item for item in catalogo}
+    base = _carregar_regras()
+    regras = base.get("regras", [])
+    fallback = base.get(
+        "ausencia_de_regra_confiavel",
+        "Não há regra clínica documentada no sistema para este teste.",
+    )
+    achados = []
 
-    # 3. Buscar o Catálogo de Testes (Para sabermos o nome de cada teste pelo ID)
-    resp_cat = requests.get(_sb_url("testes_catalogo"), headers=_sb_headers(), timeout=10)
-    catalogo = {t["id"]: t["nome"] for t in (resp_cat.json() if resp_cat.status_code == 200 else [])}
-
-    # 4. Motor de Cruzamento Lógico (Match Determinístico)
-    achados_gerados = []
-
-    for res in resultados_paciente:
-        teste_nome = catalogo.get(res["teste_id"], "Desconhecido")
-        resultado_atual = res.get("resultado")
-
-        # AULA: Normalmente só geramos achados para testes Positivos ou Inconclusivos.
-        # Testes 'Não realizados' ou 'Negativos' são ignorados nesta etapa para não poluir o relatório.
-        if resultado_atual in ["Não realizado", "Negativo"]:
+    for item in resultados:
+        if item.get("resultado") not in ("Positivo", "Inconclusivo"):
             continue
-
-        # AULA: Aqui acontece a magia determinística. 
-        # Procuramos na nossa lista de regras UMA regra em que o nome do teste E o resultado coincidam.
-        regra_encontrada = next((r for r in regras_clinicas if r["teste"] == teste_nome and r["resultado_gatilho"] == resultado_atual), None)
-
-        if regra_encontrada:
-            # Caso 1: Encontrámos uma regra. Criamos um achado perfeitamente rastreável[cite: 8].
-            achados_gerados.append({
-                "teste_origem": teste_nome,
-                "resultado": resultado_atual,
-                "achado": regra_encontrada["achado_sugerido"],
-                "referencia": regra_encontrada["referencia_bibliografica"],
-                "status": "Regra Aplicada"
-            })
-        else:
-            # Caso 2: O teste foi positivo, mas não está no JSON.
-            # Cumprimos o critério: "casos sem regra são tratados sem gerar afirmações inventadas"[cite: 8].
-            achados_gerados.append({
-                "teste_origem": teste_nome,
-                "resultado": resultado_atual,
-                "achado": mensagem_fallback,
-                "referencia": "N/A",
-                "status": "Ausência de Regra"
-            })
-
-    # Retorna o pacote completo, incluindo sempre o aviso legal para proteção jurídica do software[cite: 8]
+        teste = mapa_testes.get(int(item["teste_id"]))
+        if not teste:
+            continue
+        nome = teste["nome"]
+        regra = next(
+            (
+                rule for rule in regras
+                if rule.get("resultado_gatilho") == item["resultado"]
+                and rule.get("teste", "").lower().replace("teste de ", "") in nome.lower()
+            ),
+            None,
+        )
+        achados.append({
+            "teste_origem": nome,
+            "resultado": item["resultado"],
+            "lado": item.get("lado"),
+            "dor_0_10": item.get("dor_0_10"),
+            "achado": regra.get("achado_sugerido") if regra else fallback,
+            "referencia": regra.get("referencia_bibliografica", "Não informada") if regra else "Não informada",
+            "status": "Regra aplicada" if regra else "Sem regra documentada",
+        })
     return {
         "sucesso": True,
         "avaliacao_id": avaliacao_id,
-        "aviso_legal": base_conhecimento.get("_aviso_legal"),
-        "achados": achados_gerados
+        "aviso_legal": base.get("_aviso_legal", "Não constitui diagnóstico."),
+        "achados": achados,
     }
-    
-# ==========================================
-# INTEGRAÇÃO COM LLM (RESUMO DESIDENTIFICADO) - ORT-32
-# ==========================================
+
+
+@router.get("/avaliacoes/{avaliacao_id}/achados")
+def gerar_achados_clinicos(
+    avaliacao_id: UUID,
+    user_payload: dict = Depends(validar_auth),
+):
+    return _gerar_achados(str(avaliacao_id), user_payload)
+
+
 @router.post("/avaliacoes/{avaliacao_id}/resumo-ia")
-def gerar_resumo_ia(avaliacao_id: str, user_payload: dict = Depends(validar_auth)):
-    """
-    AULA: Esta rota consome os achados da ORT-31, junta os dados desidentificados 
-    do paciente e envia para um modelo de linguagem (LLM) redigir um rascunho.
-    """
-    
-    # 1. OBTER DADOS DESIDENTIFICADOS (Apenas Idade e Peso/Altura, NUNCA nomes)
-    resp_aval = requests.get(_sb_url("avaliacoes"), headers=_sb_headers(), params={"id": f"eq.{avaliacao_id}"}, timeout=10)
-    avaliacao_dados = resp_aval.json()[0] if resp_aval.status_code == 200 and resp_aval.json() else {}
-    participante_id = avaliacao_dados.get("participante_id")
-    
-    idade, peso, altura = "N/A", "N/A", "N/A"
-    if participante_id:
-        resp_part = requests.get(_sb_url("participantes"), headers=_sb_headers(), params={"id": f"eq.{participante_id}"}, timeout=10)
-        part_dados = resp_part.json()[0] if resp_part.status_code == 200 and resp_part.json() else {}
-        idade = part_dados.get("idade", "N/A")
-        peso = part_dados.get("peso_kg", "N/A")
-        altura = part_dados.get("altura_m", "N/A")
+def gerar_resumo_ia(
+    avaliacao_id: UUID,
+    user_payload: dict = Depends(validar_auth),
+):
+    dados = _gerar_achados(str(avaliacao_id), user_payload)
+    achados = dados["achados"]
+    if not achados:
+        return {
+            "sucesso": False,
+            "resumo": "Ainda não existem resultados positivos ou inconclusivos suficientes para elaborar um resumo.",
+            "aviso": "Sem achados para resumir.",
+        }
 
-    # 2. OBTER ACHADOS DA ORT-31
-    # Chamamos a nossa própria função para garantir rastreabilidade determinística
-    achados_paciente = gerar_achados_clinicos(avaliacao_id, user_payload).get("achados", [])
-    
-    if not achados_paciente:
-        return {"sucesso": False, "resumo": "Não há testes suficientes com gatilhos positivos para a IA analisar."}
-
-    lista_formatada = "\n".join([f"- {a['teste_origem']} ({a['resultado']}): {a['achado']}" for a in achados_paciente])
-
-    # ---------------------------------------------------------
-    # 3. ENGENHARIA DE PROMPT (O Segredo da Segurança)
-    # ---------------------------------------------------------
-    prompt_sistema = """Você é um assistente acadêmico de fisioterapia. 
-    Sua ÚNICA função é redigir um parágrafo de resumo estruturado com base nos achados fornecidos.
-    REGRAS ABSOLUTAS:
-    1. NÃO confirme diagnósticos médicos.
-    2. NÃO prescreva tratamentos, exercícios, exames ou medicações.
-    3. Use linguagem descritiva e impessoal.
-    4. O seu texto final DEVE incluir obrigatoriamente a seguinte frase exata no final: 'NOTA: Este é um rascunho gerado por IA para revisão humana e não constitui diagnóstico clínico.'"""
-        
-    dados_entrada = f"Dados do Paciente: Idade {idade}, Peso {peso}kg, Altura {altura}m.\nAchados Clínicos:\n{lista_formatada}"
-    prompt_completo = f"{prompt_sistema}\n\nAnalise e resuma o seguinte:\n{dados_entrada}"
-
-    # ---------------------------------------------------------
-    # 4. ESTRATÉGIA DE FALLBACK EM CASCATA (Gemma Local -> Nemotron Nuvem -> Falha Segura)
-    # ---------------------------------------------------------
-    texto_resumo = ""
-    aviso_geracao = ""
-
-    # TENTATIVA 1: OLLAMA LOCAL (Gemma)
-    try:
-        url_local = os.getenv("LLM_API_URL", "http://127.0.0.1:11434/api/generate")
-        modelo_local = os.getenv("LLM_MODEL", "gemma")
-        
-        resp_local = requests.post(
-            url_local, 
-            json={"model": modelo_local, "prompt": prompt_completo, "stream": False}, 
-            timeout=10 # Timeout curto para desistir rápido se o Ollama estiver desligado
-        )
-        
-        if resp_local.status_code == 200:
-            texto_resumo = resp_local.json().get("response", "")
-            aviso_geracao = "Gerado via IA Local (Gemma)."
-        else:
-            raise ValueError("Ollama respondeu com erro.")
-            
-    except Exception as e_local:
-        print(f"[Aviso] IA Local falhou ({e_local}). A tentar NVIDIA Nemotron...")
-        
-        # TENTATIVA 2: NVIDIA (Nemotron)
+    linhas = [
+        f"- {item['teste_origem']} ({item['lado']}): {item['resultado']}. {item['achado']}"
+        for item in achados
+    ]
+    prompt = (
+        "Redija um resumo acadêmico descritivo, sem diagnóstico ou tratamento. "
+        "Use somente os achados abaixo, não invente dados ou referências. "
+        "Inclua ao final: 'Rascunho para revisão humana; não constitui diagnóstico clínico.'\n"
+        + "\n".join(linhas)
+    )
+    texto = ""
+    aviso = "Resumo estruturado pelas regras locais; serviço de LLM indisponível."
+    llm_url = os.getenv("LLM_API_URL", "").strip()
+    modelo = os.getenv("LLM_MODEL", "gemma")
+    if llm_url:
         try:
-            url_nvidia = os.getenv("NVIDIA_API_URL")
-            chave_nvidia = os.getenv("NVIDIA_API_KEY")
-            modelo_nvidia = os.getenv("NVIDIA_MODEL", "nvidia/nemotron-4-340b-instruct")
-            
-            # A API da Nvidia (formato OpenAI) usa uma lista de "messages"
-            payload_nvidia = {
-                "model": modelo_nvidia,
-                "messages": [
-                    {"role": "system", "content": prompt_sistema},
-                    {"role": "user", "content": dados_entrada}
-                ],
-                "max_tokens": 400
-            }
-            headers_nvidia = {
-                "Authorization": f"Bearer {chave_nvidia}",
-                "Content-Type": "application/json"
-            }
-            
-            resp_nvidia = requests.post(url_nvidia, headers=headers_nvidia, json=payload_nvidia, timeout=20)
-            
-            if resp_nvidia.status_code == 200:
-                # O formato de resposta da Nvidia/OpenAI guarda o texto dentro de choices[0].message.content
-                texto_resumo = resp_nvidia.json()["choices"][0]["message"]["content"]
-                aviso_geracao = "Gerado via IA Nuvem (Nemotron)."
-            else:
-                raise ValueError(f"Nvidia respondeu com erro: {resp_nvidia.text}")
-                
-        except Exception as e_nvidia:
-            print(f"[Erro] NVIDIA também falhou ({e_nvidia}). Disparando Falha Segura.")
-            
-            # TENTATIVA 3: FALHA SEGURA (Safe Fallback)
-            return {
-                "sucesso": False, 
-                "resumo": "SERVIÇO DE IA INDISPONÍVEL: Os motores de IA Local e em Nuvem não estão a responder. Reveja os achados estruturados manualmente."
-            }
+            response = requests.post(
+                llm_url,
+                json={"model": modelo, "prompt": prompt, "stream": False},
+                timeout=20,
+            )
+            if response.status_code == 200:
+                texto = response.json().get("response", "").strip()
+                if texto:
+                    aviso = f"Resumo gerado pelo provedor configurado ({modelo}); aguardando revisão."
+        except (requests.RequestException, ValueError):
+            texto = ""
 
-    # Se chegar aqui, alguma IA (Gemma ou Nemotron) funcionou com sucesso!
-    return {"sucesso": True, "resumo": texto_resumo, "aviso": aviso_geracao}
-
-# ==========================================
-# AUDITORIA E APROVAÇÃO DE RASCUNHOS IA (ORT-34)
-# ==========================================
-@router.post("/avaliacoes/{avaliacao_id}/aprovar-resumo")
-def aprovar_resumo_ia_auditoria(avaliacao_id: str, payload: dict, user_payload: dict = Depends(validar_auth)):
-    """
-    AULA: Esta rota recebe o texto final que o humano editou e guardá-o na tabela ia_rascunhos.
-    A garantia de auditoria faz-se extraindo o ID do utilizador do token de segurança (user_payload).
-    """
-    texto_final = payload.get("texto_final", "").strip()
-    
-    if not texto_final:
-        return {"sucesso": False, "mensagem": "O texto do resumo não pode estar vazio."}
-        
-    # Extraímos a identidade do profissional que está a fazer a requisição (o 'revisor')
-    revisor_id = user_payload.get("sub")
-    
-    # Preparamos o pacote de dados exigido pela ORT-34
-    dados_auditoria = {
-        "avaliacao_id": avaliacao_id,
-        "texto_gerado": texto_final,
-        "revisado_por": revisor_id, # Vinculação ao utilizador autorizado exigida pelo critério de aceite
-        "aprovado": True,           # Estado persistido de aprovação
-        "data_aprovacao": datetime.now(timezone.utc).isoformat()
-    }
-    
-    try:
-        # Fazemos o POST para a tabela 'ia_rascunhos' no Supabase
-        resp = requests.post(
-            _sb_url("ia_rascunhos"),
-            headers=_sb_headers(),
-            json=dados_auditoria,
-            timeout=10
+    if not texto:
+        texto = (
+            "Resumo descritivo dos achados registrados:\n"
+            + "\n".join(linhas)
+            + "\n\nRascunho para revisão humana; não constitui diagnóstico clínico."
         )
-        
-        if resp.status_code in (200, 201):
-            return {"sucesso": True, "mensagem": "Resumo aprovado e registado com sucesso na ficha do paciente."}
-        else:
-            return {"sucesso": False, "mensagem": f"Erro ao guardar na base de dados: {resp.text}"}
-            
-    except Exception as e:
-        return {"sucesso": False, "mensagem": "Falha de comunicação ao tentar auditar o registo."}
+    elif "não constitui diagnóstico clínico" not in texto.lower():
+        texto += "\n\nRascunho para revisão humana; não constitui diagnóstico clínico."
+
+    return {"sucesso": True, "resumo": texto, "aviso": aviso}
+
+
+@router.post("/avaliacoes/{avaliacao_id}/aprovar-resumo")
+def aprovar_resumo_ia_auditoria(
+    avaliacao_id: UUID,
+    payload: dict,
+    user_payload: dict = Depends(requer_professor),
+):
+    _get_assessment(avaliacao_id, user_payload)
+    texto_final = str(payload.get("texto_final", "")).strip()
+    if not texto_final:
+        raise HTTPException(status_code=422, detail="O texto do resumo não pode estar vazio.")
+    if len(texto_final) > 10000:
+        raise HTTPException(status_code=422, detail="O resumo excede o limite de 10.000 caracteres.")
+
+    rows = _insert(
+        "ia_rascunhos",
+        user_payload,
+        {
+            "avaliacao_id": str(avaliacao_id),
+            "texto": texto_final,
+            "revisado_por": user_payload["sub"],
+            "aprovado": True,
+            "gerado_em": datetime.now(timezone.utc).isoformat(),
+        },
+    )
+    if not rows:
+        raise HTTPException(status_code=500, detail="A aprovação não foi confirmada pelo banco.")
+    return {"sucesso": True, "mensagem": "Resumo revisado e aprovado pelo professor."}

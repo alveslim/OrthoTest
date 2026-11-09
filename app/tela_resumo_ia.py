@@ -26,7 +26,7 @@ def render_resumo_ia(page: ft.Page, navegar):
                 color=ft.Colors.AMBER_900, weight=ft.FontWeight.BOLD, size=12, expand=True
             )
         ]),
-        bgcolor=ft.Colors.AMBER_100, padding=10, border_radius=8, border=ft.border.all(1, ft.Colors.AMBER_300)
+        bgcolor=ft.Colors.AMBER_100, padding=10, border_radius=8, border=ft.Border.all(1, ft.Colors.AMBER_300)
     )
 
     # AULA: A caixa de texto é multiline (permite parágrafos) e é EDITÁVEL. 
@@ -42,6 +42,11 @@ def render_resumo_ia(page: ft.Page, navegar):
     )
 
     indicador_estado = ft.Text(visible=False, size=12, italic=True)
+    pode_aprovar = sessao.get("papel") == "professor"
+    texto_permissao = ft.Text(
+        "Somente um usuário com papel de professor pode aprovar e registrar o resumo. Você pode gerar e revisar o rascunho.",
+        size=11, color=TEXT_SECONDARY, visible=not pode_aprovar
+    )
 
     # ---------------------------------------------------------
     # AÇÕES DOS BOTÕES
@@ -65,7 +70,7 @@ def render_resumo_ia(page: ft.Page, navegar):
         if sucesso:
             indicador_estado.value = f"Status: {aviso} - Aguardando sua revisão."
             indicador_estado.color = ft.Colors.GREEN_700
-            btn_aprovar.disabled = False # Só permitimos aprovar DEPOIS de gerar algo
+            btn_aprovar.disabled = not pode_aprovar  # Apenas professor pode aprovar após gerar o rascunho
         else:
             indicador_estado.value = "Falha ao contactar servidor de IA."
             indicador_estado.color = ft.Colors.ERROR
@@ -86,7 +91,7 @@ def render_resumo_ia(page: ft.Page, navegar):
         
         page.snack_bar = ft.SnackBar(
             ft.Text(msg), 
-            bgcolor=ft.colors.GREEN_800 if sucesso else ft.colors.ERROR
+            bgcolor=ft.Colors.GREEN_800 if sucesso else ft.Colors.ERROR
         )
         page.snack_bar.open = True
         
@@ -117,5 +122,6 @@ def render_resumo_ia(page: ft.Page, navegar):
         ft.Divider(height=10, color="transparent"),
         ft.Row([btn_gerar, indicador_estado], alignment=ft.MainAxisAlignment.START),
         ft.Container(content=caixa_texto, padding=ft.padding.only(top=15, bottom=15), expand=True),
+        texto_permissao,
         ft.Row([btn_aprovar], alignment=ft.MainAxisAlignment.END)
     )
