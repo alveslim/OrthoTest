@@ -16,6 +16,7 @@ sessao = {
     "access_token": None,
     "user_id": None,
     "email": None,
+    "papel": "aluno",
     "consentimento_aceito": False,
     "data_consentimento": None,
     "participante_atual": None,
@@ -35,7 +36,8 @@ def autenticar_usuario(email: str, senha: str) -> tuple[bool, str]:
         sessao["access_token"] = "mock_token_123"
         sessao["user_id"] = "mock_user_id"
         sessao["email"] = email
-        return True, "Autenticado em MODO OFFLINE (Sem API)."
+        sessao["papel"] = "aluno"
+        return True, "Autenticado em MODO OFFLINE (dados demonstrativos; não são enviados ao Supabase)."
     
     if not SUPABASE_URL or not SUPABASE_ANON_KEY:
         return False, "Configure SUPABASE_URL e SUPABASE_ANON_KEY no ficheiro .env"
@@ -45,7 +47,10 @@ def autenticar_usuario(email: str, senha: str) -> tuple[bool, str]:
         if resp.status_code == 200:
             dados = resp.json()
             sessao["access_token"] = dados.get("access_token")
-            sessao["user_id"] = str(dados.get("user", {}).get("id", ""))
+            usuario = dados.get("user", {})
+            sessao["user_id"] = str(usuario.get("id", ""))
+            sessao["email"] = usuario.get("email", email.strip())
+            sessao["papel"] = (usuario.get("app_metadata") or {}).get("role", "aluno")
             return True, "Autenticado com sucesso."
         return False, "E-mail ou palavra-passe incorretos."
     except Exception:
@@ -60,6 +65,7 @@ def limpar_sessao():
         "access_token": None,
         "user_id": None,
         "email": None,
+        "papel": "aluno",
         "consentimento_aceito": False,
         "data_consentimento": None,
         "participante_atual": None,
@@ -82,14 +88,14 @@ def buscar_participantes_e_avaliacoes() -> tuple[bool, list | str]:
             return False, f"Erro ao carregar participantes ({resp_p.status_code})."
         
         participantes = resp_p.json()
-        avaliacoes = resp_a.json() if resp_a.status_code == 200 else []
+        if resp_a.status_code != 200:\n            return False, f"Erro ao carregar avaliações ({resp_a.status_code})."\n        avaliacoes = resp_a.json()
         mapa_aval = {str(a["participante_id"]): a for a in avaliacoes}
         
         for p in participantes:
             p["avaliacao"] = mapa_aval.get(str(p["id"]))
         return True, participantes
     except Exception:
-        return False, "Não foi possível ligar à API FastAPI. Verifique se o servidor está em execução."
+        return False, "Não foi possível comunicar com a API. Verifique API_BASE_URL e se o servidor está em execução."
 
 def criar_novo_participante(codigo: str, idade: int, peso_kg: float | None, altura_m: float | None) -> tuple[bool, dict | str]:
     if MODO_OFFLINE:
@@ -134,7 +140,7 @@ def buscar_catalogo_e_resultados(avaliacao_id: str) -> tuple[bool, dict | str]:
         
         resp_res = requests.get(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados", headers=_headers_autenticados(), timeout=10)
         catalogo = resp_cat.json()
-        resultados = resp_res.json() if resp_res.status_code == 200 else []
+        if resp_res.status_code != 200:\n            return False, f"Erro ao carregar resultados ({resp_res.status_code})."\n        resultados = resp_res.json()
         mapa_resultados = {int(r["teste_id"]): r for r in resultados if "teste_id" in r}
         
         return True, {"catalogo": catalogo, "mapa_resultados": mapa_resultados}
