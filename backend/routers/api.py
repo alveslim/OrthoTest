@@ -500,7 +500,7 @@ def exportar_relatorio_csv(user_payload: dict = Depends(validar_auth)):
         ])
 
     uid = user_payload["sub"]
-    filename = f"{datetime.now(timezone.utc):%Y%m%d_%H%M%S}_relatorio.csv"
+    filename = f"{datetime.now(timezone.utc):%Y%m%d_%H%M%S_%f}_relatorio.csv"
     object_path = f"{uid}/{filename}"
     try:
         response = requests.post(
