@@ -41,7 +41,12 @@ def render_resumo_ia(page: ft.Page, navegar):
         border_color=PRIMARY
     )
 
-    indicador_estado = ft.Text(visible=False, size=12, italic=True)\n    pode_aprovar = sessao.get("papel") == "professor"\n    texto_permissao = ft.Text(\n        "Somente um usuário com papel de professor pode aprovar e registrar o resumo. Você pode gerar e revisar o rascunho.",\n        size=11, color=TEXT_SECONDARY, visible=not pode_aprovar\n    )
+    indicador_estado = ft.Text(visible=False, size=12, italic=True)
+    pode_aprovar = sessao.get("papel") == "professor"
+    texto_permissao = ft.Text(
+        "Somente um usuário com papel de professor pode aprovar e registrar o resumo. Você pode gerar e revisar o rascunho.",
+        size=11, color=TEXT_SECONDARY, visible=not pode_aprovar
+    )
 
     # ---------------------------------------------------------
     # AÇÕES DOS BOTÕES
@@ -117,5 +122,6 @@ def render_resumo_ia(page: ft.Page, navegar):
         ft.Divider(height=10, color="transparent"),
         ft.Row([btn_gerar, indicador_estado], alignment=ft.MainAxisAlignment.START),
         ft.Container(content=caixa_texto, padding=ft.padding.only(top=15, bottom=15), expand=True),
-        texto_permissao,\n        ft.Row([btn_aprovar], alignment=ft.MainAxisAlignment.END)
+        texto_permissao,
+        ft.Row([btn_aprovar], alignment=ft.MainAxisAlignment.END)
     )
