@@ -509,7 +509,6 @@ def exportar_relatorio_csv(user_payload: dict = Depends(validar_auth)):
                 "apikey": SUPABASE_ANON_KEY,
                 "Authorization": f"Bearer {user_payload['access_token']}",
                 "Content-Type": "text/csv; charset=utf-8",
-                "x-upsert": "true",
             },
             data=buffer.getvalue().encode("utf-8-sig"),
             timeout=15,
