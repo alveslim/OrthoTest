@@ -1,10 +1,30 @@
-# 🩺 OrtoCheck: Sistema Interativo de Avaliação Ortopédica (kickoff)
+# OrthoTest — Sistema Interativo de Avaliação Ortopédica
 
-Projeto de Extensão da disciplina de **Semiologia e Diagnóstico Cinesiológico-Funcional** (Universidade Nilton Lins). O OrtoCheck é um app (web, desktop e mobile, em Python + Flet) para **registrar testes ortopédicos especiais**, acompanhar os resultados em um painel e usar IA apenas como **apoio supervisionado** ao raciocínio clínico.
+Aplicação acadêmica para registrar testes ortopédicos especiais, acompanhar avaliações e consultar indicadores agregados. O cliente é desenvolvido em **Python + Flet** e a API em **FastAPI**, com autenticação e persistência no **Supabase**.
 
-> **Status:** em desenvolvimento. Projeto acadêmico, não é dispositivo médico. A ferramenta não confirma diagnósticos nem prescreve tratamento.
+> **Aviso:** projeto educacional; não é dispositivo médico. Os resultados não confirmam diagnósticos nem prescrevem tratamentos. A aplicação dos testes deve ser realizada por profissional capacitado, com consentimento do participante.
 
-## Conteúdo desta pasta
+## Estado desta versão
+
+A versão de finalização corrige a integração cliente/API, a validação da sessão Supabase, a persistência repetida de resultados, o isolamento por usuário e a tela de seleção do lado do teste. O catálogo é atualizado para refletir os três documentos ortopédicos enviados ao projeto em 09/11/2026.
+
+O catálogo contém **19 testes ativos**. O antigo registro “Gaveta Anterior” permanece inativo no banco para preservar avaliações antigas que já apontavam para aquele ID.
+
+| Região | Testes ativos |
+|---|---|
+| Joelho | Lachman, Estresse em Valgo, Estresse em Varo |
+| Tornozelo | Thompson, Inclinação Talar |
+| Quadril | Thomas, FADIR, Patrick-FABERE |
+| Ombro | Neer, Jobe |
+| Cotovelo | Cozen, Estresse em Valgo (Cotovelo) |
+| Punho | Tinel, Phalen |
+| Coluna lombar | Lasègue |
+| Coluna cervical | Spurling, Distração Cervical |
+| Tórax | Adams, Wright |
+
+As referências bibliográficas do catálogo ficam vazias até o grupo validar edição e fonte. O sistema não inventa referências.
+
+## Arquitetura
 
 ```
 ortocheck/
@@ -24,9 +44,14 @@ ortocheck/
 └── README.md
 ```
 
-> Durante o desenvolvimento use **somente dados fictícios**. Dados reais entram apenas no dia da atividade, já com consentimento.
+- **Cliente:** telas de login/consentimento, participantes, seleção de testes, registro de resultados, dashboard e resumo para revisão.
+- **API:** valida a sessão no endpoint oficial do Supabase Auth e executa consultas PostgREST com o access token do próprio usuário.
+- **Banco:** políticas RLS separam dados de alunos; professor tem acesso de revisão conforme `app_metadata.role = professor`.
+- **IA:** regras locais documentadas; provedor LLM é opcional. Sem provedor disponível, a aplicação retorna um resumo estruturado baseado nas regras, identificado como tal.
 
-## Arquitetura
+A aplicação não deve receber a chave `service_role`. Use apenas `SUPABASE_ANON_KEY` no cliente e no backend.
+
+## Estrutura
 
 ```
 Cliente (Flet: web / desktop / mobile)
@@ -45,7 +70,7 @@ Supabase (PostgreSQL + Auth + Storage, com RLS)
 | Dados | Supabase (PostgreSQL) | Tabelas, Auth, Storage, Row Level Security |
 | IA | Regras + LLM (a definir) | Rascunho de resumo para discussão |
 
-O app **não contém** senhas nem chaves do banco. A `service_role` fica só no backend.
+1. Clone e instale:
 
 ## Testes ortopédicos (19)
 
@@ -63,7 +88,9 @@ O app **não contém** senhas nem chaves do banco. A `service_role` fica só no 
 
 Fichas por: Sabrina e Vinícius (MMII), Carolaine e Sophia (ombros, cotovelos e punhos), Eduarda e Sophia (coluna). A fonte do catálogo é `app/catalogo_testes.json`; o `database/seed_catalogo.sql` é gerado por `python scripts/gerar_seed_catalogo.py`. Novos testes entram só com `INSERT` em `testes_catalogo` (ORT-45), sem mexer em código.
 
-## Dicionário de dados
+```powershell
+python -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+```
 
 | Tabela | Colunas |
 |---|---|
@@ -103,7 +130,7 @@ printf ".venv/\n__pycache__/\n.env\n*.db\n" > .gitignore
 git add . && git commit -m "kickoff: estrutura do projeto"
 ```
 
-`SUPABASE_SERVICE_KEY` só entra no `.env` do backend, nunca no app.
+Para abrir no navegador:
 
 Rodar (três modos):
 
