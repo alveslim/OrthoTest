@@ -1,30 +1,177 @@
 {
   "_aviso_legal": "O aplicativo não confirma diagnósticos nem prescreve tratamento. Os achados sugeridos servem apenas como rascunho para revisão humana acadêmica.",
-  "_nota_do_professor": "Esta chave 'ausencia_de_regra_confiavel' é crucial. Ela instrui o sistema de IA a admitir que não sabe a resposta caso o teste não esteja nesta lista, evitando que invente referências (alucinação).",
-  "ausencia_de_regra_confiavel": "Se o teste ortopédico avaliado não constar no array 'regras' abaixo, a IA deve declarar explicitamente: 'Não há regra clínica fiável documentada no sistema para este teste'. Não extrapolar.",
+  "_nota": "Regra = teste (nome e região do catálogo) + resultado gatilho. Se o teste não estiver aqui, o motor devolve 'ausencia_de_regra_confiavel' e nunca inventa achado nem referência. Referências marcadas como 'não verificada' devem ser substituídas no ORT-02.",
+  "ausencia_de_regra_confiavel": "Não há regra clínica fiável documentada no sistema para este teste.",
   "regras": [
     {
-      "teste": "Teste de Lachman",
+      "teste": "Lachman",
       "regiao": "Joelho",
       "resultado_gatilho": "Positivo",
       "achado_sugerido": "Possível frouxidão, indicando suspeita de lesão do Ligamento Cruzado Anterior (LCA).",
       "referencia_bibliografica": "Magee, D. J. (2014). Orthopedic Physical Assessment (6th ed.). Elsevier Health Sciences.",
+      "referencia_verificada": true,
       "afirma_diagnostico": false
     },
     {
-      "teste": "Teste de Neer",
-      "regiao": "Ombro",
+      "teste": "Estresse em Valgo",
+      "regiao": "Joelho",
       "resultado_gatilho": "Positivo",
-      "achado_sugerido": "Sugere impacto subacromial ou compressão das estruturas do manguito rotador.",
-      "referencia_bibliografica": "Magee, D. J. (2014). Orthopedic Physical Assessment (6th ed.). Elsevier Health Sciences.",
+      "achado_sugerido": "Dor medial e/ou abertura medial excessiva, compatível com suspeita de comprometimento do ligamento colateral medial (LCM) do joelho.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
       "afirma_diagnostico": false
     },
     {
-      "teste": "Teste de Thompson",
+      "teste": "Estresse em Varo",
+      "regiao": "Joelho",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Dor lateral e/ou abertura lateral excessiva, compatível com suspeita de comprometimento do ligamento colateral lateral (LCL).",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Thompson",
       "regiao": "Tornozelo",
       "resultado_gatilho": "Positivo",
       "achado_sugerido": "Ausência de flexão plantar, sugerindo possível rutura do tendão de Aquiles.",
       "referencia_bibliografica": "Dutton, M. (2012). Dutton's Orthopaedic Examination, Evaluation, and Intervention (3rd ed.). McGraw-Hill Medical.",
+      "referencia_verificada": true,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Inclinação Talar",
+      "regiao": "Tornozelo",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Inclinação excessiva, instabilidade ou dor, compatível com suspeita de frouxidão dos ligamentos laterais do tornozelo (especialmente o calcaneofibular).",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Thomas",
+      "regiao": "Quadril",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Coxa que não apoia na maca sugere possível encurtamento dos flexores do quadril; extensão do joelho pode indicar participação do reto femoral.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "FADIR",
+      "regiao": "Quadril",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Reprodução da dor anterior ou de virilha é compatível com suspeita de impacto femoroacetabular ou alteração intra-articular do quadril.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Neer",
+      "regiao": "Ombro",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Sugere impacto subacromial ou compressão das estruturas do manguito rotador.",
+      "referencia_bibliografica": "Magee, D. J. (2014). Orthopedic Physical Assessment (6th ed.). Elsevier Health Sciences.",
+      "referencia_verificada": true,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Jobe",
+      "regiao": "Ombro",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Dor ou fraqueza sugerem possível tendinopatia ou ruptura do supraespinhal.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Cozen",
+      "regiao": "Cotovelo",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Dor no epicôndilo lateral na extensão resistida do punho sugere epicondilalgia lateral.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Estresse em Valgo",
+      "regiao": "Cotovelo",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Dor medial, abertura aumentada ou frouxidão sugerem possível comprometimento do ligamento colateral medial do cotovelo.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Tinel",
+      "regiao": "Punho",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Sintomas no território do nervo mediano aumentam a suspeita de irritação/compressão do nervo mediano (túnel do carpo).",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Phalen",
+      "regiao": "Punho",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Sintomas na distribuição do nervo mediano aumentam a suspeita de síndrome do túnel do carpo, a correlacionar com outros achados.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Lasègue",
+      "regiao": "Coluna lombar",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Dor irradiada (geralmente entre 30° e 70° de elevação) sugere irritação das raízes lombossacrais.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Patrick-FABERE",
+      "regiao": "Coluna lombar",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Dor ou limitação sugerem alteração no quadril ou na articulação sacroilíaca.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Adams",
+      "regiao": "Tórax",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Assimetria ou gibosidade na flexão anterior sugere escoliose estrutural.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Wright",
+      "regiao": "Tórax",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Alteração do pulso radial e/ou sintomas no membro superior sugerem compressão neurovascular (síndrome do desfiladeiro torácico).",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Spurling",
+      "regiao": "Coluna cervical",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Dor irradiada, formigamento ou dormência para o membro superior sugerem comprometimento radicular cervical.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
+      "afirma_diagnostico": false
+    },
+    {
+      "teste": "Distração Cervical",
+      "regiao": "Coluna cervical",
+      "resultado_gatilho": "Positivo",
+      "achado_sugerido": "Alívio dos sintomas com a tração sugere compressão radicular cervical.",
+      "referencia_bibliografica": "Ficha clínica do grupo (docs/). Referência bibliográfica ainda não verificada (ORT-02).",
+      "referencia_verificada": false,
       "afirma_diagnostico": false
     }
   ]

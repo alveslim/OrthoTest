@@ -1,336 +1,619 @@
-import os
+"""Estado da sessão e acesso à API do OrthoTest.
+
+Três situações:
+  * online      : tudo vai para a API/Supabase.
+  * sem internet: o app continua funcionando com o que já foi baixado (cache) e guarda o que você
+                  registrar na fila do aparelho; envia sozinho quando a conexão volta.
+  * demonstração (MODO_DEMO=true): dados de exemplo em memória, login aceita qualquer coisa, nada é
+                  gravado. Só para ensaio; a tela de login avisa.
+"""
 import json
-import requests
+import os
+import sys
+import time
+import uuid
 from datetime import datetime, timezone
+from pathlib import Path
+
+import requests
 from dotenv import load_dotenv
 
-load_dotenv()
+import contingencia_offline as fila_local
+from armazenamento import apagar, gravar_json, ler_json
+from config import cfg
+from termo import TERMO_VERSAO
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
-API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/api/v1")
+load_dotenv()  # só ajuda no computador; no celular os valores vêm de app/config_publica.json
 
-MODO_OFFLINE = os.getenv("MODO_OFFLINE", "False").lower() in ("true", "1", "yes")
+if sys.platform == "emscripten":  # versão web (Pyodide): faz o `requests` usar o fetch do navegador
+    try:
+        import pyodide_http  # type: ignore
+        pyodide_http.patch_all()
+    except Exception:
+        pass
+
+SUPABASE_URL = cfg("SUPABASE_URL")
+SUPABASE_ANON_KEY = cfg("SUPABASE_ANON_KEY")
+API_BASE_URL = cfg("API_BASE_URL", "http://127.0.0.1:8000/api/v1").rstrip("/")
+
+
+def _flag(*nomes: str) -> bool:
+    return any(cfg(n, "false").lower() in ("true", "1", "yes") for n in nomes)
+
+
+MODO_DEMO = _flag("MODO_DEMO", "MODO_OFFLINE")  # MODO_OFFLINE: nome antigo, ainda aceito
+
+CATALOGO_LOCAL = Path(__file__).resolve().parent / "catalogo_testes.json"
+TIMEOUT = 10
+ARQ_SESSAO = "sessao.json"
 
 sessao = {
     "access_token": None,
+    "refresh_token": None,
+    "expires_at": 0,
     "user_id": None,
     "email": None,
     "papel": "aluno",
-    "consentimento_aceito": False,
-    "data_consentimento": None,
+    "offline": False,
     "participante_atual": None,
     "avaliacao_atual": None,
     "teste_atual": None,
-    "resultado_atual": None,
+    "resultados_teste": [],
 }
 
-OFFLINE_PARTICIPANTES = [
-    {"id": "1", "codigo": "P-MOCK1", "idade": 22, "peso_kg": 70, "altura_m": 1.75},
-    {"id": "2", "codigo": "P-MOCK2", "idade": 30, "peso_kg": 82, "altura_m": 1.80},
-]
-OFFLINE_AVALIACOES = [
-    {"id": "mock_aval_id", "participante_id": "1", "status": "pendente", "progresso_percentual": 0.0}
-]
-OFFLINE_CATALOGO = [
-    {
-        "id": 1,
-        "nome": "Lachman",
-        "regiao": "Joelho",
-        "estrutura": "Ligamento cruzado anterior (LCA)",
-        "definicao": "Teste demonstrativo do catálogo offline.",
-        "objetivo": "Avaliar a estabilidade anterior do joelho.",
-        "como_fazer": "Consulte a ficha clínica completa no catálogo do projeto.",
-        "positivo_se": "Aumento da translação anterior em comparação ao lado oposto.",
-    }
-]
-OFFLINE_RESULTADOS = {"mock_aval_id": {}}
+MSG_SEM_API = "Sem conexão com o servidor. Esta ação precisa de internet."
 
 
+class _Indisponivel(Exception):
+    """Servidor respondeu 502/503/504: tratado como falta de conexão."""
+
+
+# ---------------------------------------------------------------- HTTP com renovação de sessão
 def _headers_autenticados() -> dict:
-    return {
-        "Authorization": f"Bearer {sessao['access_token']}",
-        "Content-Type": "application/json",
-    }
+    return {"Authorization": f"Bearer {sessao['access_token']}", "Content-Type": "application/json"}
+
+
+def _req(metodo: str, caminho: str, *, params=None, json=None, timeout: int = TIMEOUT, renovar: bool = True):
+    """Chama a API com o token. Se vier 401, renova o token uma vez e repete. Levanta RequestException sem rede."""
+    url = f"{API_BASE_URL}{caminho}"
+    try:
+        resp = requests.request(metodo, url, headers=_headers_autenticados(), params=params, json=json, timeout=timeout)
+        if resp.status_code == 401 and renovar and sessao.get("refresh_token") and _renovar_sessao() is True:
+            resp = requests.request(metodo, url, headers=_headers_autenticados(), params=params, json=json, timeout=timeout)
+    except requests.RequestException:
+        sessao["offline"] = True
+        raise
+    sessao["offline"] = resp.status_code in (502, 503, 504)
+    return resp
+
+
+def _erro_api(resp: requests.Response, padrao: str) -> str:
+    """Mensagem em português a partir da resposta de erro da API."""
+    if resp.status_code == 401:
+        return "Sessão expirada. Saia e entre novamente."
+    try:
+        detalhe = resp.json().get("detail")
+    except ValueError:
+        detalhe = None
+    if isinstance(detalhe, list) and detalhe:  # erro de validação do Pydantic
+        detalhe = "; ".join(str(d.get("msg", d)) for d in detalhe)
+    if resp.status_code == 409 or (detalhe and "duplicate key" in str(detalhe)):
+        return "Já existe um registro com esse código. Use outro código."
+    return str(detalhe) if detalhe else padrao
+
+
+# ---------------------------------------------------------------- sessão (login, lembrar, renovar)
+def _aplicar_tokens(dados: dict) -> None:
+    sessao["access_token"] = dados.get("access_token")
+    if dados.get("refresh_token"):
+        sessao["refresh_token"] = dados["refresh_token"]
+    sessao["expires_at"] = int(dados.get("expires_at") or (time.time() + int(dados.get("expires_in", 3600))))
+    if dados.get("user"):
+        sessao["user_id"] = str(dados["user"].get("id", sessao.get("user_id") or ""))
+
+
+def _salvar_sessao_local() -> None:
+    if MODO_DEMO or not sessao.get("refresh_token"):
+        return
+    gravar_json(ARQ_SESSAO, {k: sessao.get(k) for k in
+                             ("access_token", "refresh_token", "expires_at", "user_id", "email", "papel")})
+
+
+def _renovar_sessao() -> bool | None:
+    """True = renovada; False = o servidor recusou (precisa entrar de novo); None = sem rede (tenta depois)."""
+    if not sessao.get("refresh_token") or not SUPABASE_URL:
+        return False
+    try:
+        resp = requests.post(
+            f"{SUPABASE_URL.rstrip('/')}/auth/v1/token?grant_type=refresh_token",
+            headers={"apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json"},
+            json={"refresh_token": sessao["refresh_token"]}, timeout=TIMEOUT)
+    except requests.RequestException:
+        return None
+    if resp.status_code == 200:
+        _aplicar_tokens(resp.json())
+        _salvar_sessao_local()
+        return True
+    if resp.status_code in (400, 401, 403):
+        return False
+    return None
+
 
 def autenticar_usuario(email: str, senha: str) -> tuple[bool, str]:
-    if MODO_OFFLINE:
-        sessao["access_token"] = "mock_token_123"
-        sessao["user_id"] = "mock_user_id"
-        sessao["email"] = email
-        sessao["papel"] = "aluno"
-        return True, "Autenticado em MODO OFFLINE (dados demonstrativos; não são enviados ao Supabase)."
-    
+    if MODO_DEMO:
+        sessao.update(access_token="demo", user_id="demo", email=email, papel="professor")
+        return True, "Modo demonstração: dados de exemplo, nada é gravado no banco."
     if not SUPABASE_URL or not SUPABASE_ANON_KEY:
-        return False, "Configure SUPABASE_URL e SUPABASE_ANON_KEY no ficheiro .env"
+        return False, "Configure SUPABASE_URL e SUPABASE_ANON_KEY no arquivo .env"
     try:
-        url = f"{SUPABASE_URL.rstrip('/')}/auth/v1/token?grant_type=password"
-        resp = requests.post(url, headers={"apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json"}, json={"email": email.strip(), "password": senha}, timeout=10)
-        if resp.status_code == 200:
-            dados = resp.json()
-            sessao["access_token"] = dados.get("access_token")
-            usuario = dados.get("user", {})
-            sessao["user_id"] = str(usuario.get("id", ""))
-            sessao["email"] = usuario.get("email", email.strip())
-            sessao["papel"] = (usuario.get("app_metadata") or {}).get("role", "aluno")
-            return True, "Autenticado com sucesso."
-        return False, "E-mail ou palavra-passe incorretos."
-    except Exception:
-        return False, "Erro ao conectar ao servidor de autenticação."
+        resp = requests.post(
+            f"{SUPABASE_URL.rstrip('/')}/auth/v1/token?grant_type=password",
+            headers={"apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json"},
+            json={"email": email.strip(), "password": senha}, timeout=TIMEOUT)
+    except requests.RequestException:
+        return False, "Sem internet. O primeiro acesso precisa de conexão; depois o app lembra do seu login."
+    if resp.status_code != 200:
+        try:
+            codigo = resp.json().get("error_code", "")
+        except ValueError:
+            codigo = ""
+        if codigo == "email_not_confirmed":
+            return False, "E-mail ainda não confirmado. Abra o link que o Supabase enviou ao seu e-mail."
+        if resp.status_code >= 500:
+            return False, "Servidor de autenticação indisponível. Tente de novo em instantes."
+        return False, "E-mail ou senha incorretos."
+    _aplicar_tokens(resp.json())
+    sessao["email"] = email.strip()
+    sessao["papel"] = "aluno"
+    sessao["offline"] = False
+    try:  # o papel só habilita botões; quem decide de verdade é o backend/RLS
+        r = _req("GET", "/me")
+        if r.status_code == 200:
+            sessao["papel"] = r.json().get("papel", "aluno")
+    except requests.RequestException:
+        pass
+    _salvar_sessao_local()
+    return True, "Autenticado com sucesso."
 
-def registrar_consentimento_sessao():
-    sessao["consentimento_aceito"] = True
-    sessao["data_consentimento"] = datetime.now(timezone.utc).isoformat()
+
+def tentar_restaurar_sessao() -> bool:
+    """Reabre o app já logado, se houver sessão salva. Funciona sem internet (a sessão é renovada depois)."""
+    if MODO_DEMO:
+        return False
+    salva = ler_json(ARQ_SESSAO, None)
+    if not isinstance(salva, dict) or not salva.get("refresh_token") or not salva.get("user_id"):
+        return False
+    sessao.update({k: salva.get(k) for k in ("access_token", "refresh_token", "expires_at", "user_id", "email")})
+    sessao["papel"] = salva.get("papel") or "aluno"
+    if (salva.get("expires_at") or 0) - time.time() > 60:
+        return True
+    resultado = _renovar_sessao()
+    if resultado is False:  # sessão revogada ou vencida de vez
+        limpar_sessao()
+        return False
+    sessao["offline"] = resultado is None  # None = sem rede: segue com o que está no aparelho
+    return True
+
 
 def limpar_sessao():
-    sessao.update({
-        "access_token": None,
-        "user_id": None,
-        "email": None,
-        "papel": "aluno",
-        "consentimento_aceito": False,
-        "data_consentimento": None,
-        "participante_atual": None,
-        "avaliacao_atual": None,
-        "teste_atual": None,
-        "resultado_atual": None,
-    })
+    sessao.update(
+        access_token=None, refresh_token=None, expires_at=0, user_id=None, email=None, papel="aluno", offline=False,
+        participante_atual=None, avaliacao_atual=None, teste_atual=None, resultados_teste=[],
+    )
+    apagar(ARQ_SESSAO)  # sair = esquecer o login neste aparelho (a fila de envios pendentes é mantida)
 
+
+def situacao_rede() -> dict:
+    return {"offline": bool(sessao.get("offline")), "demo": MODO_DEMO,
+            "pendentes": 0 if MODO_DEMO else len(fila_local.pendentes(sessao.get("user_id")))}
+
+
+# ---------------------------------------------------------------- demonstração (em memória)
+def _catalogo_local() -> list[dict]:
+    return json.loads(CATALOGO_LOCAL.read_text(encoding="utf-8"))
+
+
+_off: dict = {"participantes": [], "avaliacoes": {}, "resultados": []}
+_DEMO_PESSOAS = [("P-001", "Ana", "Lima", 22, 70.0, 1.75), ("P-002", None, None, 30, 82.0, 1.80)]
+
+
+def _off_inicializar():
+    if _off["participantes"]:
+        return
+    for i, (cod, nome, sob, idade, peso, altura) in enumerate(_DEMO_PESSOAS, 1):
+        _off["participantes"].append({"id": f"p{i}", "codigo": cod, "nome": nome, "sobrenome": sob,
+                                      "idade": idade, "peso_kg": peso, "altura_m": altura})
+
+
+def _off_atualizar_progresso(avaliacao_id: str):
+    total = len(_catalogo_local())
+    feitos = len({r["teste_id"] for r in _off["resultados"] if r["avaliacao_id"] == avaliacao_id})
+    av = _off["avaliacoes"][avaliacao_id]
+    av["progresso_percentual"] = round(100 * feitos / total, 2) if total else 0.0
+    av["status"] = "pendente" if feitos == 0 else ("concluido" if feitos >= total else "em_andamento")
+
+
+# ---------------------------------------------------------------- cache e fila (visão local)
+def _user() -> str:
+    return str(sessao.get("user_id") or "")
+
+
+def _cache() -> dict:
+    return fila_local.carregar_cache(_user())
+
+
+def _catalogo_base() -> list[dict]:
+    return _cache()["catalogo"] or _catalogo_local()
+
+
+def _indisponivel(resp) -> bool:
+    return resp.status_code in (502, 503, 504)
+
+
+def _agrupar_por_teste(resultados: list[dict]) -> dict[int, list[dict]]:
+    mapa: dict[int, list[dict]] = {}
+    for r in resultados:
+        mapa.setdefault(int(r["teste_id"]), []).append(r)
+    return mapa
+
+
+def _resultados_visiveis(avaliacao_id: str, do_servidor: list[dict] | None = None) -> list[dict]:
+    """Resultados já enviados (servidor ou cache) + os pendentes de envio (que prevalecem)."""
+    base = do_servidor if do_servidor is not None else _cache()["resultados"].get(str(avaliacao_id), [])
+    pend = fila_local.resultados_pendentes(_user(), str(avaliacao_id))
+    chaves = {(int(p["teste_id"]), p["lado"]) for p in pend}
+    return [r for r in base if (int(r["teste_id"]), r["lado"]) not in chaves] + pend
+
+
+def _progresso_visivel(av: dict) -> dict:
+    """Recalcula o progresso mostrando também o que ainda está só no aparelho."""
+    pend = {int(p["teste_id"]) for p in fila_local.resultados_pendentes(_user(), str(av["id"]))}
+    if not pend:
+        return av
+    total = len(_catalogo_base())
+    ja = {int(r["teste_id"]) for r in _cache()["resultados"].get(str(av["id"]), [])}
+    base = round(float(av.get("progresso_percentual") or 0) * total / 100)
+    feitos = min(total, base + len(pend - ja)) if total else 0
+    return dict(av, progresso_percentual=round(100 * feitos / total, 2) if total else 0.0,
+                status="concluido" if total and feitos >= total else "em_andamento")
+
+
+def _montar_lista(participantes: list[dict], avaliacoes: list[dict]) -> list[dict]:
+    """Junta servidor/cache com o que foi criado sem internet e ainda não foi enviado."""
+    user = _user()
+    ps = list(participantes)
+    avs = {str(a["participante_id"]): a for a in avaliacoes}
+    for item in fila_local.pendentes(user):
+        if item["tipo"] == "participante":
+            ps.insert(0, dict(item["payload"], id=item["local_id"], pendente=True))
+        elif item["tipo"] == "avaliacao":
+            avs[str(item["participante_id"])] = {"id": item["local_id"], "participante_id": item["participante_id"],
+                                                 "status": "pendente", "progresso_percentual": 0.0, "pendente": True}
+    return [dict(p, avaliacao=_progresso_visivel(avs[str(p["id"])]) if str(p["id"]) in avs else None) for p in ps]
+
+
+def codigo_sugerido() -> str:
+    """Próximo código P-00N (o banco gera o definitivo; sem internet este fica provisório)."""
+    if MODO_DEMO:
+        _off_inicializar()
+        return fila_local.proximo_codigo([p["codigo"] for p in _off["participantes"]])
+    c = _cache()
+    codigos = [p.get("codigo", "") for p in c["participantes"]]
+    codigos += [i["payload"].get("codigo", "") for i in fila_local.pendentes(_user()) if i["tipo"] == "participante"]
+    return fila_local.proximo_codigo(codigos)
+
+
+# ---------------------------------------------------------------- participantes e avaliações
 def buscar_participantes_e_avaliacoes() -> tuple[bool, list | str]:
-    if MODO_OFFLINE:
-        participantes = []
-        for participante in OFFLINE_PARTICIPANTES:
-            item = participante.copy()
-            avaliacoes = [
-                a for a in OFFLINE_AVALIACOES
-                if str(a.get("participante_id")) == str(participante["id"])
-            ]
-            item["avaliacao"] = avaliacoes[-1].copy() if avaliacoes else None
-            participantes.append(item)
-        return True, participantes
+    if MODO_DEMO:
+        _off_inicializar()
+        avs = {a["participante_id"]: a for a in _off["avaliacoes"].values()}
+        return True, [dict(p, avaliacao=avs.get(p["id"])) for p in _off["participantes"]]
+    sincronizar_fila_offline()
+    cache = _cache()
     try:
-        resp_p = requests.get(f"{API_BASE_URL}/participantes", headers=_headers_autenticados(), timeout=10)
-        resp_a = requests.get(f"{API_BASE_URL}/avaliacoes", headers=_headers_autenticados(), timeout=10)
-        if resp_p.status_code != 200:
-            return False, f"Erro ao carregar participantes ({resp_p.status_code})."
-        
-        participantes = resp_p.json()
-        if resp_a.status_code != 200:
-            return False, f"Erro ao carregar avaliações ({resp_a.status_code})."
-        avaliacoes = resp_a.json()
-        # A API ordena avaliações da mais recente para a mais antiga.
-        # setdefault preserva a primeira, evitando reabrir uma avaliação antiga.
-        mapa_aval = {}
-        for avaliacao in avaliacoes:
-            mapa_aval.setdefault(str(avaliacao["participante_id"]), avaliacao)
-        
-        for p in participantes:
-            p["avaliacao"] = mapa_aval.get(str(p["id"]))
-        return True, participantes
-    except Exception:
-        return False, "Não foi possível comunicar com a API. Verifique API_BASE_URL e se o servidor está em execução."
+        resp_p = _req("GET", "/participantes")
+        if resp_p.status_code == 200:
+            resp_a = _req("GET", "/avaliacoes")
+            avaliacoes = resp_a.json() if resp_a.status_code == 200 else cache["avaliacoes"]
+            cache.update(participantes=resp_p.json(), avaliacoes=avaliacoes)
+            fila_local.gravar_cache(cache)
+            return True, _montar_lista(cache["participantes"], cache["avaliacoes"])
+        if not _indisponivel(resp_p):
+            return False, _erro_api(resp_p, f"Erro ao carregar participantes ({resp_p.status_code}).")
+        sessao["offline"] = True
+    except requests.RequestException:
+        pass
+    return True, _montar_lista(cache["participantes"], cache["avaliacoes"])  # sem internet: usa o aparelho
 
-def criar_novo_participante(codigo: str, idade: int, peso_kg: float | None, altura_m: float | None) -> tuple[bool, dict | str]:
-    if MODO_OFFLINE:
-        participante = {
-            "id": f"mock_{len(OFFLINE_PARTICIPANTES) + 1}",
-            "codigo": codigo.strip().upper(),
-            "idade": idade,
-            "peso_kg": peso_kg,
-            "altura_m": altura_m,
-        }
-        OFFLINE_PARTICIPANTES.append(participante)
-        return True, participante.copy()
-    payload = {
-        "codigo": codigo.strip().upper(),
-        "idade": idade,
-        "peso_kg": peso_kg,
-        "altura_m": altura_m,
-        "consentimento": bool(sessao["consentimento_aceito"]),
-        "data_consentimento": sessao["data_consentimento"],
-    }
+
+def criar_novo_participante(idade: int, peso_kg: float | None, altura_m: float | None, nome: str | None = None,
+                            sobrenome: str | None = None, responsavel_ciente: bool = False) -> tuple[bool, dict | str]:
+    """O consentimento já foi aceito na tela (termo lido e marcado); aqui só registramos data e versão."""
+    nome = " ".join((nome or "").split()) or None
+    sobrenome = " ".join((sobrenome or "").split()) or None
+    if MODO_DEMO:
+        _off_inicializar()
+        codigo = fila_local.proximo_codigo([p["codigo"] for p in _off["participantes"]])
+        novo = {"id": f"p{uuid.uuid4().hex[:6]}", "codigo": codigo, "nome": nome, "sobrenome": sobrenome,
+                "idade": idade, "peso_kg": peso_kg, "altura_m": altura_m}
+        _off["participantes"].append(novo)
+        return True, novo
+    payload = {"nome": nome, "sobrenome": sobrenome, "idade": idade, "peso_kg": peso_kg, "altura_m": altura_m,
+               "consentimento": True, "data_consentimento": datetime.now(timezone.utc).isoformat(),
+               "termo_versao": TERMO_VERSAO, "consentimento_responsavel": bool(responsavel_ciente)}
+    payload = {k: v for k, v in payload.items() if v is not None}
     try:
-        resp = requests.post(f"{API_BASE_URL}/participantes", json=payload, headers=_headers_autenticados(), timeout=10)
+        resp = _req("POST", "/participantes", json=payload)
         if resp.status_code in (200, 201):
-            return True, resp.json()
-        return False, str(resp.json().get("detail", "Erro ao validar os dados do participante."))
-    except Exception:
-        return False, "Falha de comunicação ao gravar participante na API."
+            novo = resp.json()
+            c = _cache()
+            c["participantes"].insert(0, novo)
+            fila_local.gravar_cache(c)
+            return True, novo
+        if not _indisponivel(resp):
+            return False, _erro_api(resp, "Erro ao validar os dados do participante.")
+    except requests.RequestException:
+        pass
+    # Sem internet: guarda no aparelho com um código provisório.
+    local_id = fila_local.novo_id_local()
+    codigo = codigo_sugerido()
+    payload["codigo"] = codigo
+    fila_local.enfileirar_participante(_user(), local_id, payload)
+    return True, dict(payload, id=local_id, pendente=True)
+
 
 def garantir_avaliacao_ativa(participante_id: str, avaliacao_existente: dict | None) -> tuple[bool, dict | str]:
-    if MODO_OFFLINE:
-        if avaliacao_existente:
-            return True, avaliacao_existente
-        avaliacao = {
-            "id": f"mock_aval_{len(OFFLINE_AVALIACOES) + 1}",
-            "participante_id": str(participante_id),
-            "status": "pendente",
-            "progresso_percentual": 0.0,
-        }
-        OFFLINE_AVALIACOES.append(avaliacao)
-        OFFLINE_RESULTADOS.setdefault(avaliacao["id"], {})
-        return True, avaliacao.copy()
     if avaliacao_existente:
         return True, avaliacao_existente
-    try:
-        resp = requests.post(f"{API_BASE_URL}/avaliacoes", json={"participante_id": str(participante_id)}, headers=_headers_autenticados(), timeout=10)
-        if resp.status_code in (200, 201):
-            return True, resp.json()
-        return False, "Não foi possível iniciar a ficha de avaliação."
-    except Exception:
-        return False, "Erro de ligação ao iniciar avaliação."
+    if MODO_DEMO:
+        av = {"id": f"a{uuid.uuid4().hex[:6]}", "participante_id": participante_id, "status": "pendente", "progresso_percentual": 0.0}
+        _off["avaliacoes"][av["id"]] = av
+        return True, av
+    pendente = fila_local.avaliacao_pendente_do_participante(_user(), str(participante_id))
+    if pendente:
+        return True, {"id": pendente["local_id"], "participante_id": participante_id, "status": "pendente",
+                      "progresso_percentual": 0.0, "pendente": True}
+    if not fila_local.eh_local(participante_id):
+        try:
+            resp = _req("POST", "/avaliacoes", json={"participante_id": str(participante_id)})
+            if resp.status_code in (200, 201):
+                av = resp.json()
+                c = _cache()
+                c["avaliacoes"] = [a for a in c["avaliacoes"] if a["id"] != av["id"]] + [av]
+                fila_local.gravar_cache(c)
+                return True, av
+            if not _indisponivel(resp):
+                return False, _erro_api(resp, "Não foi possível iniciar a ficha de avaliação.")
+        except requests.RequestException:
+            pass
+    local_id = fila_local.novo_id_local()
+    fila_local.enfileirar_avaliacao(_user(), local_id, str(participante_id))
+    return True, {"id": local_id, "participante_id": participante_id, "status": "pendente",
+                  "progresso_percentual": 0.0, "pendente": True}
 
+
+# ---------------------------------------------------------------- catálogo e resultados
 def buscar_catalogo_e_resultados(avaliacao_id: str) -> tuple[bool, dict | str]:
-    if MODO_OFFLINE:
-        mapa = OFFLINE_RESULTADOS.get(str(avaliacao_id), {}).copy()
-        return True, {"catalogo": [item.copy() for item in OFFLINE_CATALOGO], "mapa_resultados": mapa}
+    """`mapa_resultados`: {teste_id: [linhas]} (um teste pode ter Direito e Esquerdo)."""
+    if MODO_DEMO:
+        res = [r for r in _off["resultados"] if r["avaliacao_id"] == avaliacao_id]
+        return True, {"catalogo": _catalogo_local(), "mapa_resultados": _agrupar_por_teste(res)}
+    avaliacao_id = str(avaliacao_id)
+    cache = _cache()
+    do_servidor = None
+    if not fila_local.eh_local(avaliacao_id):
+        try:
+            resp_cat = _req("GET", "/catalogo/testes")
+            if resp_cat.status_code == 200:
+                resp_res = _req("GET", f"/avaliacoes/{avaliacao_id}/resultados")
+                if resp_res.status_code == 200:
+                    cache["catalogo"] = resp_cat.json()
+                    do_servidor = resp_res.json()
+                    cache["resultados"][avaliacao_id] = do_servidor
+                    fila_local.gravar_cache(cache)
+                elif not _indisponivel(resp_res):
+                    return False, _erro_api(resp_res, "Erro ao carregar os resultados da avaliação.")
+            elif not _indisponivel(resp_cat):
+                return False, _erro_api(resp_cat, f"Erro ao carregar catálogo ({resp_cat.status_code}).")
+        except requests.RequestException:
+            pass
+    catalogo = cache["catalogo"] or _catalogo_local()
+    return True, {"catalogo": catalogo, "mapa_resultados": _agrupar_por_teste(_resultados_visiveis(avaliacao_id, do_servidor))}
+
+
+def _cache_gravar_resultado(avaliacao_id: str, payload: dict) -> None:
+    c = _cache()
+    linhas = [r for r in c["resultados"].get(avaliacao_id, [])
+              if not (int(r["teste_id"]) == int(payload["teste_id"]) and r["lado"] == payload["lado"])]
+    linhas.append(dict(payload, avaliacao_id=avaliacao_id))
+    c["resultados"][avaliacao_id] = linhas
+    fila_local.gravar_cache(c)
+
+
+def salvar_resultado_teste(avaliacao_id: str, payload: dict) -> tuple[bool, str]:
+    """Grava na API. Sem internet, guarda no aparelho e envia quando a conexão voltar."""
+    if MODO_DEMO:
+        _off["resultados"] = [r for r in _off["resultados"] if not (
+            r["avaliacao_id"] == avaliacao_id and r["teste_id"] == payload["teste_id"] and r["lado"] == payload["lado"])]
+        _off["resultados"].append(dict(payload, avaliacao_id=avaliacao_id))
+        _off_atualizar_progresso(avaliacao_id)
+        return True, "Resultado salvo (modo demonstração)."
+    avaliacao_id = str(avaliacao_id)
+    if not fila_local.eh_local(avaliacao_id):
+        try:
+            resp = _req("POST", f"/avaliacoes/{avaliacao_id}/resultados", json=payload)
+            if resp.status_code in (200, 201):
+                fila_local.remover_resultado_pendente(_user(), avaliacao_id, payload["teste_id"], payload["lado"])
+                _cache_gravar_resultado(avaliacao_id, payload)
+                sincronizar_fila_offline()  # a conexão voltou: aproveita para esvaziar a fila
+                return True, "Resultado salvo."
+            if not _indisponivel(resp):
+                return False, _erro_api(resp, "Erro ao salvar o resultado.")
+        except requests.RequestException:
+            pass
+    fila_local.enfileirar_resultado(_user(), avaliacao_id, payload)
+    return True, "Sem conexão: resultado guardado neste aparelho. Será enviado quando a internet voltar."
+
+
+def _enviar_para_fila(metodo: str, caminho: str, corpo: dict):
+    resp = _req(metodo, caminho, json=corpo)
     try:
-        resp_cat = requests.get(f"{API_BASE_URL}/catalogo/testes", headers=_headers_autenticados(), timeout=10)
-        if resp_cat.status_code != 200:
-            return False, f"Erro ao carregar catálogo ({resp_cat.status_code})."
-        
-        resp_res = requests.get(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados", headers=_headers_autenticados(), timeout=10)
-        catalogo = resp_cat.json()
-        if resp_res.status_code != 200:
-            return False, f"Erro ao carregar resultados ({resp_res.status_code})."
-        resultados = resp_res.json()
-        mapa_resultados = {int(r["teste_id"]): r for r in resultados if "teste_id" in r}
-        
-        return True, {"catalogo": catalogo, "mapa_resultados": mapa_resultados}
-    except Exception:
-        return False, "Falha de comunicação ao carregar catálogo e progresso da API."
+        return resp.status_code, resp.json()
+    except ValueError:
+        return resp.status_code, {}
+
+
+def sincronizar_fila_offline() -> dict:
+    """Envia o que foi guardado sem internet. Seguro chamar sempre: sem pendência, não faz nada."""
+    vazio = {"sincronizados": 0, "pendentes": 0, "rejeitados": 0, "codigos_alterados": [], "erros": [], "mapa_ids": {}}
+    if MODO_DEMO or not sessao.get("access_token"):
+        return vazio
+    n = len(fila_local.pendentes(_user()))
+    if not n:
+        return vazio
+    res = fila_local.sincronizar(_user(), _enviar_para_fila)
+    for chave in ("participante_atual", "avaliacao_atual"):  # a tela aberta passa a usar o id real
+        atual = sessao.get(chave)
+        if atual and atual.get("id") in res["mapa_ids"]:
+            sessao[chave] = dict(atual, id=res["mapa_ids"][atual["id"]], pendente=False)
+    if res["sincronizados"] and not res["erros"]:
+        sessao["offline"] = False
+    return res
+
+
+def excluir_resultado_teste_api(avaliacao_id: str, teste_id: int, lado: str | None = None) -> tuple[bool, str]:
+    if MODO_DEMO:
+        _off["resultados"] = [r for r in _off["resultados"] if not (
+            r["avaliacao_id"] == avaliacao_id and r["teste_id"] == teste_id and (lado is None or r["lado"] == lado))]
+        _off_atualizar_progresso(avaliacao_id)
+        return True, "Resultado excluído."
+    avaliacao_id = str(avaliacao_id)
+    descartou = fila_local.remover_resultado_pendente(_user(), avaliacao_id, teste_id, lado)
+    if fila_local.eh_local(avaliacao_id):
+        return True, "Resultado excluído."
+    try:
+        resp = _req("DELETE", f"/avaliacoes/{avaliacao_id}/resultados/{teste_id}", params={"lado": lado} if lado else None)
+    except requests.RequestException:
+        return descartou, ("Resultado pendente descartado. Excluir o que já foi enviado precisa de internet."
+                           if descartou else MSG_SEM_API)
+    if resp.status_code == 200:
+        c = _cache()
+        c["resultados"][avaliacao_id] = [r for r in c["resultados"].get(avaliacao_id, []) if not (
+            int(r["teste_id"]) == int(teste_id) and (lado is None or r["lado"] == lado))]
+        fila_local.gravar_cache(c)
+        return True, "Resultado excluído."
+    if resp.status_code == 404 and descartou:
+        return True, "Resultado excluído."
+    return False, _erro_api(resp, "Não foi possível excluir o resultado.")
+
 
 def sinalizar_avaliacao_professor(avaliacao_id: str, motivo: str) -> tuple[bool, str]:
-    if MODO_OFFLINE:
-        avaliacao = next((a for a in OFFLINE_AVALIACOES if str(a["id"]) == str(avaliacao_id)), None)
-        if not avaliacao:
-            return False, "Avaliação demonstrativa não encontrada."
-        avaliacao["flag_professor"] = True
-        avaliacao["flag_motivo"] = motivo.strip() or "Solicitação de revisão."
-        return True, "Avaliação sinalizada (somente em memória no modo demonstrativo)."
+    if MODO_DEMO:
+        return True, "Avaliação sinalizada (modo demonstração)."
+    if fila_local.eh_local(avaliacao_id):
+        return False, "Esta ficha ainda não foi enviada. Aguarde a internet voltar para sinalizar."
     try:
-        resp = requests.post(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/sinalizar", json={"motivo": motivo.strip() or "Solicitação de revisão pelo aluno."}, headers=_headers_autenticados(), timeout=10)
-        if resp.status_code == 200:
-            return True, "Avaliação sinalizada ao professor com sucesso."
-        return False, "Não foi possível sinalizar a avaliação."
-    except Exception:
-        return False, "Erro de conexão ao sinalizar avaliação."
-
-def atualizar_progresso_offline(avaliacao_id: str) -> None:
-    resultados = OFFLINE_RESULTADOS.get(avaliacao_id, {})
-    total = len(OFFLINE_CATALOGO)
-    respondidos = len(resultados)
-    percentual = round(respondidos / total * 100, 1) if total else 0.0
-    avaliacao = next((a for a in OFFLINE_AVALIACOES if str(a["id"]) == avaliacao_id), None)
-    if avaliacao:
-        avaliacao["progresso_percentual"] = percentual
-        avaliacao["status"] = "concluido" if respondidos == total and total else "em_andamento" if respondidos else "pendente"
-
-
-def salvar_resultado_teste_api(avaliacao_id: str, payload: dict) -> tuple[bool, str]:
-    if MODO_OFFLINE:
-        if not any(str(a["id"]) == str(avaliacao_id) for a in OFFLINE_AVALIACOES):
-            return False, "Avaliação demonstrativa não encontrada."
-        resultados = OFFLINE_RESULTADOS.setdefault(str(avaliacao_id), {})
-        resultados[int(payload["teste_id"])] = payload.copy()
-        atualizar_progresso_offline(str(avaliacao_id))
-        return True, "Resultado salvo somente em memória (modo demonstrativo)."
-    try:
-        resp = requests.post(
-            f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados",
-            json=payload,
-            headers=_headers_autenticados(),
-            timeout=15,
-        )
-        if resp.status_code in (200, 201):
-            return True, "Resultado salvo com sucesso."
-        try:
-            return False, str(resp.json().get("detail", "Não foi possível salvar o resultado."))
-        except ValueError:
-            return False, "Não foi possível salvar o resultado."
+        resp = _req("POST", f"/avaliacoes/{avaliacao_id}/sinalizar",
+                    json={"motivo": motivo.strip() or "Solicitação de revisão pelo aluno."})
     except requests.RequestException:
-        return False, "Falha de comunicação com a API ao salvar o resultado."
+        return False, MSG_SEM_API
+    if resp.status_code == 200:
+        return True, "Avaliação sinalizada ao professor."
+    return False, _erro_api(resp, "Não foi possível sinalizar a avaliação.")
 
 
-def excluir_resultado_teste_api(avaliacao_id: str, teste_id: int) -> tuple[bool, str]:
-    if MODO_OFFLINE:
-        resultados = OFFLINE_RESULTADOS.setdefault(str(avaliacao_id), {})
-        resultados.pop(int(teste_id), None)
-        atualizar_progresso_offline(str(avaliacao_id))
-        return True, "Resultado excluído da demonstração (somente em memória)."
+def marcar_revisada_api(avaliacao_id: str) -> tuple[bool, str]:
+    """Professor: tira a marca de revisão pedida."""
+    if MODO_DEMO:
+        return True, "Marcada como revisada (modo demonstração)."
     try:
-        resp = requests.delete(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resultados/{teste_id}", headers=_headers_autenticados(), timeout=10)
-        if resp.status_code == 200:
-            return True, "Resultado excluído."
-        return False, "Não foi possível excluir o resultado."
-    except Exception:
-        return False, "Erro de comunicação ao excluir."
-    
+        resp = _req("POST", f"/avaliacoes/{avaliacao_id}/revisar")
+    except requests.RequestException:
+        return False, MSG_SEM_API
+    if resp.status_code == 200:
+        return True, "Avaliação marcada como revisada."
+    return False, _erro_api(resp, "Não foi possível marcar como revisada.")
+
+
+# ---------------------------------------------------------------- dashboard
 def buscar_kpis_dashboard() -> tuple[bool, dict | str]:
-    """AULA: Esta função atua como 'carteiro'. Vai à API buscar os dados calculados na ORT-26."""
-    if MODO_OFFLINE:
-        # Se não houver API ligada, devolvemos dados fictícios instantaneamente para desenhar o ecrã.
+    if MODO_DEMO:
+        def grupo(nome, pct, n=5, campo="regiao"):
+            return {campo: nome, "total_valido": n * 4, "positivos": round(n * 4 * pct / 100),
+                    "percentual_positivo": pct, "participantes": n}
         return True, {
-            "participantes_avaliados": 12,
-            "percentual_avaliacoes_completas": 75.0,
-            "dor_media_geral": 4.2,
-            "positividade_por_regiao": [
-                {"regiao": "Joelho", "percentual_positivo": 65.0},
-                {"regiao": "Ombro", "percentual_positivo": 20.0},
-                {"regiao": "Outros (Privacidade < 3)", "percentual_positivo": 15.0}
-            ]
+            "participantes_avaliados": 12, "percentual_avaliacoes_completas": 75.0, "dor_media_geral": 4.2,
+            "gerais_ocultos": False,
+            "positividade_por_regiao": [grupo("Joelho", 35.0), grupo("Ombro", 20.0), grupo("Coluna lombar", 15.0)],
+            "positividade_por_teste": [grupo("Lachman", 30.0, campo="teste"), grupo("Neer", 20.0, campo="teste")],
+            "positividade_por_faixa_etaria": [grupo("18-24", 28.0, campo="faixa_etaria")],
+            "positividade_por_imc": [grupo("Normal", 22.0, campo="faixa_imc")],
         }
     try:
-        # Faz o pedido GET à rota que criámos no backend
-        resp = requests.get(f"{API_BASE_URL}/dashboard/kpis", headers=_headers_autenticados(), timeout=10)
-        if resp.status_code == 200:
-            return True, resp.json()
-        return False, "Não foi possível carregar os dados do Dashboard."
-    except Exception:
-        return False, "Erro de comunicação ao aceder aos KPIs."
-    
+        resp = _req("GET", "/dashboard/kpis", timeout=20)
+    except requests.RequestException:
+        return False, MSG_SEM_API
+    if resp.status_code == 200:
+        return True, resp.json()
+    return False, _erro_api(resp, "Não foi possível carregar os dados do dashboard.")
+
+
 def exportar_relatorio_dashboard() -> tuple[bool, str]:
-    if MODO_OFFLINE:
-        return True, "Relatório simulado exportado com sucesso (Modo Offline)!"
+    if MODO_DEMO:
+        return True, "Exportação simulada (modo demonstração)."
     try:
-        resp = requests.post(f"{API_BASE_URL}/dashboard/exportar/csv", headers=_headers_autenticados(), timeout=10)
-        dados = resp.json()
-        if resp.status_code in (200, 201) and dados.get("sucesso"):
-            return True, dados.get("mensagem", "Exportado com sucesso.")
-        return False, dados.get("mensagem", "Erro ao exportar.")
-    except Exception:
-        return False, "Falha de comunicação ao solicitar exportação."
-    
+        resp = _req("POST", "/dashboard/exportar/csv", timeout=20)
+    except requests.RequestException:
+        return False, MSG_SEM_API
+    if resp.status_code in (200, 201):
+        return True, resp.json().get("mensagem", "Relatório exportado.")
+    return False, _erro_api(resp, "Erro ao exportar o relatório.")
+
+
+# ---------------------------------------------------------------- IA de apoio
+MSG_FICHA_LOCAL = "Esta ficha ainda não foi enviada ao servidor. Aguarde a internet voltar e sincronize."
+
+
 def solicitar_resumo_ia(avaliacao_id: str) -> tuple[bool, str, str]:
-    """AULA: Pede à nossa API (que usa Ollama/Nvidia) para gerar o rascunho."""
-    if MODO_OFFLINE:
-        # Resumo de mentira para conseguirmos testar a interface gráfica sem a API ligada
-        return True, "Os achados sugerem possível frouxidão no joelho direito.\n\nNOTA: Este é um rascunho gerado por IA para revisão humana e não constitui diagnóstico clínico.", "Gerado via IA Local (Mock)"
+    if not MODO_DEMO and fila_local.eh_local(avaliacao_id):
+        return False, MSG_FICHA_LOCAL, ""
+    if MODO_DEMO:
+        nota = "NOTA: Este é um rascunho gerado por IA para revisão humana e não constitui diagnóstico clínico."
+        return True, f"- Lachman (Joelho), lado Direito, Positivo: Possível frouxidão, indicando suspeita de lesão do LCA.\n\n{nota}", "Exemplo (modo demonstração)."
     try:
-        # Aumentamos o timeout para 30s porque as IAs em nuvem podem demorar a responder
-        resp = requests.post(f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/resumo-ia", headers=_headers_autenticados(), timeout=30)
-        if resp.status_code == 200:
-            dados = resp.json()
-            return dados.get("sucesso", False), dados.get("resumo", ""), dados.get("aviso", "")
-        return False, "Erro ao contactar o motor de IA.", ""
-    except Exception:
-        return False, "Erro de comunicação de rede.", ""
-    
+        resp = _req("POST", f"/avaliacoes/{avaliacao_id}/resumo-ia", timeout=40)
+    except requests.RequestException:
+        return False, MSG_SEM_API, ""
+    if resp.status_code == 200:
+        d = resp.json()
+        return bool(d.get("sucesso")), d.get("resumo", ""), d.get("aviso", "")
+    return False, _erro_api(resp, "Erro ao contactar o motor de IA."), ""
+
+
+def salvar_rascunho_ia_api(avaliacao_id: str, texto: str) -> tuple[bool, str]:
+    if not MODO_DEMO and fila_local.eh_local(avaliacao_id):
+        return False, MSG_FICHA_LOCAL
+    if MODO_DEMO:
+        return True, "Rascunho salvo (modo demonstração)."
+    try:
+        resp = _req("POST", f"/avaliacoes/{avaliacao_id}/rascunho", json={"texto_final": texto})
+    except requests.RequestException:
+        return False, MSG_SEM_API
+    if resp.status_code == 200:
+        return True, resp.json().get("mensagem", "Rascunho salvo.")
+    return False, _erro_api(resp, "Erro ao salvar o rascunho.")
+
+
 def aprovar_resumo_ia_api(avaliacao_id: str, texto_final: str) -> tuple[bool, str]:
-    """AULA: Envia o texto editado pelo profissional para ser auditado e guardado no backend."""
-    if MODO_OFFLINE:
-        return True, "Resumo aprovado e auditado com sucesso (Modo Offline)!"
+    if not MODO_DEMO and fila_local.eh_local(avaliacao_id):
+        return False, MSG_FICHA_LOCAL
+    if MODO_DEMO:
+        return True, "Resumo aprovado (modo demonstração)."
     try:
-        payload = {"texto_final": texto_final}
-        resp = requests.post(
-            f"{API_BASE_URL}/avaliacoes/{avaliacao_id}/aprovar-resumo", 
-            headers=_headers_autenticados(), 
-            json=payload, 
-            timeout=10
-        )
-        dados = resp.json()
-        if resp.status_code == 200 and dados.get("sucesso"):
-            return True, dados.get("mensagem")
-        return False, dados.get("mensagem", "Erro ao aprovar resumo.")
-    except Exception:
-        return False, "Erro de rede ao tentar aprovar o resumo."
+        resp = _req("POST", f"/avaliacoes/{avaliacao_id}/aprovar-resumo", json={"texto_final": texto_final})
+    except requests.RequestException:
+        return False, MSG_SEM_API
+    if resp.status_code == 200:
+        return True, resp.json().get("mensagem", "Resumo aprovado.")
+    return False, _erro_api(resp, "Erro ao aprovar o resumo.")

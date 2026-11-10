@@ -1,7 +1,7 @@
-"""Autenticação centralizada usando o endpoint oficial do Supabase Auth.
+"""Autenticação: valida o token no endpoint oficial do Supabase Auth.
 
-Não valida JWT com segredo de exemplo ou algoritmo fixo: assim também funciona
-quando o projeto usa chaves assimétricas/Signing Keys do Supabase.
+Não valida JWT com segredo fixo: também funciona com chaves assimétricas (Signing Keys).
+O papel (aluno/professor) vem da tabela `perfis`, lida com o próprio token do usuário.
 """
 import os
 
@@ -34,10 +34,7 @@ def validar(
     try:
         response = requests.get(
             f"{base_url}/auth/v1/user",
-            headers={
-                "apikey": anon_key,
-                "Authorization": f"Bearer {token}",
-            },
+            headers={"apikey": anon_key, "Authorization": f"Bearer {token}"},
             timeout=8,
         )
     except requests.RequestException as exc:
@@ -69,9 +66,20 @@ def validar(
     }
 
 
+def papel_do_usuario(payload: dict) -> str:
+    """Lê o papel em `perfis` (RLS: cada um lê o próprio perfil). Sem perfil = aluno."""
+    from backend.supabase_client import rest
+
+    linhas = rest(
+        "GET", "perfis", payload,
+        params={"select": "papel", "user_id": f"eq.{payload['sub']}"},
+    )
+    return linhas[0]["papel"] if linhas else "aluno"
+
+
 def requer_professor(payload: dict = Depends(validar)) -> dict:
     """Autoriza ações exclusivas do professor."""
-    if (payload.get("app_metadata") or {}).get("role") != "professor":
+    if papel_do_usuario(payload) != "professor":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Ação permitida somente para usuário com papel de professor.",

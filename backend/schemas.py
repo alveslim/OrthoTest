@@ -2,7 +2,7 @@ from uuid import UUID
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class Resultado(str, Enum):
@@ -26,18 +26,32 @@ class ResultadoTeste(BaseModel):
     lado: Lado
     resultado: Resultado
     dor_0_10: int | None = Field(default=None, ge=0, le=10)
-    valor_medido: float | None = None
+    valor_medido: float | None = Field(default=None, ge=0, le=999)
     observacoes: str | None = Field(default=None, max_length=500)
 
 
 class ParticipanteEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    codigo: str = Field(min_length=1, max_length=20, pattern=r"^[A-Za-z0-9_-]+$")
+    # Sem código: o banco gera P-001, P-002... (único por avaliador).
+    codigo: str | None = Field(default=None, min_length=1, max_length=20, pattern=r"^[A-Za-z0-9_-]+$")
+    # Opcionais (ADR-049): ficam só em `participantes`; nunca vão para dashboard, CSV ou IA.
+    nome: str | None = Field(default=None, max_length=60)
+    sobrenome: str | None = Field(default=None, max_length=80)
     idade: int = Field(gt=0, lt=120)
     peso_kg: float | None = Field(default=None, gt=0, lt=400)
     altura_m: float | None = Field(default=None, ge=0.5, le=2.5)
     consentimento: bool = False
     data_consentimento: datetime | None = None
+    termo_versao: str | None = Field(default=None, max_length=30)
+    consentimento_responsavel: bool = False
+
+    @field_validator("nome", "sobrenome", mode="before")
+    @classmethod
+    def _limpar_nome(cls, v):
+        if isinstance(v, str):
+            v = " ".join(v.split())
+            return v or None
+        return v
 
     @model_validator(mode="after")
     def validar_consentimento(self) -> "ParticipanteEntrada":
@@ -45,6 +59,10 @@ class ParticipanteEntrada(BaseModel):
             raise ValueError("O consentimento é obrigatório antes de cadastrar.")
         if self.data_consentimento is None:
             raise ValueError("Consentimento marcado exige data_consentimento.")
+        if not self.termo_versao:
+            raise ValueError("Consentimento marcado exige a versão do termo aceito.")
+        if self.idade < 18 and not self.consentimento_responsavel:
+            raise ValueError("Participante menor de 18 anos exige a ciência do responsável legal.")
         return self
 
 
@@ -53,29 +71,19 @@ class AvaliacaoEntrada(BaseModel):
     participante_id: UUID
 
 
-class Regiao(str, Enum):
-    JOELHO = "Joelho"
-    TORNOZELO = "Tornozelo"
-    QUADRIL = "Quadril"
-    OMBRO = "Ombro"
-    COTOVELO = "Cotovelo"
-    PUNHO = "Punho"
-    COLUNA = "Coluna"
-    COLUNA_LOMBAR = "Coluna lombar"
-    COLUNA_CERVICAL = "Coluna cervical"
-    TORAX = "Tórax"
-
-
 class TesteCatalogo(BaseModel):
+    """Linha de testes_catalogo. `regiao` é texto livre: novos testes entram só no banco (ORT-45)."""
     id: int = Field(gt=0)
-    regiao: Regiao
+    regiao: str = Field(min_length=1, max_length=50)
     nome: str = Field(min_length=1, max_length=100)
     estrutura: str | None = Field(default=None, max_length=150)
     definicao: str = Field(min_length=1)
     objetivo: str = Field(min_length=1)
     como_fazer: str = Field(min_length=1)
     positivo_se: str = Field(min_length=1)
+    unidade_medida: str | None = Field(default=None, max_length=20)
     referencia: str | None = None
+    ativo: bool = True
 
 
 class RascunhoIA(BaseModel):
@@ -105,6 +113,7 @@ class Perfil(BaseModel):
 
 
 class ParticipanteSaida(ParticipanteEntrada):
+    codigo: str
     id: UUID
     user_id: UUID
     criado_em: datetime
@@ -122,6 +131,7 @@ class AvaliacaoSaida(AvaliacaoEntrada):
 
 class ResultadoTesteSaida(ResultadoTeste):
     id: UUID
+    excluido_em: datetime | None = None
 
 
 class AvaliacaoSinalizar(BaseModel):

@@ -4,7 +4,7 @@ from tela_login import render_login
 from tela_participantes import render_participantes
 from tela_selecao import render_selecao
 from tela_teste import render_teste
-from estado import sessao, limpar_sessao
+from estado import sessao, limpar_sessao, tentar_restaurar_sessao
 from tela_resumo_ia import render_resumo_ia
 from tela_dashboard import render_dashboard
 
@@ -28,15 +28,24 @@ def main(page: ft.Page):
     def navegar(nome_rota: str):
         if nome_rota == "login":
             limpar_sessao()
-        elif not sessao["access_token"] or not sessao["consentimento_aceito"]:
-            # Bloqueia acesso a qualquer rota interna sem login e sem consentimento
+        elif not sessao["access_token"]:
+            # Bloqueia acesso a qualquer rota interna sem login
             nome_rota = "login"
 
         page.clean()
-        rotas[nome_rota]()
+        try:
+            rotas[nome_rota]()
+        except Exception as exc:  # nunca deixar a tela em branco: mostra o erro e oferece voltar
+            page.clean()
+            page.add(
+                ft.Text("Não foi possível abrir esta tela.", size=18, weight=ft.FontWeight.BOLD),
+                ft.Text(f"{type(exc).__name__}: {exc}", size=12),
+                ft.Button(content=ft.Text("Voltar ao início"), on_click=lambda _: navegar("participantes")),
+            )
         page.update()
 
-    navegar("login")
+    # Já entrou antes neste aparelho? Abre direto (funciona sem internet).
+    navegar("participantes" if tentar_restaurar_sessao() else "login")
 
 if __name__ == "__main__":
     ft.run(main)

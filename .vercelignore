@@ -1,0 +1,10 @@
+app/
+tests/
+docs/
+dados_ficticios/
+relatorios/
+supabase/
+database/
+scripts/
+.venv/
+build/

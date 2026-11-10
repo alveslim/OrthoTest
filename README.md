@@ -27,15 +27,21 @@ As referências bibliográficas do catálogo ficam vazias até o grupo validar e
 ## Arquitetura
 
 ```
-Cliente Flet (desktop / web / mobile)
-          |
-          | HTTPS + access token do Supabase
-          v
-API FastAPI  --------------------> regras clínicas locais / LLM opcional
-          |
-          | chave anon + sessão do usuário
-          v
-Supabase Auth + PostgREST + PostgreSQL (RLS) + Storage privado
+ortocheck/
+├── app/                    # Cliente Flet (telas, componentes, tema)
+├── backend/                # API Flask, schemas Pydantic, serviços
+├── ai/                     # regras_clinicas.json e integração com o LLM
+├── database/
+│   └── seed_catalogo.sql     # gerado a partir de app/catalogo_testes.json (os 19 testes)
+├── supabase/migrations/    # schema, RLS, views e Storage (aplicadas no projeto)
+├── dados_ficticios/
+│   └── gerar_dados.py      # participantes FICTÍCIOS (semente fixa) para desenvolver
+├── tests/                  # pytest
+├── docs/                   # fichas dos testes, mockups, croqui, decisões, referências
+├── relatorios/             # CSV/PDF gerados
+├── requirements.txt
+├── .env.example
+└── README.md
 ```
 
 - **Cliente:** telas de login/consentimento, participantes, seleção de testes, registro de resultados, dashboard e resumo para revisão.
@@ -48,102 +54,228 @@ A aplicação não deve receber a chave `service_role`. Use apenas `SUPABASE_ANO
 ## Estrutura
 
 ```
-OrthoTest/
-├── app/                         # Cliente Flet
-├── backend/                     # API FastAPI, autenticação e schemas
-│   └── routers/api.py
-├── ai/regras_clinicas.json      # Regras determinísticas e referências
-├── supabase/migrations/         # Migrations do banco, RLS, views e Storage
-├── database/seed_catalogo.sql   # Catálogo atualizado (19 ativos + legado)
-├── dados_ficticios/             # Dados exclusivamente fictícios
-├── tests/                       # Testes pytest
-├── docs/                        # API, instalação, segurança e decisões
-├── requirements.txt
-├── requirements-dev.txt
-└── .env.example
+Cliente (Flet: web / desktop / mobile)
+        │  HTTPS + token (JWT do Supabase Auth)
+        ▼
+Backend (FastAPI + Pydantic + Pandas) ──► Módulo de IA (só dados desidentificados)
+        │
+        ▼
+Supabase (PostgreSQL + Auth + Storage, com RLS)
 ```
 
-## Executar localmente (Windows / PowerShell)
+| Camada | Tecnologia | Responsabilidade |
+|---|---|---|
+| Apresentação | Flet | Check-up, lista de participantes, dashboard |
+| Backend | FastAPI, Pydantic, Pandas | Validar token e dados, regras de negócio, agregações, relatórios |
+| Dados | Supabase (PostgreSQL) | Tabelas, Auth, Storage, Row Level Security |
+| IA | Regras + LLM (a definir) | Rascunho de resumo para discussão |
 
 1. Clone e instale:
 
-```powershell
-git clone https://github.com/alveslim/OrthoTest.git
-cd OrthoTest
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements-dev.txt
-Copy-Item .env.example .env
-```
+## Testes ortopédicos (19)
 
-2. Preencha o arquivo `.env` com `SUPABASE_URL` e `SUPABASE_ANON_KEY`. Para execução local, mantenha `API_BASE_URL=http://127.0.0.1:8000/api/v1` e `MODO_OFFLINE=false`.
+| Região | Testes |
+|---|---|
+| Joelho | Lachman (LCA); Estresse em Valgo (LCM); Estresse em Varo (LCL) |
+| Tornozelo | Thompson; Inclinação Talar |
+| Quadril | Thomas; FADIR |
+| Ombro | Neer; Jobe |
+| Cotovelo | Cozen; Estresse em Valgo |
+| Punho | Tinel; Phalen |
+| Coluna lombar | Lasègue; Patrick-FABERE |
+| Tórax | Adams; Wright |
+| Coluna cervical | Spurling; Distração Cervical |
 
-3. Inicie a API em um terminal:
+Fichas por: Sabrina e Vinícius (MMII), Carolaine e Sophia (ombros, cotovelos e punhos), Eduarda e Sophia (coluna). A fonte do catálogo é `app/catalogo_testes.json`; o `database/seed_catalogo.sql` é gerado por `python scripts/gerar_seed_catalogo.py`. Novos testes entram só com `INSERT` em `testes_catalogo` (ORT-45), sem mexer em código.
 
 ```powershell
 python -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-4. Inicie o cliente em outro terminal:
+| Tabela | Colunas |
+|---|---|
+| participantes | id, codigo (automático), nome e sobrenome (opcionais, ADR-049), idade, peso_kg, altura_m, consentimento, data_consentimento, termo_versao, consentimento_responsavel, criado_em |
+| avaliacoes | id, participante_id, avaliador_id, data_avaliacao, flag_professor, flag_motivo |
+| testes_catalogo | id, regiao, nome, definicao, objetivo, como_fazer, positivo_se, referencia |
+| resultados_testes | id, avaliacao_id, teste_id, lado, resultado, valor_medido, dor_0_10, observacoes |
+| ia_rascunhos | id, avaliacao_id, texto, gerado_em, revisado_por, aprovado |
+| perfis | user_id, nome_exibicao, papel (aluno ou professor) |
 
-```powershell
-flet run app/main.py
+Relacionamentos: `avaliacoes.participante_id → participantes`, `resultados_testes.avaliacao_id → avaliacoes`, `resultados_testes.teste_id → testes_catalogo`, `ia_rascunhos.avaliacao_id → avaliacoes`.
+
+Valores fixos: `lado` ∈ {Direito, Esquerdo, Bilateral}; `resultado` ∈ {Positivo, Negativo, Não realizado, Inconclusivo}.
+
+### Regras de negócio (decididas pelo grupo, mudar só com registro em `docs/decisoes.md`)
+
+- **Sem nome completo.** O participante é identificado por código (P-001). Idade, peso e altura são os únicos dados pessoais.
+- **Consentimento obrigatório** antes de abrir o primeiro teste.
+- **Positivo não é lesão e negativo não é "saudável".** Positivo = sinal compatível com a hipótese em investigação.
+- `status` da avaliação é **calculado**: Completo = todos os testes esperados com resultado diferente de vazio (Não realizado e Inconclusivo contam como respondidos).
+- IMC = `peso_kg / altura_m²`.
+- `dor_0_10` é inteiro de 0 a 10. `valor_medido` guarda o ângulo quando existir (ex.: Lasègue).
+- **Dashboard oculta qualquer grupo com menos de 3 participantes.**
+- **IA nunca diagnostica.** Toda saída é rascunho, com revisor registrado e aprovação do professor.
+- Exclusão é **lógica**, com confirmação.
+
+## 1. Preparar o ambiente
+
+```bash
+git clone https://github.com/seu-usuario/ortocheck.git && cd ortocheck
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements-dev.txt   # versões já fixadas (Flet 1.0.4)
+
+cp .env.example .env             # preencha SUPABASE_URL e SUPABASE_ANON_KEY
+printf ".venv/\n__pycache__/\n.env\n*.db\n" > .gitignore
+git add . && git commit -m "kickoff: estrutura do projeto"
 ```
 
 Para abrir no navegador:
 
-```powershell
-flet run --web app/main.py
+Rodar (três modos):
+
+```bash
+# 1) Online: API + app (precisa de SUPABASE_URL e SUPABASE_ANON_KEY no .env)
+uvicorn backend.main:app --reload --port 8000    # terminal 1
+flet run app/main.py                             # terminal 2 (desktop)
+flet run --web app/main.py                       # alternativa: navegador
+
+# 2) Demonstração (dados de exemplo, login aceita qualquer coisa, nada é gravado)
+MODO_DEMO=true flet run app/main.py              # Windows PowerShell: $env:MODO_DEMO="true"
+
+# 3) Testes automatizados
+pytest
 ```
 
-Quando o cliente web estiver hospedado em outro domínio, configure `API_BASE_URL` com a URL pública da API e inclua a origem em `CORS_ORIGINS`. O endereço `127.0.0.1` só funciona quando API e cliente estão na mesma máquina.
+Celular (APK/iPhone) e API na internet: veja `docs/publicacao.md`.
 
-## Configurar o Supabase
+Sem internet no uso real é automático: o app lembra do login (sessão salva em `~/.orthotest`), guarda
+participantes, fichas e resultados no aparelho e envia tudo, em ordem, quando a conexão volta (botão de
+sincronizar na lista). O primeiro login precisa de internet. Sair do app esquece o login, mas não apaga o que
+está pendente de envio.
 
-1. No projeto Supabase correto, confira primeiro se as tabelas e migrations anteriores estão aplicadas.
-2. Aplique `supabase/migrations/20261109170000_finalizacao_integridade_rls_storage.sql`. Ela cria tabelas que estiverem faltando, alinha colunas esperadas, ativa RLS, recria políticas específicas, prepara views e cria o bucket privado `relatorios`.
-3. Execute `database/seed_catalogo.sql` para atualizar os testes ativos. Não apague registros históricos.
-4. Crie usuários no Supabase Auth. Para um professor, o administrador deve definir `app_metadata.role = professor`; os demais usuários ficam como `aluno`.
-5. Teste com dois usuários de aluno diferentes e um professor, confirmando que cada aluno só consegue ver seus próprios participantes e avaliações e que o professor consegue revisar os registros.
+Primeiro acesso: crie o usuário em Supabase → Authentication → Users (o perfil `aluno` nasce automático).
+Para virar professor: `UPDATE perfis SET papel = 'professor' WHERE user_id = '<uuid do usuário>';`
 
-**Não execute migrations diretamente em produção sem backup e sem conferir o projeto selecionado.** A migration é idempotente quanto à criação/alinhamento de objetos, mas qualquer alteração de políticas deve ser validada no banco real.
+## 2. Chamados (tickets) para resolver, em ordem
 
-## Dados e regras de negócio
+Etiquetas: **[A]** dados/backend/IA, **[B]** app/design, **[G]** grupo inteiro (clínico).
 
-- Durante desenvolvimento, utilize somente dados fictícios.
-- Não registre nomes completos; use códigos como `P-001`.
-- O consentimento deve estar marcado e acompanhado de data antes do cadastro.
-- Um resultado positivo não é um diagnóstico; um negativo não garante ausência de condição.
-- Valores permitidos para resultado: `Positivo`, `Negativo`, `Não realizado`, `Inconclusivo`.
-- Valores permitidos para lado: `Direito`, `Esquerdo`, `Bilateral`.
-- Dor: inteiro de 0 a 10.
-- O progresso é calculado com base nos testes ativos do catálogo.
-- A exclusão de participantes e avaliações deve ser lógica; resultados podem ser removidos da avaliação pelo endpoint próprio.
-- Dashboard não exibe uma região isolada com menos de três participantes. Grupos ocultos só são agregados quando o próprio grupo agregado alcança o limite mínimo.
-- A aprovação de resumo de IA é exclusiva de professor e registra o revisor.
+**Etapa A: Fundamentos**
+- [x] **ORT-00** Revisão inicial do projeto, mockups e arquitetura (ver `docs/revisao.md`).
+- [x] **ORT-01** [G] Confirmar as regras de negócio acima e registrar em `docs/decisoes.md`. Definir datas reais: pré-projeto, dia da comunidade, entrega final.
+- [x] **ORT-02** [G] Corrigir os .docx (colagem do Lasègue/Patrick; Adams: tórax ou coluna) e incluir referências bibliográficas em cada ficha.
+- [x] **ORT-03** [A] Criar o repositório, `.env.example` e `requirements.txt` com versões fixas.
+- [x] **ORT-04** [B] Definir paleta, tipografia e tema Flet (Material 3 com cor-semente). Validar contraste mínimo de 4,5:1.
+- [x] **ORT-05** [A] Escrever `dados_ficticios/gerar_dados.py` (semente fixa, ~60 participantes com resultados plausíveis) para alimentar o desenvolvimento.
 
-## Modo de demonstração
+**Etapa B: Banco de dados (Supabase)**
+- [x] **ORT-06** [A] Escrever `database/schema.sql` com PK, FK, `NOT NULL` e `CHECK` (dor entre 0 e 10, `lado` e `resultado` válidos, idade > 0, altura entre 0,5 e 2,5).
+- [x] **ORT-07** [A] Usar `TIMESTAMPTZ` e exclusão lógica (`excluido_em`).
+- [x] **ORT-08** [A] Carregar `seed_catalogo.sql` com os 16 testes a partir das fichas.
+- [x] **ORT-09** [A] Ativar **RLS** em todas as tabelas: aluno vê o que criou, professor vê tudo. Criar `perfis` e papéis no Supabase Auth.
+- [x] **ORT-10** [A] Criar views: `vw_positivos_por_teste`, `vw_positivos_por_regiao`, `vw_participantes_faixa_etaria`.
 
-`MODO_OFFLINE=true` habilita dados mock apenas para demonstrar a interface. Esses dados são temporários e não são enviados ao Supabase. Não utilize esse modo para registrar avaliações reais.
+**Etapa C: Backend**
+- [x] **ORT-11** [A] Schemas Pydantic de todas as entidades (valida resultado, lado, dor).
+- [x] **ORT-12** [A] Middleware que valida o JWT do Supabase e o papel do usuário.
+- [x] **ORT-13** [A] Endpoints: participantes, avaliações, resultados (salvar vários de uma vez), catálogo.
+- [x] **ORT-14** [A] Calcular `status` e progresso ("2 de 6 testes") no backend.
+- [x] **ORT-15** [A] Endpoint "sinalizar ao professor".
+- [x] **ORT-16** [A] Documentar a API (lista de endpoints em `docs/api.md`) para o app consumir sem esperar o backend.
 
-## Testes
+**Etapa D: App (Flet)**
+- [x] **ORT-17** [B] Desenhar as telas **em formato celular** (check-up, teste, lista, dashboard) e só depois adaptar ao desktop.
+- [x] **ORT-18** [B] Login com sessão lembrada; termo de consentimento lido e confirmado no cadastro de cada participante (data e versão gravadas).
+- [x] **ORT-19** [B] Lista de participantes por código, com status e botão claro "Novo participante".
+- [x] **ORT-20** [B] Tela de seleção de testes com progresso e separação visual entre "feito" e "resultado".
+- [x] **ORT-21** [B] Tela do teste: seletor Positivo/Negativo/Não realizado, D/E/Bilateral, slider de dor 0–10, observações e botão "?" com a ficha. Alvos de toque de 44–48 px.
+- [x] **ORT-22** [B] Ações destrutivas (Excluir) separadas do Salvar, com confirmação.
+- [x] **ORT-23** [B] Traduzir toda a interface para português (sem "Search", "Hello", "Passed/Unpassed").
+- [x] **ORT-24** [B] Rodar com dados fictícios em JSON e depois trocar pela API.
+- [x] **ORT-25** [B] Testar o build web, desktop e APK (`flet build apk`). Anotar o que não funciona.
 
-Execute:
+**Etapa E: Dashboard e relatórios**
+- [x] **ORT-26** [A] Calcular KPIs com Pandas ou SQL: participantes avaliados, % de avaliações completas, % positivo por teste e por região, dor média.
+- [x] **ORT-27** [A] Aplicar a regra de n < 3 (ocultar ou agrupar).
+- [x] **ORT-28** [B] Gráficos: cartões de KPI, barras horizontais por teste, positivos por região, faixa etária e IMC, filtros (região, lado, faixa etária). Remover o template financeiro.
+- [x] **ORT-29** [A] Gerar relatório CSV/PDF **sem identificação individual** e guardar no Supabase Storage.
 
-```powershell
-python -m pytest -q
-```
+**Etapa F: IA de apoio**
+- [x] **ORT-30** [G] Escrever `ai/regras_clinicas.json`: teste positivo → estrutura sugerida, **com referência** (nunca inventada).
+- [x] **ORT-31** [A] Motor de regras em Python que lê as regras e gera os "achados" de uma avaliação.
+- [x] **ORT-32** [A] LLM só para redigir o resumo a partir dos achados e dos dados **desidentificados**. Prompt proíbe diagnóstico. Testar com modelo local (Ollama) ou API gratuita.
+- [x] **ORT-33** [B] Painel "Assistente de IA": mostra o rascunho, o aviso "rascunho para revisão" e botões Revisar/Aprovar. Renomear "Sugerir Diagnóstico" para "Gerar resumo para discussão".
+- [x] **ORT-34** [A] Registrar `revisado_por` e `aprovado` em `ia_rascunhos`.
+- [x] **ORT-35** [A] Se usar Colab + ngrok: endpoint protegido por chave. Nunca enviar nome ou contato.
 
-Os testes unitários não substituem o teste de integração com o Supabase. A validação real de RLS exige contas de teste distintas no projeto e requisições autenticadas com cada sessão.
+**Etapa G: Testes**
+- [x] **ORT-36** [A] `pytest` das regras (status, IMC, n < 3, validações Pydantic), incluindo casos de borda.
+- [x] **ORT-37** [A] Testes de dados: nenhum resultado sem avaliação, sem duplicidade de (avaliação, teste, lado), dor dentro de 0–10.
+- [x] **ORT-38** [A] **Teste de RLS:** um aluno não consegue ler dados de outro aluno.
+- [x] **ORT-39** [A] Reconciliação: total de resultados no banco = no dashboard = no relatório (diferença zero).
+- [ ] **ORT-40** [G] Teste de usabilidade com colegas (o PDF exige). Cronometrar uma avaliação completa e registrar os erros encontrados.
+- [x] **ORT-41** [G] Teste de regressão: refazer o fluxo inteiro com os dados fictícios e confirmar que os números não mudam.
 
-## Documentação
+**Etapa H: Como no dia real**
+- [x] **ORT-42** [A] Modo de contingência: salvar rascunho local e sincronizar quando voltar a internet.
+- [x] **ORT-43** [G] Plano B impresso: planilha ou formulário, caso o sistema caia.
+- [ ] **ORT-44** [A] Acessar o projeto Supabase na véspera (projetos inativos são pausados) e testar com a rede da universidade.
+- [x] **ORT-45** [G] Mudança de requisito: "adicionar um novo teste ao catálogo". Fazer sem mexer em código, só no banco, e documentar.
+- [x] **ORT-46** [A] Simular 5 avaliadores salvando ao mesmo tempo e medir o tempo de resposta.
+- [ ] **ORT-47** [G] Definir o que acontece com os dados depois do projeto (exportar agregados, apagar os individuais) e registrar em `docs/decisoes.md`.
+- [ ] **ORT-48** [G] Escrever o resumo de 1 página: o que foi encontrado, limitações e o que a IA fez e não fez.
 
-- [Contrato da API](docs/api.md)
-- [Instalação](docs/instalacao.md)
-- [Segurança RLS](docs/seguranca_rls.md)
-- [Integridade dos dados](docs/integridade_dados.md)
-- [Decisões de produto](docs/decisoes.md)
+## 3. Dicas
 
-## Ética e privacidade
+- **Nunca use dados reais para desenvolver.** Gere fictícios com semente fixa.
+- Faça commits pequenos, um por chamado: `ORT-21: tela do teste com seletor de resultado`.
+- Combinem o **contrato primeiro** (schemas Pydantic e `docs/api.md`). Assim [A] e [B] trabalham em paralelo.
+- Antes de corrigir, **conte**: "o dashboard mostra 12 positivos de Neer; o banco tem 12". Esse número vira teste.
+- Fixe a versão do Flet; a API muda entre versões.
+- Toda decisão clínica ou de privacidade fica em `docs/decisoes.md`, mesmo quando foi tomada rápido.
+- A IA só entra depois de o check-up e o dashboard funcionarem.
 
-A participação deve ser voluntária e consentida. O sistema coleta o mínimo necessário, evita identificação nominal e apresenta apenas indicadores agregados no dashboard. Não publique dados individuais, tokens, chaves do Supabase ou arquivos `.env` no repositório.
+## 4. Para pesquisar
+
+- Flet: `ft.Page`, `NavigationBar`, `ft.Theme(color_scheme_seed=...)`, `flet build apk`
+- Supabase: Auth (JWT), Row Level Security, Storage, `supabase-py`
+- Flask: blueprints, validação com Pydantic, CORS
+- Pandas: `groupby`, `pivot_table`, `cut` (faixas etárias), `to_csv`
+- PostgreSQL: `CHECK`, `TIMESTAMPTZ`, views, políticas RLS
+- LGPD: dado pessoal sensível, consentimento, minimização, retenção
+- Acessibilidade: contraste WCAG (4,5:1), alvos de toque
+- IA: prompts com restrições, RAG simples sobre as fichas, Ollama
+- Referências dos testes: Magee (Avaliação Musculoesquelética), Cipriano (Manual de Testes Especiais Ortopédicos). Confirmar títulos e edições.
+
+## 5. Erros de partida já identificados (gabarito)
+
+Só leia depois de fazer a sua própria revisão.
+
+<details>
+<summary>Abrir gabarito</summary>
+
+- **Ética e PDF do professor:** botão "Sugerir Diagnóstico"; `nome_completo` na tabela; nomes completos nos mockups; ausência de consentimento; dashboard sem proteção contra n pequeno.
+- **Linguagem clínica:** "Passed/Unpassed", "Falhou/Com Lesão", `sinal_positivo BOOLEAN NOT NULL` sem opção "Não realizado"; ✓ verde em teste positivo.
+- **Escopo:** telas de Pescoço, Braço e Musculatura sem ficha científica; menu "Pesquisa" sem função.
+- **Fichas (.docx):** texto colado no Lasègue/Patrick; Adams como "Tórax" vs "Coluna"; sem referências.
+- **Banco:** `status` e `avaliador` digitados em vez de calculado e FK; `TIMESTAMP` sem fuso; `ON DELETE CASCADE` com botão Excluir; sem RLS; sem tabela de perfis.
+- **Arquitetura:** Prisma (JavaScript) com backend Python; treinar um modelo sem base rotulada; Colab + ngrok em produção; IA ligada direto ao banco e ao Drive no croqui; tudo depende de internet.
+- **Visual:** dashboard de template financeiro em inglês; seis donuts iguais; contraste baixo (texto laranja em laranja, branco em cinza); logos diferentes entre as telas; Salvar e Excluir lado a lado; círculos de ~20 px; só mockups de notebook.
+
+</details>
+
+## Ética e LGPD
+
+- Participação **voluntária**, com consentimento registrado.
+- Coleta mínima, sem nome completo e sem imagens sem autorização.
+- Nenhum dado individual é exibido em apresentações ou no painel.
+- Dados usados apenas para triagem educativa e análise descritiva. A atividade não substitui avaliação fisioterapêutica ou médica.
+
+## Equipe
+
+Estudantes de Fisioterapia da Universidade Nilton Lins. Desenvolvimento: [A] backend/dados/IA e [B] app/design (preencher nomes). Fichas clínicas: veja a seção "Testes ortopédicos".
+
+## Referências
+
+_Adicionar aqui as referências das fichas (obrigatório pelas orientações do projeto)._

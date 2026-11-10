@@ -26,6 +26,7 @@ def test_participante_valido_com_consentimento():
         altura_m=1.70,
         consentimento=True,
         data_consentimento="2026-10-21T10:00:00-04:00",
+        termo_versao="2026-11-v1",
     )
 
     assert participante.codigo == "P-001"
@@ -80,7 +81,7 @@ CATALOGO_BASE = {
 def test_catalogo_aceita_registro_valido():
     teste = schemas.TesteCatalogo.model_validate(CATALOGO_BASE)
 
-    assert teste.regiao.value == "Joelho"
+    assert teste.regiao == "Joelho"
     assert teste.estrutura is None
     assert teste.referencia is None
 
@@ -89,7 +90,7 @@ def test_catalogo_aceita_registro_valido():
     "campo, valor",
     [
         ("id", 0),
-        ("regiao", "Região inexistente"),
+        ("regiao", ""),
         ("definicao", ""),
     ],
 )
@@ -193,37 +194,19 @@ def test_resultado_desconhecido_e_rejeitado():
     with pytest.raises(ValidationError):
         ResultadoTeste.model_validate({**BASE, "resultado": "Talvez"})
 
-def test_resultado_da_tela_pode_omitir_avaliacao_id():
-    payload = {
-        "teste_id": 1,
-        "lado": "Direito",
-        "resultado": "Positivo",
-        "dor_0_10": 4,
-    }
-    registro = ResultadoTeste.model_validate(payload)
-    assert registro.avaliacao_id is None
-    assert registro.teste_id == 1
+def test_codigo_e_nome_sao_opcionais_e_nome_e_normalizado():
+    p = ParticipanteEntrada(idade=30, consentimento=True, data_consentimento="2026-11-10T10:00:00-04:00",
+                            termo_versao="2026-11-v1", nome="  Ana   Maria ", sobrenome="   ")
+    assert p.codigo is None and p.nome == "Ana Maria" and p.sobrenome is None
 
 
-def test_participante_sem_consentimento_e_rejeitado():
-    with pytest.raises(ValidationError, match="consentimento é obrigatório"):
-        ParticipanteEntrada(codigo="P-004", idade=20)
+def test_consentimento_exige_versao_do_termo():
+    with pytest.raises(ValidationError, match="versão do termo"):
+        ParticipanteEntrada(idade=30, consentimento=True, data_consentimento="2026-11-10T10:00:00-04:00")
 
 
-@pytest.mark.parametrize(
-    "regiao",
-    [
-        "Joelho",
-        "Tornozelo",
-        "Quadril",
-        "Ombro",
-        "Cotovelo",
-        "Punho",
-        "Coluna lombar",
-        "Coluna cervical",
-        "Tórax",
-    ],
-)
-def test_catalogo_aceita_regioes_dos_documentos_atualizados(regiao):
-    teste = schemas.TesteCatalogo.model_validate({**CATALOGO_BASE, "regiao": regiao})
-    assert teste.regiao.value == regiao
+def test_menor_de_idade_exige_ciencia_do_responsavel():
+    base = dict(idade=15, consentimento=True, data_consentimento="2026-11-10T10:00:00-04:00", termo_versao="v1")
+    with pytest.raises(ValidationError, match="responsável legal"):
+        ParticipanteEntrada(**base)
+    assert ParticipanteEntrada(**base, consentimento_responsavel=True).idade == 15

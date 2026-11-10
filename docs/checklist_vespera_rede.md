@@ -9,7 +9,7 @@
 ## 2. Plano de Contingência de Rede e Contactos
 Caso a rede Wi-Fi institucional sofra degradação durante o evento:
 1. **Contingência Nível 1 (Hotspot 4G/5G):** Ligar roteamento móvel do smartphone principal da equipa (Portas 443 e 8000 abertas).
-2. **Contingência Nível 2 (Modo Offline App):** Ativar `MODO_OFFLINE=True` / Fila Local (ORT-42) para continuar operando sem internet.
+2. **Contingência Nível 2 (Modo Offline App):** O app já continua sem internet sozinho (fila local, ORT-42): confira antes que cada avaliador **entrou uma vez com internet** e, ao voltar a rede, toque em sincronizar. Não use `MODO_DEMO` em avaliações reais.
 3. **Contingência Nível 3 (Plano B Físico):** Distribuir as fichas impressas elaboradas na ORT-43.
 
 ### Contactos de Emergência Técnica (Equipa)

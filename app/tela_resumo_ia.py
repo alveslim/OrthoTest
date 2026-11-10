@@ -1,127 +1,93 @@
 import flet as ft
-from theme import PRIMARY, SURFACE, TEXT_PRIMARY, TEXT_SECONDARY, CARD_BORDER
-from estado import sessao, solicitar_resumo_ia, aprovar_resumo_ia_api
+
+from estado import aprovar_resumo_ia_api, salvar_rascunho_ia_api, sessao, solicitar_resumo_ia
+from theme import (
+    CARD_BORDER, PRIMARY, REVIEW_TEXT, SURFACE, TEXT_PRIMARY, WARNING_BACKGROUND, WARNING_TEXT,
+)
+
 
 def render_resumo_ia(page: ft.Page, navegar):
-    avaliacao_atual = sessao.get("avaliacao_atual")
-    if not avaliacao_atual:
-        page.snack_bar = ft.SnackBar(ft.Text("Erro: Nenhuma avaliação ativa."), bgcolor=ft.Colors.ERROR)
-        page.snack_bar.open = True
+    """Painel do assistente de IA (ORT-33): só gera RASCUNHO; nunca diagnostica."""
+    avaliacao = sessao.get("avaliacao_atual")
+    if not avaliacao:
+        sessao["aviso_selecao"] = "Abra um participante para gerar o resumo da avaliação."
         navegar("participantes")
         return
 
-    avaliacao_id = str(avaliacao_atual["id"])
+    avaliacao_id = str(avaliacao["id"])
+    eh_professor = sessao.get("papel") == "professor"
 
-    # ---------------------------------------------------------
-    # COMPONENTES VISUAIS (ORT-33)
-    # ---------------------------------------------------------
-    
-    # AULA: O Aviso Legal amarelo e gritante garante que o utilizador 
-    # não confunde isto com um diagnóstico médico validado.
     aviso_legal = ft.Container(
-        content=ft.Row([
-            ft.Icon(ft.Icons.WARNING_AMBER_ROUNDED, color=ft.Colors.AMBER_900),
-            ft.Text(
-                "ATENÇÃO: O texto abaixo é um rascunho gerado por IA para revisão humana. Não constitui diagnóstico médico nem substitui o raciocínio clínico.", 
-                color=ft.Colors.AMBER_900, weight=ft.FontWeight.BOLD, size=12, expand=True
-            )
-        ]),
-        bgcolor=ft.Colors.AMBER_100, padding=10, border_radius=8, border=ft.Border.all(1, ft.Colors.AMBER_300)
+        content=ft.Text(
+            "ATENÇÃO: o texto abaixo é um rascunho gerado para discussão e revisão humana. "
+            "Não constitui diagnóstico nem substitui o raciocínio clínico.",
+            color=WARNING_TEXT, weight=ft.FontWeight.BOLD, size=12,
+        ),
+        bgcolor=WARNING_BACKGROUND, padding=12, border_radius=8,
     )
-
-    # AULA: A caixa de texto é multiline (permite parágrafos) e é EDITÁVEL. 
-    # O humano tem o poder de alterar o texto antes de aprovar[cite: 9].
     caixa_texto = ft.TextField(
-        multiline=True,
-        min_lines=12,
-        max_lines=20,
-        expand=True,
-        label="Rascunho Clínico (Editável pelo profissional)",
-        text_size=14,
-        border_color=PRIMARY
+        multiline=True, min_lines=10, max_lines=18,
+        label="Rascunho (editável antes de salvar ou aprovar)", text_size=14,
+        border_color=PRIMARY, bgcolor=SURFACE,
+    )
+    estado_txt = ft.Text("", size=12, visible=False)
+
+    botao_gerar = ft.Button(content=ft.Text("Gerar resumo para discussão", weight=ft.FontWeight.BOLD),
+                            bgcolor=PRIMARY, color="white", height=48)
+    botao_salvar = ft.Button(content=ft.Text("Salvar rascunho"), height=48, disabled=True)
+    botao_aprovar = ft.Button(
+        content=ft.Text("Aprovar (professor)", weight=ft.FontWeight.BOLD), bgcolor=PRIMARY, color="white",
+        height=48, disabled=True, visible=eh_professor,
     )
 
-    indicador_estado = ft.Text(visible=False, size=12, italic=True)
-    pode_aprovar = sessao.get("papel") == "professor"
-    texto_permissao = ft.Text(
-        "Somente um usuário com papel de professor pode aprovar e registrar o resumo. Você pode gerar e revisar o rascunho.",
-        size=11, color=TEXT_SECONDARY, visible=not pode_aprovar
-    )
-
-    # ---------------------------------------------------------
-    # AÇÕES DOS BOTÕES
-    # ---------------------------------------------------------
-    def gerar_clique(e):
-        # Bloqueia o botão enquanto a IA "pensa"
-        btn_gerar.disabled = True
-        btn_gerar.text = "A analisar achados..."
-        indicador_estado.visible = False
+    def mostrar(msg: str, ok: bool):
+        estado_txt.value = msg
+        estado_txt.color = PRIMARY if ok else REVIEW_TEXT
+        estado_txt.visible = True
         page.update()
-        
-        sucesso, resumo, aviso = solicitar_resumo_ia(avaliacao_id)
-        
-        # Injeta a resposta da IA na caixa de texto
-        caixa_texto.value = resumo
-        
-        # AULA: Cumprimos o critério de renomear a ação explicitamente[cite: 9].
-        btn_gerar.text = "Regerar resumo para discussão"
-        btn_gerar.disabled = False
-        
-        if sucesso:
-            indicador_estado.value = f"Status: {aviso} - Aguardando sua revisão."
-            indicador_estado.color = ft.Colors.GREEN_700
-            btn_aprovar.disabled = not pode_aprovar  # Apenas professor pode aprovar após gerar o rascunho
+
+    def definir_texto_botao(botao: ft.Button, texto: str):
+        botao.content = ft.Text(texto, weight=ft.FontWeight.BOLD)
+
+    def gerar(_):
+        botao_gerar.disabled = True
+        definir_texto_botao(botao_gerar, "Gerando...")
+        page.update()
+        ok, resumo, aviso = solicitar_resumo_ia(avaliacao_id)
+        botao_gerar.disabled = False
+        definir_texto_botao(botao_gerar, "Gerar novamente")
+        if ok:
+            caixa_texto.value = resumo
+            botao_salvar.disabled = False
+            botao_aprovar.disabled = False
+            mostrar(f"{aviso} Revise o texto antes de salvar.", True)
         else:
-            indicador_estado.value = "Falha ao contactar servidor de IA."
-            indicador_estado.color = ft.Colors.ERROR
-        
-        indicador_estado.visible = True
-        page.update()
+            mostrar(resumo or "Não foi possível gerar o resumo.", False)
 
-    def aprovar_clique(e):
-        # AULA: Bloqueamos a interface para evitar duplo clique
-        btn_aprovar.disabled = True
-        btn_aprovar.text = "A registar auditoria..."
-        page.update()
-        
-        # Extraímos o texto que o utilizador eventualmente alterou na caixa de texto
-        texto_revisado = caixa_texto.value
-        
-        sucesso, msg = aprovar_resumo_ia_api(avaliacao_id, texto_revisado)
-        
-        page.snack_bar = ft.SnackBar(
-            ft.Text(msg), 
-            bgcolor=ft.Colors.GREEN_800 if sucesso else ft.Colors.ERROR
-        )
-        page.snack_bar.open = True
-        
-        if sucesso:
-            navegar("participantes")
-        else:
-            # Se falhar, devolvemos o botão ao estado normal para ele tentar novamente
-            btn_aprovar.disabled = False
-            btn_aprovar.text = "Aprovar Resumo Final"
-            page.update()
+    def salvar(_):
+        if not (caixa_texto.value or "").strip():
+            return mostrar("O texto não pode estar vazio.", False)
+        ok, msg = salvar_rascunho_ia_api(avaliacao_id, caixa_texto.value)
+        mostrar(msg, ok)
 
-    # AULA: Botão renomeado conforme exigido no requisito[cite: 9]. Sem a palavra "Diagnóstico".
-    btn_gerar = ft.ElevatedButton("Gerar resumo para discussão", on_click=gerar_clique, icon=ft.Icons.AUTO_AWESOME, bgcolor=PRIMARY, color="white")
-    
-    # Botão de aprovação fica bloqueado até o rascunho existir[cite: 9].
-    btn_aprovar = ft.FilledButton("Aprovar Resumo Final", on_click=aprovar_clique, icon=ft.Icons.CHECK_CIRCLE, disabled=True, bgcolor=ft.Colors.GREEN_600)
+    def aprovar(_):
+        if not (caixa_texto.value or "").strip():
+            return mostrar("O texto não pode estar vazio.", False)
+        ok, msg = aprovar_resumo_ia_api(avaliacao_id, caixa_texto.value)
+        mostrar(msg, ok)
 
-    # ---------------------------------------------------------
-    # MONTAGEM FINAL DO ECRÃ
-    # ---------------------------------------------------------
+    botao_gerar.on_click = gerar
+    botao_salvar.on_click = salvar
+    botao_aprovar.on_click = aprovar
+
     page.add(
         ft.Row([
-            ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda _: navegar("participantes")),
-            ft.Text("Assistente de Revisão (IA)", size=20, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY)
+            ft.IconButton(icon=ft.Icons.ARROW_BACK, icon_color=TEXT_PRIMARY, on_click=lambda _: navegar("selecao")),
+            ft.Text("Assistente de revisão (IA)", size=20, weight=ft.FontWeight.BOLD, color=TEXT_PRIMARY),
         ]),
-        ft.Divider(color="transparent"),
         aviso_legal,
-        ft.Divider(height=10, color="transparent"),
-        ft.Row([btn_gerar, indicador_estado], alignment=ft.MainAxisAlignment.START),
-        ft.Container(content=caixa_texto, padding=ft.padding.only(top=15, bottom=15), expand=True),
-        texto_permissao,
-        ft.Row([btn_aprovar], alignment=ft.MainAxisAlignment.END)
+        botao_gerar,
+        estado_txt,
+        caixa_texto,
+        ft.Row([botao_salvar, botao_aprovar], wrap=True, spacing=8),
     )
