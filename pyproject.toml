@@ -1,0 +1,21 @@
+[project]
+name = "orthotest"
+version = "1.0.0"
+description = "OrthoTest - avaliação ortopédica acadêmica"
+requires-python = ">=3.10"
+# Dependências que entram DENTRO do app (APK/web). O backend tem as dele em requirements.txt.
+dependencies = [
+  "flet==1.0.4",
+  "requests>=2.31,<3.0",
+  "python-dotenv>=1.0,<2.0",
+]
+
+[tool.flet]
+product = "OrthoTest"
+company = "Universidade Nilton Lins"
+org = "br.edu.niltonlins"
+copyright = "Projeto acadêmico OrthoTest"
+
+[tool.flet.app]
+path = "app"
+module = "main"

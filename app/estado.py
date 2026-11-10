@@ -9,6 +9,7 @@ Três situações:
 """
 import json
 import os
+import sys
 import time
 import uuid
 from datetime import datetime, timezone
@@ -19,22 +20,30 @@ from dotenv import load_dotenv
 
 import contingencia_offline as fila_local
 from armazenamento import apagar, gravar_json, ler_json
+from config import cfg
 from termo import TERMO_VERSAO
 
-load_dotenv()
+load_dotenv()  # só ajuda no computador; no celular os valores vêm de app/config_publica.json
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
-API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/api/v1").rstrip("/")
+if sys.platform == "emscripten":  # versão web (Pyodide): faz o `requests` usar o fetch do navegador
+    try:
+        import pyodide_http  # type: ignore
+        pyodide_http.patch_all()
+    except Exception:
+        pass
+
+SUPABASE_URL = cfg("SUPABASE_URL")
+SUPABASE_ANON_KEY = cfg("SUPABASE_ANON_KEY")
+API_BASE_URL = cfg("API_BASE_URL", "http://127.0.0.1:8000/api/v1").rstrip("/")
 
 
 def _flag(*nomes: str) -> bool:
-    return any(os.getenv(n, "false").lower() in ("true", "1", "yes") for n in nomes)
+    return any(cfg(n, "false").lower() in ("true", "1", "yes") for n in nomes)
 
 
 MODO_DEMO = _flag("MODO_DEMO", "MODO_OFFLINE")  # MODO_OFFLINE: nome antigo, ainda aceito
 
-CATALOGO_LOCAL = Path(__file__).resolve().parent.parent / "database" / "catalogo_testes.json"
+CATALOGO_LOCAL = Path(__file__).resolve().parent / "catalogo_testes.json"
 TIMEOUT = 10
 ARQ_SESSAO = "sessao.json"
 

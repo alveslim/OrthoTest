@@ -1,4 +1,4 @@
-"""Gera database/seed_catalogo.sql a partir de database/catalogo_testes.json.
+"""Gera database/seed_catalogo.sql a partir de app/catalogo_testes.json.
 
 O JSON é a fonte única dos textos das fichas clínicas (docs/ dos grupos).
 Uso: python scripts/gerar_seed_catalogo.py
@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-ORIGEM = RAIZ / "database" / "catalogo_testes.json"
+ORIGEM = RAIZ / "app" / "catalogo_testes.json"
 DESTINO = RAIZ / "database" / "seed_catalogo.sql"
 CAMPOS = ("id", "regiao", "nome", "estrutura", "definicao", "objetivo",
           "como_fazer", "positivo_se", "unidade_medida", "referencia")
@@ -24,7 +24,7 @@ def literal(valor) -> str:
 def main() -> None:
     testes = json.loads(ORIGEM.read_text(encoding="utf-8"))
     linhas = [
-        "-- GERADO por scripts/gerar_seed_catalogo.py a partir de database/catalogo_testes.json.",
+        "-- GERADO por scripts/gerar_seed_catalogo.py a partir de app/catalogo_testes.json.",
         "-- Não edite à mão. Idempotente: pode ser executado mais de uma vez.",
         f"INSERT INTO testes_catalogo ({', '.join(CAMPOS)}) VALUES",
     ]

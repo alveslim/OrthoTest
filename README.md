@@ -12,8 +12,7 @@ ortocheck/
 ├── backend/                # API Flask, schemas Pydantic, serviços
 ├── ai/                     # regras_clinicas.json e integração com o LLM
 ├── database/
-│   ├── catalogo_testes.json  # os 19 testes (vindos das fichas do grupo)
-│   └── seed_catalogo.sql     # gerado a partir do JSON
+│   └── seed_catalogo.sql     # gerado a partir de app/catalogo_testes.json (os 19 testes)
 ├── supabase/migrations/    # schema, RLS, views e Storage (aplicadas no projeto)
 ├── dados_ficticios/
 │   └── gerar_dados.py      # participantes FICTÍCIOS (semente fixa) para desenvolver
@@ -62,7 +61,7 @@ O app **não contém** senhas nem chaves do banco. A `service_role` fica só no 
 | Tórax | Adams; Wright |
 | Coluna cervical | Spurling; Distração Cervical |
 
-Fichas por: Sabrina e Vinícius (MMII), Carolaine e Sophia (ombros, cotovelos e punhos), Eduarda e Sophia (coluna). A fonte do catálogo é `database/catalogo_testes.json`; o `database/seed_catalogo.sql` é gerado por `python scripts/gerar_seed_catalogo.py`. Novos testes entram só com `INSERT` em `testes_catalogo` (ORT-45), sem mexer em código.
+Fichas por: Sabrina e Vinícius (MMII), Carolaine e Sophia (ombros, cotovelos e punhos), Eduarda e Sophia (coluna). A fonte do catálogo é `app/catalogo_testes.json`; o `database/seed_catalogo.sql` é gerado por `python scripts/gerar_seed_catalogo.py`. Novos testes entram só com `INSERT` em `testes_catalogo` (ORT-45), sem mexer em código.
 
 ## Dicionário de dados
 
@@ -120,6 +119,8 @@ MODO_DEMO=true flet run app/main.py              # Windows PowerShell: $env:MODO
 # 3) Testes automatizados
 pytest
 ```
+
+Celular (APK/iPhone) e API na internet: veja `docs/publicacao.md`.
 
 Sem internet no uso real é automático: o app lembra do login (sessão salva em `~/.orthotest`), guarda
 participantes, fichas e resultados no aparelho e envia tudo, em ordem, quando a conexão volta (botão de

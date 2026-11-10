@@ -4,7 +4,7 @@ Fonte única do texto: a tela de novo participante, o formulário impresso do Pl
 (docs/termo_consentimento.md, gerado por `python scripts/gerar_termo.py`) e a versão gravada no
 banco (`participantes.termo_versao`) saem daqui. Mudou o texto? Mude TERMO_VERSAO.
 """
-import os
+from config import cfg
 
 TERMO_VERSAO = "2026-11-v1"
 TITULO = "Termo de Consentimento Livre e Esclarecido"
@@ -12,7 +12,7 @@ TITULO = "Termo de Consentimento Livre e Esclarecido"
 
 def _contato() -> str:
     # Opcional: TERMO_CONTATO="Prof.ª Fulana, fulana@exemplo.edu.br" no .env
-    c = os.getenv("TERMO_CONTATO", "").strip()
+    c = cfg("TERMO_CONTATO").strip()
     return f" ({c})" if c else ""
 
 
