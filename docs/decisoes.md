@@ -43,3 +43,12 @@ Em conformidade com o princípio da minimização e limitação de armazenamento
 No momento definido, o responsável executará a limpeza definitiva no Supabase SQL Editor:
 ```sql
 TRUNCATE TABLE public.ia_rascunhos, public.resultados_testes, public.avaliacoes, public.participantes RESTART IDENTITY CASCADE;
+
+## ADR-049: Nome opcional, código automático e termo de consentimento por participante
+
+- **Data:** 10/11/2026
+- **Decisão:** o cadastro passa a aceitar **nome e sobrenome opcionais** (`participantes.nome`, `participantes.sobrenome`) e o **código P-001, P-002… é gerado pelo banco** (gatilho `participantes_codigo`, único por avaliador). Antes o código era digitado e nome completo era proibido.
+- **Por quê:** digitar o código atrapalhava e dava erro; o avaliador precisa achar a ficha de quem está na sua frente.
+- **Salvaguardas:** nome e sobrenome ficam só na tabela `participantes` (RLS: aluno vê os que criou, professor vê todos). **Nunca** entram em views, no dashboard, no CSV nem no prompt da IA (a IA recebe só idade, peso, altura e resultados). Continuam valendo n < 3 e o expurgo do ADR-047 (a tabela inteira é apagada).
+- **Termo de consentimento:** o participante lê o termo (texto em `app/termo.py`, versão impressa em `docs/termo_consentimento.md`) e o avaliador marca a confirmação no cadastro. O banco grava `consentimento`, `data_consentimento` e `termo_versao`, e recusa cadastro sem eles. Menor de 18 anos exige também `consentimento_responsavel`. Mudou o texto? Mude `TERMO_VERSAO`.
+- **Sem internet:** participante criado offline recebe código provisório; se outro aparelho usar o mesmo código, o servidor atribui o próximo e o app avisa na sincronização.

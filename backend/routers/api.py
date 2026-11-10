@@ -157,6 +157,16 @@ def sinalizar_avaliacao(avaliacao_id: UUID, sinalizacao: AvaliacaoSinalizar, use
     return {"mensagem": "Avaliação sinalizada com sucesso para o professor."}
 
 
+@router.post("/avaliacoes/{avaliacao_id}/revisar")
+def marcar_avaliacao_revisada(avaliacao_id: UUID, user: dict = Depends(requer_professor)):
+    """Professor: tira a marca de 'revisão solicitada' depois de olhar a ficha."""
+    feito = rest("PATCH", "avaliacoes", user, params={"id": f"eq.{avaliacao_id}"},
+                 json={"flag_professor": False, "flag_motivo": None}, prefer="return=representation")
+    if not feito:
+        raise HTTPException(404, "Avaliação não encontrada.")
+    return {"mensagem": "Avaliação marcada como revisada."}
+
+
 # ---------------- DASHBOARD ----------------
 def _kpis_do_usuario(user: dict) -> dict:
     resultados = rest_todos("vw_resultados_dashboard", user, {"select": "*"})

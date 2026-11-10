@@ -86,3 +86,10 @@ class TestRegrasDeNegocio:
         """Garante que pesos negativos ou zero são rejeitados[cite: 11]."""
         with pytest.raises(ValidationError):
             ParticipanteEsquema(idade=25, peso_kg=-5.0)
+
+def test_termo_impresso_esta_em_dia_com_o_texto_do_app():
+    """docs/termo_consentimento.md é gerado de app/termo.py; se divergir, rode scripts/gerar_termo.py."""
+    from pathlib import Path
+    from termo import TERMO_VERSAO, termo_markdown
+    doc = (Path(__file__).resolve().parent.parent / "docs" / "termo_consentimento.md").read_text(encoding="utf-8")
+    assert doc == termo_markdown() and TERMO_VERSAO in doc

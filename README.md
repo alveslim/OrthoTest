@@ -68,7 +68,7 @@ Fichas por: Sabrina e Vinícius (MMII), Carolaine e Sophia (ombros, cotovelos e 
 
 | Tabela | Colunas |
 |---|---|
-| participantes | id, codigo, idade, peso_kg, altura_m, consentimento, data_consentimento, criado_em |
+| participantes | id, codigo (automático), nome e sobrenome (opcionais, ADR-049), idade, peso_kg, altura_m, consentimento, data_consentimento, termo_versao, consentimento_responsavel, criado_em |
 | avaliacoes | id, participante_id, avaliador_id, data_avaliacao, flag_professor, flag_motivo |
 | testes_catalogo | id, regiao, nome, definicao, objetivo, como_fazer, positivo_se, referencia |
 | resultados_testes | id, avaliacao_id, teste_id, lado, resultado, valor_medido, dor_0_10, observacoes |
@@ -114,12 +114,17 @@ uvicorn backend.main:app --reload --port 8000    # terminal 1
 flet run app/main.py                             # terminal 2 (desktop)
 flet run --web app/main.py                       # alternativa: navegador
 
-# 2) Ensaio sem internet nem banco: dados em memória, catálogo real de 19 testes
-MODO_OFFLINE=true flet run app/main.py           # Windows PowerShell: $env:MODO_OFFLINE="true"
+# 2) Demonstração (dados de exemplo, login aceita qualquer coisa, nada é gravado)
+MODO_DEMO=true flet run app/main.py              # Windows PowerShell: $env:MODO_DEMO="true"
 
 # 3) Testes automatizados
 pytest
 ```
+
+Sem internet no uso real é automático: o app lembra do login (sessão salva em `~/.orthotest`), guarda
+participantes, fichas e resultados no aparelho e envia tudo, em ordem, quando a conexão volta (botão de
+sincronizar na lista). O primeiro login precisa de internet. Sair do app esquece o login, mas não apaga o que
+está pendente de envio.
 
 Primeiro acesso: crie o usuário em Supabase → Authentication → Users (o perfil `aluno` nasce automático).
 Para virar professor: `UPDATE perfis SET papel = 'professor' WHERE user_id = '<uuid do usuário>';`
@@ -153,7 +158,7 @@ Etiquetas: **[A]** dados/backend/IA, **[B]** app/design, **[G]** grupo inteiro (
 
 **Etapa D: App (Flet)**
 - [x] **ORT-17** [B] Desenhar as telas **em formato celular** (check-up, teste, lista, dashboard) e só depois adaptar ao desktop.
-- [x] **ORT-18** [B] Login e consentimento (checkbox + data) antes do primeiro teste.
+- [x] **ORT-18** [B] Login com sessão lembrada; termo de consentimento lido e confirmado no cadastro de cada participante (data e versão gravadas).
 - [x] **ORT-19** [B] Lista de participantes por código, com status e botão claro "Novo participante".
 - [x] **ORT-20** [B] Tela de seleção de testes com progresso e separação visual entre "feito" e "resultado".
 - [x] **ORT-21** [B] Tela do teste: seletor Positivo/Negativo/Não realizado, D/E/Bilateral, slider de dor 0–10, observações e botão "?" com a ficha. Alvos de toque de 44–48 px.

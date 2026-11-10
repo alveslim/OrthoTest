@@ -26,6 +26,7 @@ def test_participante_valido_com_consentimento():
         altura_m=1.70,
         consentimento=True,
         data_consentimento="2026-10-21T10:00:00-04:00",
+        termo_versao="2026-11-v1",
     )
 
     assert participante.codigo == "P-001"
@@ -192,3 +193,20 @@ def test_dor_fora_dos_limites_e_rejeitada(dor):
 def test_resultado_desconhecido_e_rejeitado():
     with pytest.raises(ValidationError):
         ResultadoTeste.model_validate({**BASE, "resultado": "Talvez"})
+
+def test_codigo_e_nome_sao_opcionais_e_nome_e_normalizado():
+    p = ParticipanteEntrada(idade=30, consentimento=True, data_consentimento="2026-11-10T10:00:00-04:00",
+                            termo_versao="2026-11-v1", nome="  Ana   Maria ", sobrenome="   ")
+    assert p.codigo is None and p.nome == "Ana Maria" and p.sobrenome is None
+
+
+def test_consentimento_exige_versao_do_termo():
+    with pytest.raises(ValidationError, match="versão do termo"):
+        ParticipanteEntrada(idade=30, consentimento=True, data_consentimento="2026-11-10T10:00:00-04:00")
+
+
+def test_menor_de_idade_exige_ciencia_do_responsavel():
+    base = dict(idade=15, consentimento=True, data_consentimento="2026-11-10T10:00:00-04:00", termo_versao="v1")
+    with pytest.raises(ValidationError, match="responsável legal"):
+        ParticipanteEntrada(**base)
+    assert ParticipanteEntrada(**base, consentimento_responsavel=True).idade == 15

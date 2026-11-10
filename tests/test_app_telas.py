@@ -14,7 +14,7 @@ from fake_flet import Pagina, clicavel_com_texto, textos  # noqa: E402
 
 @pytest.fixture(autouse=True)
 def offline(monkeypatch, tmp_path):
-    monkeypatch.setattr(estado, "MODO_OFFLINE", True)
+    monkeypatch.setattr(estado, "MODO_DEMO", True)
     monkeypatch.setattr(estado, "_off", {"participantes": [], "avaliacoes": {}, "resultados": []})
     estado.limpar_sessao()
     yield
@@ -24,7 +24,6 @@ def offline(monkeypatch, tmp_path):
 def _entrar():
     ok, _ = estado.autenticar_usuario("a@b.com", "x")
     assert ok
-    estado.registrar_consentimento_sessao()
 
 
 def _abrir_participante():
@@ -61,24 +60,57 @@ def test_salvar_excluir_e_progresso_offline():
     assert [r["lado"] for r in estado.buscar_catalogo_e_resultados(av["id"])[1]["mapa_resultados"][1]] == ["Esquerdo"]
 
 
-def test_codigo_duplicado_e_recusado():
+def test_codigo_e_gerado_automaticamente_e_nome_e_opcional():
     _entrar()
     estado.buscar_participantes_e_avaliacoes()
-    ok, msg = estado.criar_novo_participante("p-mock1", 20, None, None)
-    assert not ok and "código" in msg
+    ok, p = estado.criar_novo_participante(20, None, None)
+    assert ok and p["codigo"] == "P-003" and p["nome"] is None
+    ok, p = estado.criar_novo_participante(21, 60.0, 1.65, nome="  Maria  ", sobrenome="Souza", responsavel_ciente=False)
+    assert ok and p["codigo"] == "P-004" and (p["nome"], p["sobrenome"]) == ("Maria", "Souza")
 
 
-def test_login_exige_consentimento():
+def test_login_exige_email_e_senha_e_nao_pede_consentimento():
     pagina, destinos = Pagina(), []
     tela_login.render_login(pagina, destinos.append)
+    assert not any(type(c).__name__ == "Checkbox" for c in fake_flet.percorrer(pagina.controles))
+    clicavel_com_texto(pagina.controles, "Entrar e Iniciar").on_click(None)
+    assert destinos == [] and any("Preencha" in t for t in textos(pagina.controles))
     campos = [c for c in fake_flet.percorrer(pagina.controles) if type(c).__name__ == "TextField"]
     campos[0].value, campos[1].value = "a@b.com", "x"
     clicavel_com_texto(pagina.controles, "Entrar e Iniciar").on_click(None)
-    assert destinos == []
-    assert any("consentimento" in t for t in textos(pagina.controles))
-    next(c for c in fake_flet.percorrer(pagina.controles) if type(c).__name__ == "Checkbox").value = True
-    clicavel_com_texto(pagina.controles, "Entrar e Iniciar").on_click(None)
     assert destinos == ["participantes"]
+
+
+def _campos_form(pagina):
+    por_rotulo = {getattr(c, "label", ""): c for c in fake_flet.percorrer(pagina.controles) if type(c).__name__ == "TextField"}
+    caixas = [c for c in fake_flet.percorrer(pagina.controles) if type(c).__name__ == "Checkbox"]
+    return por_rotulo, caixas
+
+
+def test_formulario_exige_termo_e_responsavel_para_menor():
+    _entrar()
+    pagina, destinos = Pagina(), []
+    tela_participantes.render_participantes(pagina, destinos.append)
+    clicavel_com_texto(pagina.controles, "+ Novo participante").on_click(None)
+    assert any(t.startswith("Código: gerado automaticamente (próximo: P-003)") for t in textos(pagina.controles))
+    campos, caixas = _campos_form(pagina)
+    assert "Nome (opcional)" in campos and "Sobrenome (opcional)" in campos and "Código (ex.: P-015 — nunca use nome)" not in campos
+    campos["Idade (anos)"].value = "16"
+    campos["Idade (anos)"].on_change(None)
+    campos["Nome (opcional)"].value = "Joana"
+    clicavel_com_texto(pagina.controles, "Salvar").on_click(None)
+    assert any("termo de consentimento" in t for t in textos(pagina.controles))  # sem termo marcado
+    chk_termo = next(c for c in caixas if getattr(c, "label", "").startswith("Li (ou foi lido"))
+    chk_resp = next(c for c in caixas if getattr(c, "label", "").startswith("O responsável legal"))
+    assert chk_resp.visible is True
+    chk_termo.value = True
+    clicavel_com_texto(pagina.controles, "Salvar").on_click(None)
+    assert any("responsável legal" in t for t in textos(pagina.controles)) and len(estado._off["participantes"]) == 2
+    chk_resp.value = True
+    clicavel_com_texto(pagina.controles, "Salvar").on_click(None)
+    assert [p["codigo"] for p in estado._off["participantes"]] == ["P-001", "P-002", "P-003"]
+    assert estado._off["participantes"][-1]["nome"] == "Joana"
+    assert any("P-003 cadastrado" in t for t in textos(pagina.controles))
 
 
 def test_telas_montam_e_tela_do_teste_salva():
@@ -87,7 +119,7 @@ def test_telas_montam_e_tela_do_teste_salva():
     pagina, destinos = Pagina(), []
 
     tela_participantes.render_participantes(pagina, destinos.append)
-    assert "P-MOCK1" in textos(pagina.controles)
+    assert "P-001" in textos(pagina.controles)
 
     pagina.clean()
     tela_selecao.render_selecao(pagina, destinos.append)

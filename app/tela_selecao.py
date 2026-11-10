@@ -12,6 +12,7 @@ from theme import (
 from estado import (
     sessao,
     buscar_catalogo_e_resultados,
+    marcar_revisada_api,
     sincronizar_fila_offline,
     sinalizar_avaliacao_professor,
 )
@@ -20,6 +21,11 @@ from estado import (
 def render_selecao(page: ft.Page, navegar):
     participante = sessao.get("participante_atual") or {"codigo": "P-000", "idade": 20, "peso_kg": 70, "altura_m": 1.70}
     avaliacao = sessao.get("avaliacao_atual") or {"id": ""}
+    eh_professor = sessao.get("papel") == "professor"
+
+    def av_id() -> str:
+        """Id atual da avaliação (muda de provisório para o real depois da sincronização)."""
+        return str((sessao.get("avaliacao_atual") or avaliacao)["id"])
 
     regiao_selecionada = {"valor": "Todas"}
     dados_estado = {"catalogo": [], "mapa_resultados": {}}
@@ -157,14 +163,14 @@ def render_selecao(page: ft.Page, navegar):
         aviso = sessao.pop("aviso_selecao", None)
         sync = sincronizar_fila_offline()
         if sync["sincronizados"]:
-            aviso = f"{sync['sincronizados']} resultado(s) guardado(s) sem internet foram enviados."
+            aviso = f"{sync['sincronizados']} registro(s) guardado(s) sem internet foram enviados."
         elif sync["pendentes"]:
-            aviso = f"{sync['pendentes']} resultado(s) ainda aguardam internet para serem enviados."
+            aviso = f"{sync['pendentes']} registro(s) ainda aguardam internet para serem enviados."
         if aviso:
             feedback_msg.value = aviso
             feedback_msg.color = PRIMARY
             feedback_msg.visible = True
-        sucesso, resp = buscar_catalogo_e_resultados(str(avaliacao["id"]))
+        sucesso, resp = buscar_catalogo_e_resultados(av_id())
         if not sucesso:
             feedback_msg.value = str(resp)
             feedback_msg.color = REVIEW_TEXT
@@ -183,18 +189,41 @@ def render_selecao(page: ft.Page, navegar):
         text_size=13,
     )
 
-    def acao_sinalizar(e):
-        ok, msg = sinalizar_avaliacao_professor(str(avaliacao["id"]), motivo_input.value or "")
+    def acao_revisada(e):
+        ok, msg = marcar_revisada_api(av_id())
+        if ok:
+            sessao["avaliacao_atual"] = dict(sessao.get("avaliacao_atual") or {}, flag_professor=False, flag_motivo=None)
+            botao_revisada.visible = False
         feedback_msg.value = msg
         feedback_msg.color = PRIMARY if ok else REVIEW_TEXT
         feedback_msg.visible = True
         page.update()
 
+    def acao_sinalizar(e):
+        ok, msg = sinalizar_avaliacao_professor(av_id(), motivo_input.value or "")
+        if ok:
+            sessao["avaliacao_atual"] = dict(sessao.get("avaliacao_atual") or {}, flag_professor=True,
+                                             flag_motivo=(motivo_input.value or "").strip() or None)
+            aviso_flag.value = "Revisão solicitada: " + (sessao["avaliacao_atual"]["flag_motivo"] or "sem motivo informado")
+            aviso_flag.visible = True
+        feedback_msg.value = msg
+        feedback_msg.color = PRIMARY if ok else REVIEW_TEXT
+        feedback_msg.visible = True
+        page.update()
+
+    flag_atual = (sessao.get("avaliacao_atual") or {}).get("flag_professor")
+    botao_revisada = ft.Button(
+        content=ft.Text("Marcar como revisada", weight=ft.FontWeight.BOLD), bgcolor=SURFACE, color=PRIMARY, width=350,
+        visible=bool(eh_professor and flag_atual), on_click=acao_revisada)
+    aviso_flag = ft.Text(
+        "Revisão solicitada: " + ((sessao.get("avaliacao_atual") or {}).get("flag_motivo") or "sem motivo informado"),
+        size=12, color=REVIEW_TEXT, weight=ft.FontWeight.BOLD, visible=bool(flag_atual))
+
     cabecalho = ft.Row(
         controls=[
             ft.IconButton(icon=ft.Icons.ARROW_BACK, icon_color=TEXT_PRIMARY, on_click=lambda _: navegar("participantes")),
             ft.Text(
-                f"Avaliação • {participante['codigo']}",
+                f"Avaliação • {participante['codigo']}" + (f" · {participante['nome']}" if participante.get("nome") else ""),
                 size=20,
                 weight=ft.FontWeight.BOLD,
                 color=TEXT_PRIMARY,
@@ -230,6 +259,7 @@ def render_selecao(page: ft.Page, navegar):
         cabecalho,
         info_participante,
         feedback_msg,
+        aviso_flag,
         ft.Text("Regiões", theme_style=ft.TextThemeStyle.TITLE_LARGE),
         coluna_regioes_resumo,
         coluna_testes,
@@ -242,6 +272,8 @@ def render_selecao(page: ft.Page, navegar):
             on_click=lambda _: navegar("resumo_ia"),
         ),
         ft.Divider(height=5, color="transparent"),
+        ft.Text("Dúvida no achado, caso fora do comum ou desconforto do participante? Sinalize: o professor "
+                "verá esta ficha marcada como \"Revisão solicitada\" na lista.", size=12, color=TEXT_SECONDARY),
         motivo_input,
         ft.Button(
             content=ft.Text("Sinalizar ao professor", weight=ft.FontWeight.BOLD),
@@ -250,6 +282,7 @@ def render_selecao(page: ft.Page, navegar):
             width=350,
             on_click=acao_sinalizar,
         ),
+        botao_revisada,
     )
 
     carregar_dados()
