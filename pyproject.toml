@@ -3,9 +3,12 @@ name = "orthotest"
 version = "1.0.0"
 description = "OrthoTest - avaliação ortopédica acadêmica"
 requires-python = ">=3.10"
-# Dependências que entram DENTRO do app (APK/web). O backend tem as dele em requirements.txt.
+# ATENÇÃO: o Vercel instala a API a partir DESTE bloco (o pyproject.toml tem prioridade sobre o
+# requirements.txt). Por isso aqui ficam só as dependências do backend. As do app (Flet) estão em
+# app/requirements.txt, que o `flet build` lê no lugar deste bloco.
 dependencies = [
-  "flet==1.0.4",
+  "fastapi==0.104.1",
+  "pydantic>=2.6,<3.0",
   "requests>=2.31,<3.0",
   "python-dotenv>=1.0,<2.0",
 ]

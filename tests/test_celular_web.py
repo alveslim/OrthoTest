@@ -82,6 +82,9 @@ def test_versao_web_sem_localstorage_usa_memoria_da_aba(monkeypatch):
 def test_arquivos_de_deploy_do_vercel_sao_validos():
     v = json.loads((RAIZ / "vercel.json").read_text(encoding="utf-8"))
     assert v["rewrites"][0]["destination"] == "/api/index" and v["functions"]["api/index.py"]["maxDuration"] == 60
-    reqs = (RAIZ / "requirements.txt").read_text(encoding="utf-8")
-    assert "fastapi" in reqs and "flet" not in reqs and "pandas" not in reqs  # backend leve no serverless
+    # O Vercel instala a partir do pyproject.toml (tem prioridade): precisa ter a API e não o Flet.
+    py = (RAIZ / "pyproject.toml").read_text(encoding="utf-8")
+    deps = py.split("dependencies = [", 1)[1].split("]", 1)[0]
+    assert "fastapi" in deps and "flet" not in deps and "pandas" not in deps  # backend leve no serverless
+    assert "flet==" in (RAIZ / "app" / "requirements.txt").read_text(encoding="utf-8")  # o app usa este arquivo (flet build)
     assert "backend.main" in (RAIZ / "api" / "index.py").read_text(encoding="utf-8")
