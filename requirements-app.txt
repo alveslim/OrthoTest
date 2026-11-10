@@ -1,4 +1,5 @@
-# App (Flet). Para gerar o APK/web o `flet build` lê as dependências do pyproject.toml.
+# Dependências do APP (Flet). O `flet build` lê ESTE arquivo no lugar do pyproject.toml.
+# A API (Vercel) usa as dependências do pyproject.toml, não este arquivo.
 flet==1.0.4
 requests>=2.31,<3.0
 python-dotenv>=1.0,<2.0
