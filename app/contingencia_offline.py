@@ -1,8 +1,11 @@
 import json
 import os
+from pathlib import Path
+
 import requests
 
-ARQUIVO_FILA = "fila_offline.json"
+# Fila no disco, ao lado do projeto (não depende da pasta onde o app foi iniciado).
+ARQUIVO_FILA = str(Path(__file__).resolve().parent.parent / "fila_offline.json")
 
 def salvar_rascunho_local(item_avaliacao: dict) -> bool:
     """
@@ -54,7 +57,8 @@ def sincronizar_rascunhos(api_url: str, headers: dict, post_fn=requests.post) ->
 
     for item in fila:
         try:
-            resp = post_fn(f"{api_url}/resultados", headers=headers, json=item, timeout=5)
+            url = f"{api_url}/avaliacoes/{item['avaliacao_id']}/resultados"
+            resp = post_fn(url, headers=headers, json=item, timeout=8)
             if resp.status_code in (200, 201):
                 sincronizados += 1
             elif resp.status_code == 409:

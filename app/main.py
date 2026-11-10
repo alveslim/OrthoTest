@@ -33,7 +33,15 @@ def main(page: ft.Page):
             nome_rota = "login"
 
         page.clean()
-        rotas[nome_rota]()
+        try:
+            rotas[nome_rota]()
+        except Exception as exc:  # nunca deixar a tela em branco: mostra o erro e oferece voltar
+            page.clean()
+            page.add(
+                ft.Text("Não foi possível abrir esta tela.", size=18, weight=ft.FontWeight.BOLD),
+                ft.Text(f"{type(exc).__name__}: {exc}", size=12),
+                ft.Button(content=ft.Text("Voltar ao início"), on_click=lambda _: navegar("participantes")),
+            )
         page.update()
 
     navegar("login")

@@ -9,7 +9,8 @@ from estado import (
 
 def render_participantes(page: ft.Page, navegar):
     lista_container = ft.Column(spacing=12)
-    mensagem_feedback = ft.Text("", color=REVIEW_TEXT, size=13, visible=False)
+    aviso_anterior = sessao.pop("aviso_selecao", None)
+    mensagem_feedback = ft.Text(aviso_anterior or "", color=REVIEW_TEXT, size=13, visible=bool(aviso_anterior))
     filtro_codigo = ft.TextField(
         hint_text="Buscar por código (ex.: P-014)",
         border_color=CARD_BORDER,
@@ -215,7 +216,6 @@ def render_participantes(page: ft.Page, navegar):
             ft.Text("Participantes", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM),
             ft.IconButton(icon=ft.Icons.LOGOUT, icon_color=TEXT_PRIMARY, on_click=lambda _: navegar("login")),
             ft.IconButton(icon=ft.Icons.BAR_CHART, tooltip="Ver Dashboard", on_click=lambda _: navegar("dashboard")),
-            ft.IconButton(icon=ft.Icons.AUTO_AWESOME, tooltip="Assistente de IA", icon_color=ft.Colors.PURPLE_600, on_click=lambda _: navegar("resumo_ia"))
         ],
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
     )

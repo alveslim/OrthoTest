@@ -11,3 +11,5 @@ testes_schema.sql
 .flet
 __pycache__/
 *.pyc
+# Dados locais (rascunhos offline podem conter resultados de avaliações)
+fila_offline.json

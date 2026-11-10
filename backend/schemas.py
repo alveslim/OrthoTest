@@ -26,7 +26,7 @@ class ResultadoTeste(BaseModel):
     lado: Lado
     resultado: Resultado
     dor_0_10: int | None = Field(default=None, ge=0, le=10)
-    valor_medido: float | None = None
+    valor_medido: float | None = Field(default=None, ge=0, le=999)
     observacoes: str | None = Field(default=None, max_length=500)
 
 
@@ -53,28 +53,19 @@ class AvaliacaoEntrada(BaseModel):
     participante_id: UUID
 
 
-class Regiao(str, Enum):
-    JOELHO = "Joelho"
-    TORNOZELO = "Tornozelo"
-    QUADRIL = "Quadril"
-    OMBRO = "Ombro"
-    COTOVELO = "Cotovelo"
-    PUNHO = "Punho"
-    COLUNA_LOMBAR = "Coluna lombar"
-    COLUNA_CERVICAL = "Coluna cervical"
-    TORAX = "Tórax"
-
-
 class TesteCatalogo(BaseModel):
+    """Linha de testes_catalogo. `regiao` é texto livre: novos testes entram só no banco (ORT-45)."""
     id: int = Field(gt=0)
-    regiao: Regiao
+    regiao: str = Field(min_length=1, max_length=50)
     nome: str = Field(min_length=1, max_length=100)
     estrutura: str | None = Field(default=None, max_length=150)
     definicao: str = Field(min_length=1)
     objetivo: str = Field(min_length=1)
     como_fazer: str = Field(min_length=1)
     positivo_se: str = Field(min_length=1)
+    unidade_medida: str | None = Field(default=None, max_length=20)
     referencia: str | None = None
+    ativo: bool = True
 
 
 class RascunhoIA(BaseModel):
@@ -121,6 +112,7 @@ class AvaliacaoSaida(AvaliacaoEntrada):
 
 class ResultadoTesteSaida(ResultadoTeste):
     id: UUID
+    excluido_em: datetime | None = None
 
 
 class AvaliacaoSinalizar(BaseModel):

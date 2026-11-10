@@ -80,7 +80,7 @@ CATALOGO_BASE = {
 def test_catalogo_aceita_registro_valido():
     teste = schemas.TesteCatalogo.model_validate(CATALOGO_BASE)
 
-    assert teste.regiao.value == "Joelho"
+    assert teste.regiao == "Joelho"
     assert teste.estrutura is None
     assert teste.referencia is None
 
@@ -89,7 +89,7 @@ def test_catalogo_aceita_registro_valido():
     "campo, valor",
     [
         ("id", 0),
-        ("regiao", "Região inexistente"),
+        ("regiao", ""),
         ("definicao", ""),
     ],
 )

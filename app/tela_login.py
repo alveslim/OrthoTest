@@ -61,7 +61,7 @@ def render_login(page: ft.Page, navegar):
         ft.Column(
             controls=[
                 ft.Divider(height=30, color="transparent"),
-                ft.Text("OrtoTest", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM),
+                ft.Text("OrthoTest", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM),
                 ft.Text(
                     "Avaliação Ortopédica Académica",
                     color=TEXT_SECONDARY,

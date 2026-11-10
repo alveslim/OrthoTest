@@ -12,8 +12,9 @@ ortocheck/
 ├── backend/                # API Flask, schemas Pydantic, serviços
 ├── ai/                     # regras_clinicas.json e integração com o LLM
 ├── database/
-│   ├── schema.sql          # tabelas, constraints, RLS
-│   └── seed_catalogo.sql   # os 16 testes (vindos das fichas do grupo)
+│   ├── catalogo_testes.json  # os 19 testes (vindos das fichas do grupo)
+│   └── seed_catalogo.sql     # gerado a partir do JSON
+├── supabase/migrations/    # schema, RLS, views e Storage (aplicadas no projeto)
 ├── dados_ficticios/
 │   └── gerar_dados.py      # participantes FICTÍCIOS (semente fixa) para desenvolver
 ├── tests/                  # pytest
@@ -32,7 +33,7 @@ ortocheck/
 Cliente (Flet: web / desktop / mobile)
         │  HTTPS + token (JWT do Supabase Auth)
         ▼
-Backend (Flask + Pydantic + Pandas) ──► Módulo de IA (só dados desidentificados)
+Backend (FastAPI + Pydantic + Pandas) ──► Módulo de IA (só dados desidentificados)
         │
         ▼
 Supabase (PostgreSQL + Auth + Storage, com RLS)
@@ -41,23 +42,27 @@ Supabase (PostgreSQL + Auth + Storage, com RLS)
 | Camada | Tecnologia | Responsabilidade |
 |---|---|---|
 | Apresentação | Flet | Check-up, lista de participantes, dashboard |
-| Backend | Flask, Pydantic, Pandas | Validar token e dados, regras de negócio, agregações, relatórios |
+| Backend | FastAPI, Pydantic, Pandas | Validar token e dados, regras de negócio, agregações, relatórios |
 | Dados | Supabase (PostgreSQL) | Tabelas, Auth, Storage, Row Level Security |
 | IA | Regras + LLM (a definir) | Rascunho de resumo para discussão |
 
 O app **não contém** senhas nem chaves do banco. A `service_role` fica só no backend.
 
-## Testes ortopédicos (16)
+## Testes ortopédicos (19)
 
 | Região | Testes |
 |---|---|
-| Joelho | Lachman, Gaveta Anterior (LCA); Estresse em Valgo (LCM); Estresse em Varo (LCL) |
-| Tornozelo | Thompson; Inclinação Talar; Sinal de Kleiger |
-| Ombro | Neer; Impacto de Yocum; Jobe |
-| Punho | Finkelstein; Tinel; Phalen |
-| Coluna | Lasègue; Patrick-FABERE; Adams |
+| Joelho | Lachman (LCA); Estresse em Valgo (LCM); Estresse em Varo (LCL) |
+| Tornozelo | Thompson; Inclinação Talar |
+| Quadril | Thomas; FADIR |
+| Ombro | Neer; Jobe |
+| Cotovelo | Cozen; Estresse em Valgo |
+| Punho | Tinel; Phalen |
+| Coluna lombar | Lasègue; Patrick-FABERE |
+| Tórax | Adams; Wright |
+| Coluna cervical | Spurling; Distração Cervical |
 
-Fichas por: Sabrina e Vinícius (MMII), Carolaine e Sophia (ombros e punhos), Eduarda e Sophia (coluna). Cada ficha tem definição, objetivo, como fazer e critério de resultado positivo.
+Fichas por: Sabrina e Vinícius (MMII), Carolaine e Sophia (ombros, cotovelos e punhos), Eduarda e Sophia (coluna). A fonte do catálogo é `database/catalogo_testes.json`; o `database/seed_catalogo.sql` é gerado por `python scripts/gerar_seed_catalogo.py`. Novos testes entram só com `INSERT` em `testes_catalogo` (ORT-45), sem mexer em código.
 
 ## Dicionário de dados
 
@@ -92,8 +97,7 @@ Valores fixos: `lado` ∈ {Direito, Esquerdo, Bilateral}; `resultado` ∈ {Posit
 git clone https://github.com/seu-usuario/ortocheck.git && cd ortocheck
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install flet flask pydantic pandas supabase python-dotenv pytest
-pip freeze > requirements.txt    # fixe as versões, principalmente a do Flet
+pip install -r requirements-dev.txt   # versões já fixadas (Flet 1.0.4)
 
 cp .env.example .env             # preencha SUPABASE_URL e SUPABASE_ANON_KEY
 printf ".venv/\n__pycache__/\n.env\n*.db\n" > .gitignore
@@ -102,13 +106,23 @@ git add . && git commit -m "kickoff: estrutura do projeto"
 
 `SUPABASE_SERVICE_KEY` só entra no `.env` do backend, nunca no app.
 
-Rodar:
+Rodar (três modos):
 
 ```bash
-flask --app backend.app run        # terminal 1
-flet run app/main.py               # terminal 2 (desktop)
-flet run --web app/main.py         # alternativa: navegador
+# 1) Online: API + app (precisa de SUPABASE_URL e SUPABASE_ANON_KEY no .env)
+uvicorn backend.main:app --reload --port 8000    # terminal 1
+flet run app/main.py                             # terminal 2 (desktop)
+flet run --web app/main.py                       # alternativa: navegador
+
+# 2) Ensaio sem internet nem banco: dados em memória, catálogo real de 19 testes
+MODO_OFFLINE=true flet run app/main.py           # Windows PowerShell: $env:MODO_OFFLINE="true"
+
+# 3) Testes automatizados
+pytest
 ```
+
+Primeiro acesso: crie o usuário em Supabase → Authentication → Users (o perfil `aluno` nasce automático).
+Para virar professor: `UPDATE perfis SET papel = 'professor' WHERE user_id = '<uuid do usuário>';`
 
 ## 2. Chamados (tickets) para resolver, em ordem
 
@@ -146,7 +160,7 @@ Etiquetas: **[A]** dados/backend/IA, **[B]** app/design, **[G]** grupo inteiro (
 - [x] **ORT-22** [B] Ações destrutivas (Excluir) separadas do Salvar, com confirmação.
 - [x] **ORT-23** [B] Traduzir toda a interface para português (sem "Search", "Hello", "Passed/Unpassed").
 - [x] **ORT-24** [B] Rodar com dados fictícios em JSON e depois trocar pela API.
-- [X] **ORT-25** [B] Testar o build web, desktop e APK (`flet build apk`). Anotar o que não funciona.
+- [x] **ORT-25** [B] Testar o build web, desktop e APK (`flet build apk`). Anotar o que não funciona.
 
 **Etapa E: Dashboard e relatórios**
 - [x] **ORT-26** [A] Calcular KPIs com Pandas ou SQL: participantes avaliados, % de avaliações completas, % positivo por teste e por região, dor média.
@@ -164,18 +178,18 @@ Etiquetas: **[A]** dados/backend/IA, **[B]** app/design, **[G]** grupo inteiro (
 
 **Etapa G: Testes**
 - [x] **ORT-36** [A] `pytest` das regras (status, IMC, n < 3, validações Pydantic), incluindo casos de borda.
-- [ ] **ORT-37** [A] Testes de dados: nenhum resultado sem avaliação, sem duplicidade de (avaliação, teste, lado), dor dentro de 0–10.
-- [ ] **ORT-38** [A] **Teste de RLS:** um aluno não consegue ler dados de outro aluno.
-- [ ] **ORT-39** [A] Reconciliação: total de resultados no banco = no dashboard = no relatório (diferença zero).
+- [x] **ORT-37** [A] Testes de dados: nenhum resultado sem avaliação, sem duplicidade de (avaliação, teste, lado), dor dentro de 0–10.
+- [x] **ORT-38** [A] **Teste de RLS:** um aluno não consegue ler dados de outro aluno.
+- [x] **ORT-39** [A] Reconciliação: total de resultados no banco = no dashboard = no relatório (diferença zero).
 - [ ] **ORT-40** [G] Teste de usabilidade com colegas (o PDF exige). Cronometrar uma avaliação completa e registrar os erros encontrados.
-- [ ] **ORT-41** [G] Teste de regressão: refazer o fluxo inteiro com os dados fictícios e confirmar que os números não mudam.
+- [x] **ORT-41** [G] Teste de regressão: refazer o fluxo inteiro com os dados fictícios e confirmar que os números não mudam.
 
 **Etapa H: Como no dia real**
-- [ ] **ORT-42** [A] Modo de contingência: salvar rascunho local e sincronizar quando voltar a internet.
-- [ ] **ORT-43** [G] Plano B impresso: planilha ou formulário, caso o sistema caia.
+- [x] **ORT-42** [A] Modo de contingência: salvar rascunho local e sincronizar quando voltar a internet.
+- [x] **ORT-43** [G] Plano B impresso: planilha ou formulário, caso o sistema caia.
 - [ ] **ORT-44** [A] Acessar o projeto Supabase na véspera (projetos inativos são pausados) e testar com a rede da universidade.
-- [ ] **ORT-45** [G] Mudança de requisito: "adicionar um novo teste ao catálogo". Fazer sem mexer em código, só no banco, e documentar.
-- [ ] **ORT-46** [A] Simular 5 avaliadores salvando ao mesmo tempo e medir o tempo de resposta.
+- [x] **ORT-45** [G] Mudança de requisito: "adicionar um novo teste ao catálogo". Fazer sem mexer em código, só no banco, e documentar.
+- [x] **ORT-46** [A] Simular 5 avaliadores salvando ao mesmo tempo e medir o tempo de resposta.
 - [ ] **ORT-47** [G] Definir o que acontece com os dados depois do projeto (exportar agregados, apagar os individuais) e registrar em `docs/decisoes.md`.
 - [ ] **ORT-48** [G] Escrever o resumo de 1 página: o que foi encontrado, limitações e o que a IA fez e não fez.
 
