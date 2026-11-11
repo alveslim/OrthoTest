@@ -20,10 +20,12 @@ from backend.auth import validar as validar_auth
 from backend.kpis import calcular_kpis
 from backend.schemas import (
     AvaliacaoEntrada,
+    AvaliacaoSaida,
     AvaliacaoSinalizar,
     ParticipanteEntrada,
     ParticipanteSaida,
     ResultadoTeste,
+    TesteCatalogo,
 )
 from backend.supabase_client import rest, rest_todos, upload_storage
 
@@ -45,18 +47,10 @@ def _avaliacao_visivel(avaliacao_id: UUID, user: dict) -> dict:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Avaliação não encontrada.")
     return linhas[0]
 
-def _select(table: str, user_payload: dict, params: dict | None = None) -> list[dict]:
-    result = _request("GET", table, user_payload, params=params or {"select": "*"})
-    return result if isinstance(result, list) else []
-
 # ---------------- PERFIL ----------------
 @router.get("/me")
 def quem_sou_eu(user: dict = Depends(validar_auth)):
     return {"user_id": user["sub"], "email": user.get("email"), "papel": papel_do_usuario(user)}
-
-def _insert(table: str, user_payload: dict, body: dict, params: dict | None = None, prefer: str = "return=representation") -> list[dict]:
-    result = _request("POST", table, user_payload, params=params, body=body, prefer=prefer)
-    return result if isinstance(result, list) else []
 
 # ---------------- CATÁLOGO ----------------
 @router.get("/catalogo/testes", response_model=List[TesteCatalogo])
