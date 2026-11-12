@@ -81,7 +81,8 @@ def test_versao_web_sem_localstorage_usa_memoria_da_aba(monkeypatch):
 
 def test_arquivos_de_deploy_do_vercel_sao_validos():
     v = json.loads((RAIZ / "vercel.json").read_text(encoding="utf-8"))
-    assert v["rewrites"][0]["destination"] == "/api/index" and v["functions"]["api/index.py"]["maxDuration"] == 60
+    # Sem "rewrites": no modo FastAPI do Vercel o rewrite muda o caminho visto pelo app (tudo viraria 404).
+    assert "rewrites" not in v and v["functions"]["api/index.py"]["maxDuration"] == 60
     # O Vercel instala a partir do pyproject.toml (tem prioridade): precisa ter a API e não o Flet.
     py = (RAIZ / "pyproject.toml").read_text(encoding="utf-8")
     deps = py.split("dependencies = [", 1)[1].split("]", 1)[0]
