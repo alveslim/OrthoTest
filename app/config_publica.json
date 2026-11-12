@@ -1,6 +1,6 @@
 {
   "SUPABASE_URL": "https://ddlkfevmmpuofyrghfni.supabase.co",
   "SUPABASE_ANON_KEY": "sb_publishable_mxVJHnSSTX9iK2WvdnEG0Q_6FAOfxqE",
-  "API_BASE_URL": "",
+  "API_BASE_URL": "https://orthotest-api.vercel.app/api/v1",
   "TERMO_CONTATO": ""
 }
