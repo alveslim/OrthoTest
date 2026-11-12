@@ -1,0 +1,28 @@
+# Gera a versão web do app (para instalar no iPhone pelo Safari). Resultado: artefato "orthotest-web".
+# Como usar: aba Actions -> "Gerar versão web" -> Run workflow -> baixe o zip em Artifacts e publique a pasta.
+name: Gerar versão web
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["app/**", "pyproject.toml", ".github/workflows/build-web.yml"]
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar Flet
+        run: pip install -r app/requirements.txt
+      - name: Gerar o site (o Flet baixa o Flutter sozinho; "y" confirma a pergunta)
+        run: echo y | flet build web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orthotest-web
+          path: build/web
+          if-no-files-found: error
