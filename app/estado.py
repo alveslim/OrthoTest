@@ -80,8 +80,9 @@ def _req(metodo: str, caminho: str, *, params=None, json=None, timeout: int = TI
         resp = requests.request(metodo, url, headers=_headers_autenticados(), params=params, json=json, timeout=timeout)
         if resp.status_code == 401 and renovar and sessao.get("refresh_token") and _renovar_sessao() is True:
             resp = requests.request(metodo, url, headers=_headers_autenticados(), params=params, json=json, timeout=timeout)
-    except requests.RequestException:
+    except requests.RequestException as e:
         sessao["offline"] = True
+        print(f"[orthotest] falha de rede em {metodo} {url}: {type(e).__name__}: {e}", file=sys.stderr)  # aparece no console (F12)
         raise
     sessao["offline"] = resp.status_code in (502, 503, 504)
     return resp
