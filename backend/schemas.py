@@ -117,6 +117,8 @@ class ParticipanteSaida(ParticipanteEntrada):
     id: UUID
     user_id: UUID
     criado_em: datetime
+    excluido_em: datetime | None = None  # o select * do banco traz a coluna; sem isso a resposta dava 500
+    data_consentimento: datetime | None = None
 
 
 class AvaliacaoSaida(AvaliacaoEntrada):
@@ -127,10 +129,12 @@ class AvaliacaoSaida(AvaliacaoEntrada):
     flag_motivo: str | None = None
     status: str = "pendente"
     progresso_percentual: float = 0.0
+    excluido_em: datetime | None = None
 
 
 class ResultadoTesteSaida(ResultadoTeste):
     id: UUID
+    criado_em: datetime | None = None
     excluido_em: datetime | None = None
 
 
