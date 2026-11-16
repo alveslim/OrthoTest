@@ -3,13 +3,38 @@
 Não valida JWT com segredo fixo: também funciona com chaves assimétricas (Signing Keys).
 O papel (aluno/professor) vem da tabela `perfis`, lida com o próprio token do usuário.
 """
+import hashlib
 import os
+import time
 
 import requests
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 security = HTTPBearer(auto_error=False)
+
+# Cache curto em memória (por instância): evita ir ao Supabase Auth/perfis a CADA chamada da API; uma tela do app
+# faz várias chamadas seguidas. Token revogado ou papel alterado passam a valer em até TTL segundos.
+TTL_SESSAO = 30
+TTL_PAPEL = 60
+_MAX_CACHE = 512
+_cache_sessao: dict[str, tuple[float, dict]] = {}
+_cache_papel: dict[str, tuple[float, str]] = {}
+
+
+def limpar_caches() -> None:
+    _cache_sessao.clear()
+    _cache_papel.clear()
+
+
+def _guardar(cache: dict, chave: str, valor, ttl: int) -> None:
+    agora = time.monotonic()
+    if len(cache) >= _MAX_CACHE:  # nunca cresce sem limite: descarta o que expirou (ou tudo, se ainda estiver cheio)
+        for k in [k for k, (exp, _) in cache.items() if exp <= agora]:
+            cache.pop(k, None)
+        if len(cache) >= _MAX_CACHE:
+            cache.clear()
+    cache[chave] = (agora + ttl, valor)
 
 
 def validar(
@@ -31,6 +56,10 @@ def validar(
         )
 
     token = credentials.credentials
+    chave = hashlib.sha256(token.encode()).hexdigest()  # o token em si nunca fica guardado
+    em_cache = _cache_sessao.get(chave)
+    if em_cache and em_cache[0] > time.monotonic():
+        return dict(em_cache[1])
     try:
         response = requests.get(
             f"{base_url}/auth/v1/user",
@@ -58,23 +87,30 @@ def validar(
             detail="O Supabase não retornou uma identidade válida.",
         )
 
-    return {
+    resultado = {
         "sub": str(user_id),
         "email": user.get("email"),
         "app_metadata": user.get("app_metadata") or {},
         "access_token": token,
     }
+    _guardar(_cache_sessao, chave, resultado, TTL_SESSAO)
+    return dict(resultado)
 
 
 def papel_do_usuario(payload: dict) -> str:
     """Lê o papel em `perfis` (RLS: cada um lê o próprio perfil). Sem perfil = aluno."""
     from backend.supabase_client import rest
 
+    em_cache = _cache_papel.get(payload["sub"])
+    if em_cache and em_cache[0] > time.monotonic():
+        return em_cache[1]
     linhas = rest(
         "GET", "perfis", payload,
         params={"select": "papel", "user_id": f"eq.{payload['sub']}"},
     )
-    return linhas[0]["papel"] if linhas else "aluno"
+    papel = linhas[0]["papel"] if linhas else "aluno"
+    _guardar(_cache_papel, payload["sub"], papel, TTL_PAPEL)
+    return papel
 
 
 def requer_professor(payload: dict = Depends(validar)) -> dict:

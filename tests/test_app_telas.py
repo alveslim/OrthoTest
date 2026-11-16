@@ -65,7 +65,7 @@ def test_codigo_e_gerado_automaticamente_e_nome_e_opcional():
     estado.buscar_participantes_e_avaliacoes()
     ok, p = estado.criar_novo_participante(20, None, None)
     assert ok and p["codigo"] == "P-003" and p["nome"] is None
-    ok, p = estado.criar_novo_participante(21, 60.0, 1.65, nome="  Maria  ", sobrenome="Souza", responsavel_ciente=False)
+    ok, p = estado.criar_novo_participante(21, 60.0, 1.65, nome="  Maria  ", sobrenome="Souza")
     assert ok and p["codigo"] == "P-004" and (p["nome"], p["sobrenome"]) == ("Maria", "Souza")
 
 
@@ -87,27 +87,18 @@ def _campos_form(pagina):
     return por_rotulo, caixas
 
 
-def test_formulario_exige_termo_e_responsavel_para_menor():
+def test_formulario_nao_tem_termo_e_cadastra_com_codigo_automatico():
     _entrar()
     pagina, destinos = Pagina(), []
     tela_participantes.render_participantes(pagina, destinos.append)
     clicavel_com_texto(pagina.controles, "+ Novo participante").on_click(None)
     assert any(t.startswith("Código: gerado automaticamente (próximo: P-003)") for t in textos(pagina.controles))
     campos, caixas = _campos_form(pagina)
-    assert "Nome (opcional)" in campos and "Sobrenome (opcional)" in campos and "Código (ex.: P-015 — nunca use nome)" not in campos
+    assert "Nome (opcional)" in campos and "Sobrenome (opcional)" in campos
+    assert all("revisão" in getattr(c, "label", "") for c in caixas) and not any("termo" in t.lower() for t in textos(pagina.controles))  # sem termo de consentimento
     campos["Idade (anos)"].value = "16"
-    campos["Idade (anos)"].on_change(None)
     campos["Nome (opcional)"].value = "Joana"
-    clicavel_com_texto(pagina.controles, "Salvar").on_click(None)
-    assert any("termo de consentimento" in t for t in textos(pagina.controles))  # sem termo marcado
-    chk_termo = next(c for c in caixas if getattr(c, "label", "").startswith("Li (ou foi lido"))
-    chk_resp = next(c for c in caixas if getattr(c, "label", "").startswith("O responsável legal"))
-    assert chk_resp.visible is True
-    chk_termo.value = True
-    clicavel_com_texto(pagina.controles, "Salvar").on_click(None)
-    assert any("responsável legal" in t for t in textos(pagina.controles)) and len(estado._off["participantes"]) == 2
-    chk_resp.value = True
-    clicavel_com_texto(pagina.controles, "Salvar").on_click(None)
+    clicavel_com_texto(pagina.controles, "Salvar").on_click(None)  # menor de idade também salva: sem exigência de termo
     assert [p["codigo"] for p in estado._off["participantes"]] == ["P-001", "P-002", "P-003"]
     assert estado._off["participantes"][-1]["nome"] == "Joana"
     assert any("P-003 cadastrado" in t for t in textos(pagina.controles))

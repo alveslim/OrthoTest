@@ -165,7 +165,7 @@ def test_perfil_rejeita_valor_invalido(campo, valor):
     [
         (
             ParticipanteEntrada,
-            {"codigo": "P-001", "idade": 19, "nome": "Exemplo fictício"},
+            {"codigo": "P-001", "idade": 19, "campo_inexistente": "x"},
         ),
         (
             ResultadoTeste,
@@ -210,3 +210,9 @@ def test_menor_de_idade_exige_ciencia_do_responsavel():
     with pytest.raises(ValidationError, match="responsável legal"):
         ParticipanteEntrada(**base)
     assert ParticipanteEntrada(**base, consentimento_responsavel=True).idade == 15
+
+
+def test_participante_sem_termo_e_aceito():
+    """O app não coleta mais o termo de consentimento: cadastro vale sem esses campos."""
+    p = ParticipanteEntrada(idade=15)
+    assert p.consentimento is False and p.data_consentimento is None and p.termo_versao is None

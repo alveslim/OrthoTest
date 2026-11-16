@@ -60,5 +60,5 @@ Pontos de atenção da versão web (não foram testados em aparelho real):
 ## 5. Conferir depois de publicar
 1. `/health` da API responde ok.
 2. Login com um usuário criado no Supabase (*Authentication → Users*).
-3. Cadastrar participante com o termo, salvar um teste.
+3. Cadastrar participante (sem termo de consentimento: foi removido do app), salvar um teste.
 4. Ligar o modo avião, salvar outro teste, desligar, tocar em sincronizar e conferir no Supabase (*Table Editor → resultados_testes*).

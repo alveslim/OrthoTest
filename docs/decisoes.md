@@ -44,11 +44,19 @@ No momento definido, o responsável executará a limpeza definitiva no Supabase 
 ```sql
 TRUNCATE TABLE public.ia_rascunhos, public.resultados_testes, public.avaliacoes, public.participantes RESTART IDENTITY CASCADE;
 
-## ADR-049: Nome opcional, código automático e termo de consentimento por participante
+## ADR-049: Nome opcional e código automático (termo de consentimento removido pelo ADR-050)
 
 - **Data:** 10/11/2026
 - **Decisão:** o cadastro passa a aceitar **nome e sobrenome opcionais** (`participantes.nome`, `participantes.sobrenome`) e o **código P-001, P-002… é gerado pelo banco** (gatilho `participantes_codigo`, único por avaliador). Antes o código era digitado e nome completo era proibido.
 - **Por quê:** digitar o código atrapalhava e dava erro; o avaliador precisa achar a ficha de quem está na sua frente.
 - **Salvaguardas:** nome e sobrenome ficam só na tabela `participantes` (RLS: aluno vê os que criou, professor vê todos). **Nunca** entram em views, no dashboard, no CSV nem no prompt da IA (a IA recebe só idade, peso, altura e resultados). Continuam valendo n < 3 e o expurgo do ADR-047 (a tabela inteira é apagada).
-- **Termo de consentimento:** o participante lê o termo (texto em `app/termo.py`, versão impressa em `docs/termo_consentimento.md`) e o avaliador marca a confirmação no cadastro. O banco grava `consentimento`, `data_consentimento` e `termo_versao`, e recusa cadastro sem eles. Menor de 18 anos exige também `consentimento_responsavel`. Mudou o texto? Mude `TERMO_VERSAO`.
+- **Termo de consentimento:** foi implementado nesta versão e **removido do app em 16/11/2026** (ADR-050).
 - **Sem internet:** participante criado offline recebe código provisório; se outro aparelho usar o mesmo código, o servidor atribui o próximo e o app avisa na sincronização.
+
+## ADR-050: Termo de consentimento removido do app; nome do produto "OrthoTest MVP"
+
+- **Data:** 16/11/2026
+- **Decisão:** o cadastro de participante **não pede mais o termo de consentimento** nem a ciência do responsável (a pedido do grupo). O app deixa de enviar `consentimento`, `data_consentimento`, `termo_versao` e `consentimento_responsavel`; a API e o banco aceitam cadastro sem eles (as colunas continuam, com `consentimento = false`, e linhas antigas permanecem válidas). Arquivos removidos: `app/termo.py`, `docs/termo_consentimento.md`, `scripts/gerar_termo.py`.
+- **Consequência:** o app não registra mais que houve consentimento. Se o professor ou o comitê de ética exigirem, a coleta precisa ser feita fora do app (ex.: termo em papel). Para voltar atrás, o histórico do git (ADR-049, commit `ecde795`) tem a implementação completa.
+- **Nome:** o produto passa a se chamar **OrthoTest MVP** (título do site, tela de login, nome do app).
+

@@ -55,14 +55,14 @@ class ParticipanteEntrada(BaseModel):
 
     @model_validator(mode="after")
     def validar_consentimento(self) -> "ParticipanteEntrada":
-        if not self.consentimento:
-            raise ValueError("O consentimento é obrigatório antes de cadastrar.")
-        if self.data_consentimento is None:
-            raise ValueError("Consentimento marcado exige data_consentimento.")
-        if not self.termo_versao:
-            raise ValueError("Consentimento marcado exige a versão do termo aceito.")
-        if self.idade < 18 and not self.consentimento_responsavel:
-            raise ValueError("Participante menor de 18 anos exige a ciência do responsável legal.")
+        # O app não coleta mais o termo; os campos ficam só para dados antigos. Se vier marcado, tem de ser coerente.
+        if self.consentimento:
+            if self.data_consentimento is None:
+                raise ValueError("Consentimento marcado exige data_consentimento.")
+            if not self.termo_versao:
+                raise ValueError("Consentimento marcado exige a versão do termo aceito.")
+            if self.idade < 18 and not self.consentimento_responsavel:
+                raise ValueError("Participante menor de 18 anos exige a ciência do responsável legal.")
         return self
 
 

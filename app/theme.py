@@ -12,6 +12,19 @@ REVIEW_BACKGROUND = "#FDE8E8"
 REVIEW_TEXT = "#8B1E2D"
 
 
+def tela_carregando(mensagem: str = "Carregando...") -> ft.Control:
+    """Tela simples com indicador de progresso, mostrada enquanto uma tela busca dados (conexão lenta)."""
+    return ft.Column(
+        controls=[
+            ft.Divider(height=120, color="transparent"),
+            ft.ProgressRing(width=44, height=44, stroke_width=4, color=PRIMARY),
+            ft.Text(mensagem, size=14, color=TEXT_SECONDARY),
+        ],
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        spacing=16,
+    )
+
+
 def apply_theme(page: ft.Page) -> None:
     page.theme_mode = ft.ThemeMode.LIGHT
     page.theme = ft.Theme(
