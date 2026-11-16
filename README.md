@@ -44,7 +44,7 @@ ortocheck/
 └── README.md
 ```
 
-- **Cliente:** telas de login/consentimento, participantes, seleção de testes, registro de resultados, dashboard e resumo para revisão.
+- **Cliente:** telas de login, participantes, seleção de testes, registro de resultados, dashboard e resumo para revisão.
 - **API:** valida a sessão no endpoint oficial do Supabase Auth e executa consultas PostgREST com o access token do próprio usuário.
 - **Banco:** políticas RLS separam dados de alunos; professor tem acesso de revisão conforme `app_metadata.role = professor`.
 - **IA:** regras locais documentadas; provedor LLM é opcional. Sem provedor disponível, a aplicação retorna um resumo estruturado baseado nas regras, identificado como tal.
@@ -108,7 +108,7 @@ Valores fixos: `lado` ∈ {Direito, Esquerdo, Bilateral}; `resultado` ∈ {Posit
 ### Regras de negócio (decididas pelo grupo, mudar só com registro em `docs/decisoes.md`)
 
 - **Sem nome completo.** O participante é identificado por código (P-001). Idade, peso e altura são os únicos dados pessoais.
-- **Consentimento obrigatório** antes de abrir o primeiro teste.
+- **Consentimento:** o app não coleta mais o termo (ADR-050); se a coordenação exigir, colete fora do app.
 - **Positivo não é lesão e negativo não é "saudável".** Positivo = sinal compatível com a hipótese em investigação.
 - `status` da avaliação é **calculado**: Completo = todos os testes esperados com resultado diferente de vazio (Não realizado e Inconclusivo contam como respondidos).
 - IMC = `peso_kg / altura_m²`.
@@ -186,7 +186,7 @@ Etiquetas: **[A]** dados/backend/IA, **[B]** app/design, **[G]** grupo inteiro (
 
 **Etapa D: App (Flet)**
 - [x] **ORT-17** [B] Desenhar as telas **em formato celular** (check-up, teste, lista, dashboard) e só depois adaptar ao desktop.
-- [x] **ORT-18** [B] Login com sessão lembrada; termo de consentimento lido e confirmado no cadastro de cada participante (data e versão gravadas).
+- [x] **ORT-18** [B] Login com sessão lembrada; termo de consentimento (implementado e depois removido do app, ADR-050).
 - [x] **ORT-19** [B] Lista de participantes por código, com status e botão claro "Novo participante".
 - [x] **ORT-20** [B] Tela de seleção de testes com progresso e separação visual entre "feito" e "resultado".
 - [x] **ORT-21** [B] Tela do teste: seletor Positivo/Negativo/Não realizado, D/E/Bilateral, slider de dor 0–10, observações e botão "?" com a ficha. Alvos de toque de 44–48 px.

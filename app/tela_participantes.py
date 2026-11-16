@@ -9,7 +9,6 @@ from estado import (
     situacao_rede,
     sincronizar_fila_offline,
 )
-from termo import DECLARACAO, DECLARACAO_RESPONSAVEL, TITULO, secoes
 from theme import (
     CARD_BORDER, PRIMARY, REVIEW_BACKGROUND, REVIEW_TEXT, SURFACE, TEXT_PRIMARY, TEXT_SECONDARY,
     WARNING_BACKGROUND, WARNING_TEXT,
@@ -41,6 +40,7 @@ def render_participantes(page: ft.Page, navegar):
         page.update()
 
     def abrir_participante(participante: dict):
+        dizer("Abrindo a ficha...")
         sucesso, resultado = garantir_avaliacao_ativa(participante["id"], participante.get("avaliacao"))
         if not sucesso:
             return dizer(str(resultado), erro=True)
@@ -142,6 +142,7 @@ def render_participantes(page: ft.Page, navegar):
         atualizar_lista()
 
     def sincronizar_agora(_=None):
+        dizer("Sincronizando...")
         res = sincronizar_fila_offline()
         if res["sincronizados"]:
             msg = f"{res['sincronizados']} registro(s) enviado(s) ao servidor."
@@ -157,7 +158,7 @@ def render_participantes(page: ft.Page, navegar):
         carregar_do_servidor()
 
     # ==========================================
-    # FORMULÁRIO DE NOVO PARTICIPANTE (com termo de consentimento)
+    # FORMULÁRIO DE NOVO PARTICIPANTE
     # ==========================================
     form_visivel = ft.Container(visible=False)
 
@@ -167,37 +168,10 @@ def render_participantes(page: ft.Page, navegar):
     texto_codigo = ft.Text("", size=13, color=TEXT_SECONDARY)
     nome_in = campo("Nome (opcional)", hint_text="Só para você localizar a ficha", max_length=60)
     sobrenome_in = campo("Sobrenome (opcional)", max_length=80)
-    idade_in = campo("Idade (anos)", keyboard_type=ft.KeyboardType.NUMBER, on_change=lambda _: ao_mudar_idade())
+    idade_in = campo("Idade (anos)", keyboard_type=ft.KeyboardType.NUMBER)
     peso_in = campo("Peso em kg (ex.: 68.5)", keyboard_type=ft.KeyboardType.NUMBER)
     altura_in = campo("Altura em metros (ex.: 1.72)", keyboard_type=ft.KeyboardType.NUMBER)
     erro_form = ft.Text("", color=REVIEW_TEXT, size=12, visible=False)
-
-    termo_box = ft.Container(
-        visible=False, bgcolor=SURFACE, border=ft.Border.all(width=1, color=CARD_BORDER), border_radius=12, padding=12,
-        content=ft.Column(
-            controls=[ft.Text(TITULO, weight=ft.FontWeight.BOLD, size=14, color=TEXT_PRIMARY)] + [
-                ft.Column([ft.Text(t, weight=ft.FontWeight.BOLD, size=13, color=PRIMARY),
-                           ft.Text(x, size=13, color=TEXT_PRIMARY)], spacing=2)
-                for t, x in secoes()],
-            spacing=10, scroll=ft.ScrollMode.AUTO, height=280,
-        ),
-    )
-    chk_termo = ft.Checkbox(label=DECLARACAO, value=False)
-    chk_responsavel = ft.Checkbox(label=DECLARACAO_RESPONSAVEL, value=False, visible=False)
-
-    def alternar_termo(_):
-        termo_box.visible = not termo_box.visible
-        page.update()
-
-    def ao_mudar_idade():
-        try:
-            menor = 0 < int(idade_in.value) < 18
-        except (TypeError, ValueError):
-            menor = False
-        chk_responsavel.visible = menor
-        if not menor:
-            chk_responsavel.value = False
-        page.update()
 
     def alternar_formulario(e):
         form_visivel.visible = not form_visivel.visible
@@ -231,22 +205,14 @@ def render_participantes(page: ft.Page, navegar):
                 raise ValueError()
         except Exception:
             return falha("Altura inválida (informe em metros entre 0.50 e 2.50, ex.: 1.75).")
-        if not chk_termo.value:
-            return falha("Peça ao participante para ler o termo de consentimento e marque a confirmação.")
-        if idade_val < 18 and not chk_responsavel.value:
-            return falha("Participante menor de 18 anos: é preciso a ciência do responsável legal.")
 
-        sucesso, resp = criar_novo_participante(idade_val, peso_val, altura_val, nome_in.value, sobrenome_in.value,
-                                                responsavel_ciente=bool(chk_responsavel.value))
+        dizer("Salvando participante...")
+        sucesso, resp = criar_novo_participante(idade_val, peso_val, altura_val, nome_in.value, sobrenome_in.value)
         if not sucesso:
             return falha(str(resp))
 
         for c in (nome_in, sobrenome_in, idade_in, peso_in, altura_in):
             c.value = ""
-        chk_termo.value = False
-        chk_responsavel.value = False
-        chk_responsavel.visible = False
-        termo_box.visible = False
         form_visivel.visible = False
         carregar_do_servidor()
         dizer(f"Participante {resp['codigo']} cadastrado"
@@ -266,10 +232,6 @@ def render_participantes(page: ft.Page, navegar):
                 idade_in,
                 peso_in,
                 altura_in,
-                ft.TextButton("Ler o termo de consentimento", on_click=alternar_termo),
-                termo_box,
-                chk_termo,
-                chk_responsavel,
                 erro_form,
                 ft.Row(
                     controls=[

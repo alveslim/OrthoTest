@@ -1,5 +1,5 @@
 import flet as ft
-from theme import apply_theme
+from theme import apply_theme, tela_carregando
 from tela_login import render_login
 from tela_participantes import render_participantes
 from tela_selecao import render_selecao
@@ -25,6 +25,14 @@ def main(page: ft.Page):
         "resumo_ia": lambda: render_resumo_ia(page, navegar)
     }
 
+    mensagens = {
+        "participantes": "Carregando participantes...",
+        "selecao": "Abrindo a ficha...",
+        "teste": "Abrindo o teste...",
+        "dashboard": "Calculando o dashboard...",
+        "resumo_ia": "Abrindo o assistente...",
+    }
+
     def navegar(nome_rota: str):
         if nome_rota == "login":
             limpar_sessao()
@@ -33,6 +41,10 @@ def main(page: ft.Page):
             nome_rota = "login"
 
         page.clean()
+        if nome_rota != "login":  # mostra o carregamento antes de a tela buscar dados (a rede pode demorar)
+            page.add(tela_carregando(mensagens.get(nome_rota, "Carregando...")))
+            page.update()
+            page.clean()
         try:
             rotas[nome_rota]()
         except Exception as exc:  # nunca deixar a tela em branco: mostra o erro e oferece voltar
@@ -45,6 +57,9 @@ def main(page: ft.Page):
         page.update()
 
     # Já entrou antes neste aparelho? Abre direto (funciona sem internet).
+    page.add(tela_carregando("Abrindo o OrthoTest MVP..."))
+    page.update()
+    page.clean()
     navegar("participantes" if tentar_restaurar_sessao() else "login")
 
 if __name__ == "__main__":

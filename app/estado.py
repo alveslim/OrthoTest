@@ -21,7 +21,6 @@ from dotenv import load_dotenv
 import contingencia_offline as fila_local
 from armazenamento import apagar, gravar_json, ler_json
 from config import cfg
-from termo import TERMO_VERSAO
 
 load_dotenv()  # só ajuda no computador; no celular os valores vêm de app/config_publica.json
 
@@ -329,8 +328,8 @@ def buscar_participantes_e_avaliacoes() -> tuple[bool, list | str]:
 
 
 def criar_novo_participante(idade: int, peso_kg: float | None, altura_m: float | None, nome: str | None = None,
-                            sobrenome: str | None = None, responsavel_ciente: bool = False) -> tuple[bool, dict | str]:
-    """O consentimento já foi aceito na tela (termo lido e marcado); aqui só registramos data e versão."""
+                            sobrenome: str | None = None) -> tuple[bool, dict | str]:
+    """Cadastra o participante. O código (P-001...) é gerado automaticamente; nome e sobrenome são opcionais."""
     nome = " ".join((nome or "").split()) or None
     sobrenome = " ".join((sobrenome or "").split()) or None
     if MODO_DEMO:
@@ -340,9 +339,7 @@ def criar_novo_participante(idade: int, peso_kg: float | None, altura_m: float |
                 "idade": idade, "peso_kg": peso_kg, "altura_m": altura_m}
         _off["participantes"].append(novo)
         return True, novo
-    payload = {"nome": nome, "sobrenome": sobrenome, "idade": idade, "peso_kg": peso_kg, "altura_m": altura_m,
-               "consentimento": True, "data_consentimento": datetime.now(timezone.utc).isoformat(),
-               "termo_versao": TERMO_VERSAO, "consentimento_responsavel": bool(responsavel_ciente)}
+    payload = {"nome": nome, "sobrenome": sobrenome, "idade": idade, "peso_kg": peso_kg, "altura_m": altura_m}
     payload = {k: v for k, v in payload.items() if v is not None}
     try:
         resp = _req("POST", "/participantes", json=payload)

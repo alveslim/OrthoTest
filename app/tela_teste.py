@@ -138,6 +138,7 @@ def render_teste(page: ft.Page, navegar):
             "dor_0_10": estado["dor"], "valor_medido": valor,
             "observacoes": (campo_obs.value or "").strip() or None,
         }
+        dizer("Salvando...", erro=False)
         ok, msg = salvar_resultado_teste(str(avaliacao["id"]), payload)
         if ok:
             sessao["aviso_selecao"] = msg

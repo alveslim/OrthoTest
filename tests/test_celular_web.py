@@ -26,7 +26,7 @@ def test_config_prioriza_ambiente_e_cai_no_arquivo_publico(monkeypatch, tmp_path
 
 def test_arquivo_publico_nao_tem_segredos():
     dados = json.loads((RAIZ / "app" / "config_publica.json").read_text(encoding="utf-8"))
-    assert set(dados) == {"SUPABASE_URL", "SUPABASE_ANON_KEY", "API_BASE_URL", "TERMO_CONTATO"}
+    assert set(dados) == {"SUPABASE_URL", "SUPABASE_ANON_KEY", "API_BASE_URL"}
     chave = dados["SUPABASE_ANON_KEY"]
     assert chave.startswith("sb_publishable_") or (chave.startswith("eyJ") and '"role":"anon"' in
                                                     __import__("base64").urlsafe_b64decode(chave.split(".")[1] + "==").decode().replace(" ", ""))

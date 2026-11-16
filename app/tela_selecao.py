@@ -247,7 +247,6 @@ def render_selecao(page: ft.Page, navegar):
                     size=13,
                     color=TEXT_SECONDARY,
                 ),
-                ft.Text("Consentimento registrado", size=12, color=PRIMARY, weight=ft.FontWeight.W_500),
                 texto_progresso,
                 barra_progresso,
             ],
