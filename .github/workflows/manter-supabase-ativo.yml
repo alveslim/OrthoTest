@@ -1,0 +1,28 @@
+# Projetos gratuitos do Supabase são PAUSADOS após ~7 dias sem atividade (e o app mostra "Sem internet").
+# Este agendador chama public.ping() a cada 2 dias para manter o projeto ativo. Pode rodar na mão (Run workflow).
+# Só usa valores PÚBLICOS (URL e chave publishable, as mesmas que já vão dentro do app).
+name: Manter Supabase ativo
+
+on:
+  schedule:
+    - cron: "17 9 */2 * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Chamar public.ping()
+        run: |
+          URL=$(python3 -c "import json;print(json.load(open('app/config_publica.json'))['SUPABASE_URL'])")
+          KEY=$(python3 -c "import json;print(json.load(open('app/config_publica.json'))['SUPABASE_ANON_KEY'])")
+          for i in 1 2 3; do
+            code=$(curl -s -o resp.txt -w "%{http_code}" -X POST "$URL/rest/v1/rpc/ping" \
+              -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{}')
+            echo "tentativa $i: HTTP $code - $(cat resp.txt)"
+            [ "$code" = "200" ] && exit 0
+            sleep 20
+          done
+          echo "::error::Supabase não respondeu 200 (projeto pausado ou fora do ar?)"; exit 1
