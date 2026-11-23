@@ -1,5 +1,6 @@
 import flet as ft
 
+from mascaras import mascara_altura, mascara_idade, mascara_peso
 from estado import (
     buscar_participantes_e_avaliacoes,
     codigo_sugerido,
@@ -169,8 +170,22 @@ def render_participantes(page: ft.Page, navegar):
     nome_in = campo("Nome (opcional)", hint_text="Só para você localizar a ficha", max_length=60)
     sobrenome_in = campo("Sobrenome (opcional)", max_length=80)
     idade_in = campo("Idade (anos)", keyboard_type=ft.KeyboardType.NUMBER)
-    peso_in = campo("Peso em kg (ex.: 68.5)", keyboard_type=ft.KeyboardType.NUMBER)
-    altura_in = campo("Altura em metros (ex.: 1.72)", keyboard_type=ft.KeyboardType.NUMBER)
+    peso_in = campo("Peso em kg (ex.: 68)", keyboard_type=ft.KeyboardType.NUMBER,
+                    hint_text="Só os números")
+    altura_in = campo("Altura (ex.: 172 vira 1.72 m)", keyboard_type=ft.KeyboardType.NUMBER,
+                      hint_text="Só os números; o ponto entra sozinho")
+
+    def aplicar_mascara(campo_, funcao):
+        def ao_mudar(_):
+            novo = funcao(campo_.value)
+            if novo != (campo_.value or ""):
+                campo_.value = novo
+                campo_.update()
+        campo_.on_change = ao_mudar
+
+    aplicar_mascara(idade_in, mascara_idade)
+    aplicar_mascara(peso_in, mascara_peso)
+    aplicar_mascara(altura_in, mascara_altura)
     erro_form = ft.Text("", color=REVIEW_TEXT, size=12, visible=False)
 
     def alternar_formulario(e):
