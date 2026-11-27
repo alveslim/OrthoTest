@@ -1,7 +1,7 @@
 [project]
 name = "orthotest"
 version = "1.0.0"
-description = "OrthoTest MVP - avaliação ortopédica acadêmica"
+description = "OrthoTest - avaliação ortopédica acadêmica"
 requires-python = ">=3.10"
 # ATENÇÃO: o Vercel instala a API a partir DESTE bloco (o pyproject.toml tem prioridade sobre o
 # requirements.txt). Por isso aqui ficam só as dependências do backend. As do app (Flet) estão em
@@ -14,10 +14,10 @@ dependencies = [
 ]
 
 [tool.flet]
-product = "OrthoTest MVP"
+product = "OrthoTest"
 company = "Universidade Nilton Lins"
 org = "br.edu.niltonlins"
-copyright = "Projeto acadêmico OrthoTest MVP"
+copyright = "Projeto acadêmico OrthoTest"
 
 [tool.flet.app]
 path = "app"
@@ -26,8 +26,8 @@ module = "main"
 # Telas de carregamento do app (web: enquanto o navegador prepara o Python; primeira abertura é a mais lenta)
 [tool.flet.app.boot_screen]
 show = true
-message = "Preparando o OrthoTest MVP pela primeira vez…"
+message = "Preparando o OrthoTest pela primeira vez…"
 
 [tool.flet.app.startup_screen]
 show = true
-message = "Carregando o OrthoTest MVP…"
+message = "Carregando o OrthoTest…"

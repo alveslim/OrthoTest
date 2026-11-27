@@ -53,10 +53,10 @@ TRUNCATE TABLE public.ia_rascunhos, public.resultados_testes, public.avaliacoes,
 - **Termo de consentimento:** foi implementado nesta versão e **removido do app em 16/11/2026** (ADR-050).
 - **Sem internet:** participante criado offline recebe código provisório; se outro aparelho usar o mesmo código, o servidor atribui o próximo e o app avisa na sincronização.
 
-## ADR-050: Termo de consentimento removido do app; nome do produto "OrthoTest MVP"
+## ADR-050: Termo de consentimento removido do app; nome do produto "OrthoTest"
 
 - **Data:** 16/11/2026
 - **Decisão:** o cadastro de participante **não pede mais o termo de consentimento** nem a ciência do responsável (a pedido do grupo). O app deixa de enviar `consentimento`, `data_consentimento`, `termo_versao` e `consentimento_responsavel`; a API e o banco aceitam cadastro sem eles (as colunas continuam, com `consentimento = false`, e linhas antigas permanecem válidas). Arquivos removidos: `app/termo.py`, `docs/termo_consentimento.md`, `scripts/gerar_termo.py`.
 - **Consequência:** o app não registra mais que houve consentimento. Se o professor ou o comitê de ética exigirem, a coleta precisa ser feita fora do app (ex.: termo em papel). Para voltar atrás, o histórico do git (ADR-049, commit `ecde795`) tem a implementação completa.
-- **Nome:** o produto passa a se chamar **OrthoTest MVP** (título do site, tela de login, nome do app).
+- **Nome:** o produto se chama **OrthoTest** (título do site, tela de login, nome do app). O sufixo "MVP" foi usado por um período e depois retirado.
 

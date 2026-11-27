@@ -10,7 +10,7 @@ from tela_dashboard import render_dashboard
 
 def main(page: ft.Page):
     apply_theme(page)
-    page.title = "OrthoTest MVP"
+    page.title = "OrthoTest"
     page.window.width = 390
     page.window.height = 844
     page.padding = 20
@@ -57,7 +57,7 @@ def main(page: ft.Page):
         page.update()
 
     # Já entrou antes neste aparelho? Abre direto (funciona sem internet).
-    page.add(tela_carregando("Abrindo o OrthoTest MVP..."))
+    page.add(tela_carregando("Abrindo o OrthoTest..."))
     page.update()
     page.clean()
     navegar("participantes" if tentar_restaurar_sessao() else "login")
